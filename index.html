@@ -1,0 +1,1794 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Classy — Wireframe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Instrument+Sans:ital@0;1&family=Instrument+Serif:ital@0;1&family=Jacquard+24&family=Monoton&family=Rubik+Dirt&family=Ruthie&family=Sancreek&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f4f4f4;
+    --panel:#ffffff;
+    --rail:#3a3a3a;
+    --rail-ink:#f4f4f4;
+    --rail-muted:#a9a9a9;
+    --line:#c9c9c9;
+    --line-strong:#8f8f8f;
+    --fill:#ececec;
+    --fill-2:#f7f7f7;
+    --ink:#1f1f1f;
+    --muted:#828282;
+    --radius:6px;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    /* printed-paper palette for the newspaper feed view */
+    --news-bg:#fcfcf8; --news-ink:#161616; --news-muted:#6d6d66; --news-rule:#bcbcb2;
+  }
+  body.dark{
+    --bg:#242424; --panel:#2e2e2e; --rail:#1c1c1c; --rail-ink:#e8e8e8; --rail-muted:#8a8a8a;
+    --line:#484848; --line-strong:#6a6a6a; --fill:#3a3a3a; --fill-2:#333; --ink:#e8e8e8; --muted:#9a9a9a;
+    --news-bg:#262624; --news-ink:#e9e9e4; --news-muted:#a7a79f; --news-rule:#4c4c48;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font-family:var(--font);color:var(--ink);background:var(--bg);display:flex;overflow:hidden}
+  button{font-family:inherit;cursor:pointer}
+
+  /* ---------- Sidebar ---------- */
+  .rail{
+    width:220px;flex:0 0 220px;background:var(--rail);color:var(--rail-ink);
+    height:100vh;display:flex;flex-direction:column;padding:22px 16px;
+  }
+  .brand{font-family:var(--serif);font-size:32px;line-height:1;letter-spacing:.01em}
+  .tag{font-size:10px;letter-spacing:.22em;color:var(--rail-muted);margin-top:8px;text-transform:uppercase}
+  .nav{margin-top:34px;display:flex;flex-direction:column;gap:4px}
+  .nav button{
+    display:flex;align-items:center;gap:12px;background:none;border:0;color:var(--rail-ink);
+    padding:10px 10px;border-radius:6px;font-size:14px;text-align:left;width:100%;opacity:.82;
+  }
+  .nav button:hover{background:rgba(255,255,255,.06);opacity:1}
+  .nav button.active{opacity:1;font-weight:700}
+  .nav button svg{width:19px;height:19px;flex:0 0 auto;opacity:.92}
+  .rail .foot{margin-top:auto;border-top:1px solid rgba(255,255,255,.15);padding-top:14px}
+  .rail .acct{font-size:13px;margin-bottom:12px}
+  .rail .acct b{font-weight:700}
+  .rail .acct span{color:var(--rail-muted)}
+  .rail .foot-row{display:flex;align-items:center;justify-content:space-between}
+  .rail .foot-row button{background:none;border:0;color:var(--rail-ink);opacity:.82;display:flex;align-items:center;gap:8px;font-size:13px;padding:4px}
+  .rail .foot-row button:hover{opacity:1}
+  .rail .foot-row button svg{width:18px;height:18px;flex:0 0 auto}
+
+  /* ---------- Main ---------- */
+  .main{position:relative;flex:1;height:100vh;display:flex;flex-direction:column;min-width:0}
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px 34px;border-bottom:1px solid var(--line);flex:0 0 auto;background:var(--bg);
+  }
+  .topbar h2{font-family:var(--serif);font-weight:500;font-size:26px;margin:0}
+  .topbar .date{display:inline-flex;align-items:baseline;gap:9px;color:var(--muted)}
+  .topbar .date .date-label{font-family:var(--font);font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+  .topbar .date .date-val{font-family:var(--serif);font-size:22px;font-style:italic}
+  .topbar-right{display:flex;align-items:center;gap:22px}
+  /* feed view toggle: masonry ⇄ newspaper (only visible on the feed) */
+  /* floats over the top-left of the feed content, fixed while the paper pans */
+  .viewseg{position:absolute;top:86px;left:30px;z-index:25;display:none;align-items:center;
+    border:1.5px solid var(--line-strong);border-radius:7px;overflow:hidden;background:var(--panel);
+    box-shadow:0 2px 12px rgba(0,0,0,.1)}
+  .viewseg.show{display:inline-flex}
+  .viewseg button{display:flex;align-items:center;justify-content:center;background:var(--panel);border:0;color:var(--muted);padding:8px 14px}
+  .viewseg button + button{border-left:1.5px solid var(--line-strong)}
+  .viewseg button:hover{color:var(--ink)}
+  .viewseg button.active{background:var(--ink);color:var(--panel)}
+  .viewseg button svg{width:19px;height:19px;display:block}
+  .scroll{flex:1;overflow-y:auto;padding:30px 34px 60px}
+
+  /* ---------- Feed ---------- */
+  .horoscope{text-align:center;max-width:640px;margin:0 auto 28px;padding-bottom:22px;border-bottom:1px solid var(--line)}
+  .horo-label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+  .horo-text{font-family:var(--serif);font-style:italic;font-size:15px;line-height:1.55;color:var(--ink);margin:8px 0 0}
+  .masonry{display:flex;gap:20px;align-items:flex-start}
+  .mcol{flex:1;min-width:0;display:flex;flex-direction:column;gap:20px}
+  .card{
+    background:var(--panel);border:1.5px solid var(--line-strong);border-radius:var(--radius);
+    padding:18px;text-align:left;display:block;width:100%;margin:0;cursor:pointer;
+    transition:border-color .12s ease, box-shadow .12s ease, transform .12s ease;
+  }
+  .card:hover{border-color:var(--ink);box-shadow:0 4px 14px rgba(0,0,0,.09);transform:translateY(-2px)}
+  .card p{font-size:13px;line-height:1.5;color:var(--ink);margin:0}
+  .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .tag-chip{font-size:11px;padding:4px 9px;background:var(--fill);border:1px solid var(--line);border-radius:4px;color:var(--muted)}
+  /* ad typography (global): decorative font on name+age only; headline ALWAYS ALL CAPS in the body font */
+  .ad-name{font-weight:500;font-size:calc(22px * var(--fscale,1));line-height:1.05;color:var(--ink);margin:0 0 6px}
+  .ad-place{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+  .ad-headline{font-weight:700;font-size:13px;letter-spacing:.07em;text-transform:uppercase;line-height:1.3;color:var(--ink);margin:0 0 11px}
+  .ad-body{font-size:13px;line-height:1.5;color:var(--ink);margin:0}
+  .sheet .ad-name,.myad-card .ad-name{font-size:calc(27px * var(--fscale,1))}
+  /* ad you've already replied to — still shown (daily limit), but de-emphasized */
+  .card.replied{background:var(--fill-2)}
+  .card.replied .ad-name,.card.replied .ad-headline,.card.replied .ad-body,.card.replied .tags{opacity:.45}
+  .card.replied:hover{border-color:var(--line-strong);box-shadow:0 2px 8px rgba(0,0,0,.05);transform:none}
+  .replied-note{display:flex;align-items:center;gap:7px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:12px;font-weight:600;letter-spacing:.01em;color:var(--muted)}
+  .replied-note::before{content:'✓';display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--ink);color:var(--panel);font-size:10px;flex:none}
+  /* gated feed (no ad posted) */
+  .feed-locked{position:relative;overflow:hidden;max-height:560px}
+  .feed-locked .masonry .card{pointer-events:none}
+  .feed-blur{position:absolute;left:-12px;right:-12px;bottom:0;height:66%;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);background:linear-gradient(to bottom, rgba(0,0,0,0), var(--bg) 80%)}
+  .feed-gate{position:absolute;left:0;right:0;bottom:56px;display:flex;justify-content:center;z-index:2;padding:0 20px}
+  .feed-gate-card{background:var(--panel);border:1.5px solid var(--ink);border-radius:12px;padding:26px 28px;max-width:420px;text-align:center;box-shadow:0 10px 34px rgba(0,0,0,.14)}
+  .feed-gate-card h3{font-family:var(--serif);font-weight:500;font-size:22px;margin:0 0 10px}
+  .feed-gate-card p{font-size:14px;color:var(--muted);line-height:1.55;margin:0 0 18px}
+
+  /* ---------- Feed: The Newspaper (fixed sheet you pan & zoom around) ---------- */
+  .scroll.paper-mode{padding:0;overflow:hidden;position:relative}
+  .paper-viewport{position:absolute;inset:0;overflow:hidden;background:var(--news-bg);cursor:grab;
+    user-select:none;-webkit-user-select:none}
+  .paper-viewport.panning{cursor:grabbing}
+  .paper{width:1120px;transform-origin:0 0;background:var(--news-bg);color:var(--news-ink);
+    padding:40px 48px 44px;font-family:var(--serif);will-change:transform;box-shadow:0 8px 40px rgba(0,0,0,.16)}
+  /* gated (no ad posted): a static, blurred snapshot of the sheet behind the post-your-ad gate */
+  .paper.static{transform:scale(.62);transform-origin:top left;pointer-events:none;box-shadow:none;margin:0 auto}
+  .masthead{text-align:center;border-bottom:3px double var(--news-ink);padding-bottom:16px;margin-bottom:24px}
+  .mast-title{font-family:var(--serif);font-weight:700;font-size:76px;line-height:.9;letter-spacing:-.01em}
+  .mast-sub{font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--news-muted);
+    margin-top:13px;border-top:1px solid var(--news-rule);padding-top:10px}
+  .paper-cols{column-count:4;column-gap:34px;column-rule:1px solid var(--news-rule)}
+  .clip{display:block;width:100%;text-align:left;background:none;border:0;padding:0 0 15px;margin:0 0 15px;
+    border-bottom:1px solid var(--news-rule);break-inside:avoid;cursor:pointer;color:inherit;font-family:inherit;transition:opacity .12s}
+  .clip:hover{opacity:.55}
+  .clip-name{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-weight:500;
+    font-size:calc(20px * var(--fscale,1));line-height:1.05;color:var(--news-ink)}
+  .clip-rep-ic{width:13px;height:13px;flex:0 0 auto;color:var(--news-ink);align-self:center}
+  .clip-head{font-weight:700;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;line-height:1.22;margin:6px 0 5px;color:var(--news-ink)}
+  .clip-body{font-size:12px;line-height:1.48;color:var(--news-ink);opacity:.9}
+  .clip-loc{font-size:10.5px;font-style:italic;color:var(--news-muted);margin-top:6px}
+  .clip.replied,.clip.replied:hover{opacity:.5}
+  .paper-foot{text-align:center;font-size:13px;letter-spacing:.24em;color:var(--news-muted);margin-top:24px;font-family:var(--font)}
+  /* zoom controls + hint float over the viewport */
+  .paper-zoom{position:absolute;right:20px;bottom:22px;z-index:5;display:flex;flex-direction:column;gap:8px}
+  .paper-zoom button{width:38px;height:38px;border:1.5px solid var(--line-strong);border-radius:9px;
+    background:var(--panel);color:var(--ink);font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 2px 10px rgba(0,0,0,.12)}
+  .paper-zoom button:hover{border-color:var(--ink)}
+  .paper-hint{position:absolute;left:20px;bottom:26px;z-index:5;font-size:12px;color:var(--muted);
+    background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:7px 14px;
+    box-shadow:0 2px 10px rgba(0,0,0,.1);pointer-events:none}
+
+  /* ---------- Overlay ---------- */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:30px;z-index:50}
+  .overlay.open{display:flex}
+  .sheet{background:var(--panel);border:1.5px solid var(--line-strong);border-radius:8px;max-width:560px;width:100%;max-height:86vh;overflow-y:auto;padding:30px}
+  .sheet .close{float:right;border:1px solid var(--line-strong);background:var(--panel);color:var(--ink);border-radius:5px;width:30px;height:30px;font-size:16px}
+  .sheet .kicker{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .sheet h3{font-family:var(--serif);font-weight:500;font-size:calc(26px * var(--fscale,1));margin:8px 0 16px}
+  .sheet p{font-size:14px;line-height:1.6;margin:0 0 18px}
+  .sheet .meta{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;border-top:1px solid var(--line);padding-top:16px;margin-bottom:20px}
+  .sheet .meta div{font-size:13px}
+  .sheet .meta span{color:var(--muted)}
+
+  /* ---------- Buttons ---------- */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 18px;border-radius:6px;font-size:14px;border:1.5px solid var(--ink);background:var(--ink);color:var(--panel)}
+  body.dark .btn{color:#1c1c1c;background:var(--ink);border-color:var(--ink)}
+  .btn.ghost{background:var(--panel);color:var(--ink)}
+  .btn.block{width:100%}
+  .btn:disabled{background:var(--fill);color:var(--muted);border-color:var(--line-strong);cursor:default}
+
+  /* ---------- Messages list ---------- */
+  .mlist{display:flex;flex-direction:column;gap:14px;max-width:760px}
+  .mrow{background:var(--panel);border:1.5px solid var(--line-strong);border-radius:var(--radius);padding:18px;text-align:left;display:flex;gap:16px;align-items:flex-start}
+  .mrow:hover{border-color:var(--ink)}
+  .mrow .kicker{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .mrow h3{font-family:var(--serif);font-weight:500;font-size:18px;margin:5px 0 8px}
+  .mrow p{font-size:13px;line-height:1.5;color:var(--muted);margin:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .mrow .when{font-size:12px;color:var(--muted);white-space:nowrap}
+
+  /* ---------- Thread ---------- */
+  .thread{max-width:720px;margin:0 auto;display:flex;flex-direction:column;height:100%}
+  .back{background:none;border:0;color:var(--muted);font-size:13px;padding:0 0 14px;display:flex;gap:6px;align-items:center}
+  .scroll.thread-mode{padding-top:0;padding-bottom:0}
+  .thread-head{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;align-items:center;gap:12px;margin:0 0 20px;padding:18px 0 14px;border-bottom:1px solid var(--line-strong)}
+  .th-icon{background:none;border:0;color:var(--ink);display:flex;align-items:center;justify-content:center;padding:5px;flex:0 0 auto;border-radius:6px}
+  .th-icon svg{width:22px;height:22px}
+  .th-icon:hover{background:var(--fill)}
+  .th-name{background:none;border:0;color:var(--ink);font-family:var(--serif);font-weight:500;font-size:calc(23px * var(--fscale,1));line-height:1.05;padding:2px 2px;cursor:pointer;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
+  .th-name:hover{text-decoration:underline;text-underline-offset:3px}
+  .th-actions{margin-left:auto;display:flex;align-items:center;gap:4px;flex:0 0 auto}
+  .th-block{color:var(--muted)}
+  .th-block:hover{color:#b23b3b;background:none}
+  /* face-reveal eye + tooltip (greyed until a mutual reveal is unlocked) */
+  .th-eye-wrap{position:relative;display:flex}
+  .th-eye{position:relative;background:none;border:0;padding:5px;display:flex;align-items:center;justify-content:center;color:var(--ink);border-radius:6px}
+  .th-eye svg{width:22px;height:22px}
+  .th-eye:hover{background:var(--fill)}
+  .th-eye.locked{color:var(--line-strong);cursor:default}
+  .th-eye.locked:hover{background:none}
+  .th-eye.offered::after{content:'';position:absolute;top:2px;right:2px;width:9px;height:9px;border-radius:50%;background:#c0392b;border:2px solid var(--bg)}
+  .th-eye-wrap .tip{position:absolute;top:calc(100% + 9px);right:-4px;width:212px;background:var(--ink);color:var(--panel);font-size:12px;line-height:1.45;padding:10px 12px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.24);opacity:0;pointer-events:none;transform:translateY(-4px);transition:opacity .14s,transform .14s;z-index:30;text-align:left}
+  body.dark .th-eye-wrap .tip{background:var(--panel);color:var(--ink);border:1px solid var(--line-strong)}
+  .th-eye-wrap .tip::before{content:'';position:absolute;bottom:100%;right:12px;border:6px solid transparent;border-bottom-color:var(--ink)}
+  body.dark .th-eye-wrap .tip::before{border-bottom-color:var(--panel)}
+  .th-eye-wrap:hover .tip,.th-eye-wrap.tip-show .tip{opacity:1;transform:none}
+  /* conversation "more" menu (unmatch / block) */
+  .th-menu-wrap{position:relative;display:flex}
+  .th-menu{position:absolute;top:calc(100% + 6px);right:0;min-width:168px;background:var(--panel);border:1px solid var(--line-strong);border-radius:10px;box-shadow:0 10px 28px rgba(0,0,0,.18);padding:6px;display:none;z-index:40}
+  .th-menu.open{display:block}
+  .th-menu button{display:block;width:100%;text-align:left;background:none;border:0;padding:10px 12px;border-radius:6px;font-size:14px;color:var(--ink);cursor:pointer}
+  .th-menu button:hover{background:var(--fill)}
+  .th-menu button.danger{color:#b23b3b}
+  /* pinned ad preview + inline face-reveal prompt in a conversation */
+  .ad-snip{background:var(--fill-2);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-bottom:20px;cursor:pointer}
+  .ad-snip:hover{border-color:var(--line-strong)}
+  .ad-snip .ad-name{font-size:calc(16px * var(--fscale,1));margin:0 0 3px}
+  .ad-snip .ad-place{font-size:10px;margin:0 0 7px}
+  .ad-snip .ad-headline{font-size:11px;margin:0 0 6px}
+  .ad-snip p{font-size:12px;color:var(--muted);margin:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .reveal-inline{align-self:center;max-width:360px;margin:12px auto 4px;padding:16px 18px;border:1px solid var(--line);border-radius:12px;background:var(--fill-2);display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+  .reveal-inline .ri-text{font-size:13px;color:var(--muted);line-height:1.5}
+  .reveal-inline .ri-link{background:none;border:0;color:var(--ink);font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:2px;padding:2px;cursor:pointer}
+  .reveal-inline .ri-link:hover{opacity:.65}
+
+  /* ---------- Face reveal ---------- */
+  .reveal-status{font-size:13px;color:var(--ink);background:var(--fill-2);border:1px solid var(--line);border-radius:6px;padding:10px 12px;margin:16px 0 18px;display:flex;align-items:center;gap:8px}
+  .reveal-pair{display:flex;gap:16px;margin:18px 0 4px}
+  .reveal-single{display:flex;justify-content:center;margin:18px 0 4px}
+  .reveal-single .reveal-tile{flex:0 0 260px;width:260px}
+
+  /* ---------- Onboarding ---------- */
+  .onboarding{position:fixed;inset:0;background:var(--bg);z-index:100;display:none;align-items:center;justify-content:center;padding:30px}
+  .onboarding.open{display:flex}
+  .ob-card{width:100%;max-width:520px;display:flex;flex-direction:column;gap:24px}
+  .ob-body{overflow-y:auto;max-height:calc(100vh - 200px)}
+  .ob-optional-head{font-size:12px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-top:8px;padding-top:16px;border-top:1px solid var(--line)}
+  .ob-dots{display:flex;gap:7px;justify-content:center;min-height:8px}
+  .ob-dot{width:7px;height:7px;border-radius:50%;background:var(--line-strong);opacity:.45}
+  .ob-dot.on{opacity:1;background:var(--ink)}
+  .ob-kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+  .ob-body h2{font-family:var(--serif);font-weight:500;font-size:30px;margin:0 0 8px}
+  .ob-sub{font-size:14px;color:var(--muted);margin:0 0 20px;line-height:1.5}
+  .ob-step{display:flex;flex-direction:column;gap:16px}
+  .ob-welcome{text-align:center;padding:16px 0}
+  .ob-brand{font-family:var(--serif);font-size:52px;line-height:1}
+  .ob-tag{font-size:11px;letter-spacing:.24em;color:var(--muted);text-transform:uppercase;margin:10px 0 30px}
+  .ob-welcome h2{font-family:var(--serif);font-weight:500;font-size:28px;margin:0 0 10px}
+  .ob-welcome p{font-size:15px;color:var(--muted);line-height:1.6;max-width:380px;margin:0 auto}
+  .ob-nav{display:flex;justify-content:space-between;gap:12px}
+  .req-mark{color:#b23b3b;font-weight:600}
+  .ob-body h2 .req-mark{font-size:.5em;vertical-align:super;font-weight:700}
+  .photo-drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:34px 20px;border:1.5px dashed var(--line-strong);border-radius:12px;background:var(--fill-2);cursor:pointer;text-align:center;transition:border-color .12s ease,background .12s ease}
+  .photo-drop:hover{border-color:var(--ink);background:var(--fill)}
+  .photo-drop .pu-ico{font-size:24px;line-height:1;margin-bottom:2px}
+  .photo-drop strong{font-size:15px;font-weight:600;color:var(--ink)}
+  .photo-drop span{font-size:12px;color:var(--muted)}
+  .photo-prev{display:flex;gap:16px;align-items:center}
+  .photo-prev .thumb{width:96px;height:120px;border-radius:10px;object-fit:cover;border:1px solid var(--line);flex:none}
+  .photo-prev .pp-meta{display:flex;flex-direction:column;gap:7px}
+  .photo-prev .pp-lock{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink)}
+  .photo-prev .pp-replace{font-size:13px;color:var(--muted);text-decoration:underline;background:none;border:0;padding:0;cursor:pointer;text-align:left}
+  .photo-privacy{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);background:var(--fill-2);border:1px solid var(--line);border-radius:8px;padding:11px 13px;line-height:1.4}
+  .photo-attached{display:flex;align-items:center;gap:11px;font-size:12.5px;color:var(--muted);background:var(--fill-2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:14px;line-height:1.4}
+  .pa-thumb{width:34px;height:42px;border-radius:5px;object-fit:cover;border:1px solid var(--line);flex:none}
+  .reveal-tile{position:relative;flex:1;aspect-ratio:3/4;border-radius:10px;overflow:hidden;border:1.5px solid var(--line-strong);cursor:crosshair}
+  .portrait{position:absolute;inset:0;background:linear-gradient(155deg,#aebccb,#7d899c)}
+  .portrait.them{background:linear-gradient(155deg,#c9b49f,#9a8770)}
+  .portrait::before{content:'';position:absolute;left:50%;top:35%;width:40%;aspect-ratio:1;background:rgba(255,255,255,.9);border-radius:50%;transform:translate(-50%,-50%)}
+  .portrait::after{content:'';position:absolute;left:50%;bottom:-32%;width:78%;height:62%;background:rgba(255,255,255,.9);border-radius:50%;transform:translateX(-50%)}
+  .frost{position:absolute;inset:0;background:rgba(226,227,231,.96);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+  .reveal-cap{position:absolute;left:0;right:0;bottom:0;text-align:center;font-size:12px;color:#fff;background:rgba(0,0,0,.35);padding:6px}
+  .reveal-hint{font-size:12px;color:var(--muted);text-align:center;margin-top:12px}
+  .msgs{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+  .bubble{max-width:76%;padding:10px 14px;border-radius:12px;font-size:14px;line-height:1.45}
+  .bubble.them{background:var(--fill);align-self:flex-start;border-bottom-left-radius:3px}
+  .bubble.me{background:var(--ink);color:var(--panel);align-self:flex-end;border-bottom-right-radius:3px}
+  body.dark .bubble.me{color:#1c1c1c}
+  .composer{position:sticky;bottom:0;z-index:10;background:var(--bg);display:flex;gap:10px;border-top:1px solid var(--line);padding:16px 0 22px;margin-top:auto}
+  .composer .field{flex:1;height:44px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--panel);padding:0 14px;color:var(--ink);font-size:14px;font-family:inherit;outline:none}
+  .composer .field::placeholder{color:var(--muted)}
+
+  /* ---------- Forms (My Ad / Settings) ---------- */
+  .form{max-width:640px;display:flex;flex-direction:column;gap:24px}
+  .fgroup label.lab{display:block;font-size:13px;font-weight:600;margin-bottom:8px}
+  .fgroup{display:block}
+  .hint{font-size:12px;color:var(--muted);font-weight:400;margin-left:6px}
+  .field-in{width:100%;border:1.5px solid var(--line-strong);border-radius:6px;background:var(--panel);padding:11px 13px;font-size:14px;color:var(--muted)}
+  textarea.field-in{resize:none;height:96px}
+  textarea.field-in.autogrow{height:auto;min-height:84px;overflow:hidden}
+  .lab-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+  .lab-row .lab{margin-bottom:0}
+  .counter{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .counter.at-max{color:#b23b3b}
+  .show-on-ad{display:flex;align-items:center;gap:8px}
+  .soa-lab{font-size:12px;color:var(--muted)}
+  .form-subhead{border-top:1px solid var(--line);padding-top:20px;margin-top:2px}
+  .fsh-title{font-family:var(--serif);font-size:17px;margin-bottom:3px}
+  .fsh-sub{font-size:12px;color:var(--muted)}
+  .checks{display:flex;flex-wrap:wrap;gap:10px}
+  .check{display:flex;align-items:center;gap:8px;border:1.5px solid var(--line-strong);border-radius:6px;padding:9px 13px;font-size:13px;background:var(--panel);color:var(--ink)}
+  .check .bx{width:15px;height:15px;border:1.5px solid var(--line-strong);border-radius:3px}
+  .check.sel{border-color:var(--ink);background:var(--fill)}
+  .check.sel .bx{background:var(--ink);border-color:var(--ink)}
+  .check.radio .bx{border-radius:50%}
+  .checks.stacked{flex-direction:column;gap:8px}
+  .checks.stacked .check{width:100%;justify-content:flex-start}
+  .checks.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .checks.grid2 .check{width:100%;justify-content:flex-start}
+  .writein-check{cursor:text}
+  .writein-check .bx{cursor:pointer}
+  .writein-field{border:0;background:transparent;padding:0;margin:0;font:inherit;color:var(--ink);flex:1;min-width:0;outline:none}
+  .writein-field::placeholder{color:var(--muted)}
+  .writein-check:not(.sel) .writein-field{color:var(--muted)}
+  /* collapsible field rows (accordion) */
+  .acc{border:1.5px solid var(--line-strong);border-radius:8px;background:var(--panel);overflow:hidden}
+  .acc-head{display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;padding:13px 15px;cursor:pointer;text-align:left;font-family:inherit}
+  .acc-label{font-size:14px;font-weight:600;flex:0 0 auto}
+  .acc-value{flex:1;text-align:right;font-size:14px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .acc-value.set{color:var(--ink)}
+  .acc-chev{color:var(--muted);font-size:11px;flex:0 0 auto;transition:transform .15s}
+  .acc.open .acc-chev{transform:rotate(180deg)}
+  .acc-body{padding:0 15px 15px;border-top:1px solid var(--line)}
+  .acc-body .checks{margin-top:14px}
+  .soa-row{display:flex;align-items:center;justify-content:space-between;margin:14px 0 2px}
+  .form-actions{display:flex;justify-content:flex-end;gap:12px;border-top:1px solid var(--line);padding-top:22px}
+  .sec-head{font-family:var(--serif);font-size:18px;margin:0 0 4px}
+  .sec-sub{font-size:12px;color:var(--muted);margin:0}
+  .card-plain{background:var(--panel);border:1.5px solid var(--line);border-radius:var(--radius);padding:18px}
+  .spread{display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .note-inline{font-size:12px;color:var(--muted);margin-top:6px}
+
+  /* ---------- My Ad (public preview) ---------- */
+  .myad{max-width:620px}
+  .myad-card{background:var(--panel);border:1.5px solid var(--line-strong);border-radius:8px;padding:26px}
+  .myad-desc{font-size:14px;line-height:1.6;margin:0 0 20px}
+  .myad-meta{display:grid;grid-template-columns:1fr 1fr;gap:14px 20px;border-top:1px solid var(--line);padding-top:18px}
+  .myad-meta div{font-size:13px}
+  .myad-meta span{color:var(--muted);display:block;margin-bottom:2px}
+  .myad-foot{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:18px}
+  .myad-hint{font-size:12px;color:var(--muted)}
+
+  /* ---------- Customize ad ---------- */
+  .customize{max-width:620px}
+  .cust-hint{text-align:center;font-size:12px;color:var(--muted);margin:14px 0 26px}
+  .cust-drops{display:flex;gap:20px;margin-bottom:24px}
+  .drop{flex:1;display:flex;flex-direction:column;gap:8px;position:relative}
+  .drop::after{content:'▾';position:absolute;right:14px;bottom:13px;font-size:11px;color:var(--muted);pointer-events:none}
+  .drop-label{font-size:13px;font-weight:600}
+  .drop-select{appearance:none;-webkit-appearance:none;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--panel);padding:11px 34px 11px 14px;font-size:14px;color:var(--ink);width:100%;cursor:pointer}
+  .drop-select:focus{outline:none;border-color:var(--ink)}
+
+  /* ---------- Settings ---------- */
+  .settings{max-width:680px;display:flex;flex-direction:column;gap:34px}
+  .set-section{display:flex;flex-direction:column}
+  .set-section .sec-head{margin-bottom:2px}
+  .set-section .sec-sub{margin-bottom:14px}
+  .set-card{background:var(--panel);border:1.5px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .set-row{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px 18px}
+  .set-row + .set-row{border-top:1px solid var(--line)}
+  .set-row .rl{font-size:14px;font-weight:600}
+  .set-row .rs{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.45}
+  .set-row .rl-wrap{min-width:0}
+  .toggle{width:44px;height:26px;border-radius:999px;border:1.5px solid var(--line-strong);background:var(--fill);position:relative;flex:0 0 auto;padding:0}
+  .toggle::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--panel);border:1px solid var(--line-strong);transition:left .12s}
+  .toggle.on{background:var(--ink);border-color:var(--ink)}
+  .toggle.on::after{left:20px;border-color:var(--ink)}
+  .link-btn{background:none;border:0;color:var(--ink);font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:2px;padding:4px;flex:0 0 auto}
+  .mini-input{border:1.5px solid var(--line-strong);border-radius:6px;background:var(--panel);padding:9px 12px;font-size:14px;color:var(--muted);width:230px;max-width:100%}
+  .seg{display:flex;gap:8px;flex:0 0 auto}
+  .seg .check{padding:8px 12px}
+  .danger{color:#b23b3b}
+  body.dark .danger{color:#e39a9a}
+
+  /* ---------- Messages tabs & requests ---------- */
+  .tabs{display:flex;margin-bottom:24px;border-bottom:1px solid var(--line)}
+  .tab{background:none;border:0;padding:11px 2px;margin-right:26px;font-size:14px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+  .tab.active{color:var(--ink);font-weight:600;border-bottom-color:var(--ink)}
+  .tab .count{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--ink);color:var(--panel);font-size:11px;margin-left:7px;font-weight:600;vertical-align:middle}
+  body.dark .tab .count{color:#1c1c1c}
+  .when{font-size:12px;color:var(--muted);white-space:nowrap}
+  .who-name{font-family:var(--serif);font-weight:500;font-size:calc(20px * var(--fscale,1));line-height:1.2;margin:0}
+  .who-cap{font-size:12.5px;color:var(--muted);margin-top:3px}
+  .who-name .loc{font-family:var(--font);font-size:12.5px;font-weight:400;color:var(--muted)}
+  .sender{font-weight:600;color:var(--ink)}
+  .mrow-right{display:flex;flex-direction:row;align-items:center;gap:8px;flex:0 0 auto}
+  .unread-dot{width:9px;height:9px;border-radius:50%;background:var(--ink)}
+  .mrow.unread .who-name{font-weight:700}
+  .mrow.unread p{color:var(--ink)}
+  .block-check{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;font-size:13px;color:var(--ink);line-height:1.45;border:1.5px solid var(--line-strong);border-radius:6px;padding:12px 14px;margin:18px 0 22px;background:var(--panel)}
+  .block-check .bx{width:16px;height:16px;border:1.5px solid var(--line-strong);border-radius:3px;flex:0 0 auto;margin-top:1px}
+  .block-check.sel{border-color:var(--ink);background:var(--fill)}
+  .block-check.sel .bx{background:var(--ink);border-color:var(--ink)}
+  .confirm-actions{display:flex;justify-content:flex-end;gap:12px}
+  .btn.danger-btn{background:#b23b3b;border-color:#b23b3b;color:#fff}
+  body.dark .btn.danger-btn{background:#c25454;border-color:#c25454;color:#fff}
+  .req{background:var(--panel);border:1.5px solid var(--line-strong);border-radius:var(--radius);padding:18px}
+  .req .kicker{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .req h3{font-family:var(--serif);font-weight:500;font-size:18px;margin:4px 0 0}
+  .req .their-msg{font-size:14px;line-height:1.55;margin:16px 0 16px}
+  .req .their-msg .wrote{font-weight:600;color:var(--ink)}
+  .req .their-msg .msg-text{font-style:italic}
+  .req-actions{display:flex;gap:10px;align-items:center}
+  .req-actions .btn.ghost{margin-left:auto}
+  .btn.sm{padding:8px 16px;font-size:13px}
+  .empty-msg{color:var(--muted);font-size:14px;line-height:1.6;max-width:460px;padding:20px 0}
+  .nav-count{margin-left:auto;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--rail-ink);color:var(--rail);font-size:11px;font-weight:700;align-items:center;justify-content:center;display:none}
+  .nav-count.show{display:inline-flex}
+</style>
+</head>
+<body>
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="rail">
+    <div>
+      <div class="brand">Classy</div>
+      <div class="tag">Seek. Find.</div>
+    </div>
+    <nav class="nav" id="nav">
+      <button data-view="feed" class="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5h11v12H5.5A1.5 1.5 0 0 1 4 17V6.5z"/><path d="M15 9.5h3.5A1.5 1.5 0 0 1 20 11v6a1.5 1.5 0 0 1-1.5 1.5H15"/><line x1="6.6" y1="9.5" x2="12.4" y2="9.5"/><line x1="6.6" y1="12.5" x2="12.4" y2="12.5"/><line x1="6.6" y1="15.5" x2="10" y2="15.5"/></svg> Feed</button>
+      <button data-view="myad">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.4"/><path d="M5.6 19c.7-3.2 3.2-4.9 6.4-4.9s5.7 1.7 6.4 4.9"/></svg> My Ad</button>
+      <button data-view="messages">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/><path d="M4 7.5l8 5.5 8-5.5"/></svg> Messages<span class="nav-count" id="navMsgCount"></span></button>
+    </nav>
+    <div class="foot">
+      <div class="acct"><b>Alex</b> <span>(free account)</span></div>
+      <div class="foot-row">
+        <button data-view="settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Settings</button>
+        <button id="darkToggle" title="Toggle dark mode"></button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <div class="main">
+    <div class="topbar">
+      <h2 id="title">Today's Picks</h2>
+      <div class="topbar-right">
+        <div class="date" id="topDate"></div>
+      </div>
+    </div>
+    <div class="viewseg" id="viewseg">
+      <button data-mode="paper" title="Newspaper view" aria-label="Newspaper view">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5h11v12H5.5A1.5 1.5 0 0 1 4 17V6.5z"/><path d="M15 9.5h3.5A1.5 1.5 0 0 1 20 11v6a1.5 1.5 0 0 1-1.5 1.5H15"/><line x1="6.6" y1="9.5" x2="12.4" y2="9.5"/><line x1="6.6" y1="12.5" x2="12.4" y2="12.5"/><line x1="6.6" y1="15.5" x2="10" y2="15.5"/></svg>
+      </button>
+      <button data-mode="feed" title="Feed view" aria-label="Feed view">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="4" y="5" width="16" height="6" rx="1.4"/><rect x="4" y="13" width="16" height="6" rx="1.4"/></svg>
+      </button>
+    </div>
+    <div class="scroll" id="scroll"><!-- view renders here --></div>
+  </div>
+
+  <!-- ===================== OVERLAY ===================== -->
+  <div class="overlay" id="overlay">
+    <div class="sheet" id="sheet"></div>
+  </div>
+
+  <!-- ===================== ONBOARDING ===================== -->
+  <div class="onboarding" id="onboarding">
+    <div class="ob-card">
+      <div class="ob-dots" id="obDots"></div>
+      <div class="ob-body" id="obBody"></div>
+      <div class="ob-nav" id="obNav"></div>
+    </div>
+  </div>
+
+<script>
+// ---------- Today's date (formatted like "July 11th, 2026") ----------
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+function ordinalSuffix(n){ const v = n % 100; if(v >= 11 && v <= 13) return 'th'; return ({1:'st',2:'nd',3:'rd'})[n % 10] || 'th'; }
+const TODAY_STR = (()=>{ const d = new Date(); return `${MONTHS[d.getMonth()]} ${d.getDate()}${ordinalSuffix(d.getDate())}, ${d.getFullYear()}`; })();
+
+// ---------- Sample data ----------
+const ADS = [
+  {id:1, name:'Riley', age:30, location:'Bushwick, NY', headline:'Quiet but not shy',
+   desc:"I read a lot, take long walks, and notice small things. I'm genuinely interested in people — what they think, what they've changed their mind about, what embarrasses them a little. Looking for someone who likes a slow conversation.",
+   gender:['Woman'], pronouns:['she/her'], politics:'Liberal', kids:'Not sure yet', relationship:'Something serious', weight:'Average height, always mid-book, big cardigan'},
+  {id:2, name:'Sam', age:34, location:'Silver Lake, LA', headline:'Will cook you dinner, badly',
+   desc:"Enthusiastic amateur in the kitchen, genuinely dangerous with a cast-iron pan but improving. Great at picking restaurants when the cooking fails, which is often. I run most mornings, argue about movies most nights, and I text back quickly — probably too quickly. I'm looking for someone who has opinions and isn't precious about them, who likes a long dinner that turns into a longer walk. Tell me what you're reading, what you quit, and the last thing that genuinely surprised you. Let's skip the small talk and get to the good part.",
+   gender:['Man'], pronouns:['he/him'], politics:'Centrist', kids:'Wants kids', relationship:'Something serious', weight:'Tall, runner build, flour on everything'},
+  {id:3, name:'Jordan', age:27, location:'Capitol Hill, Seattle', headline:'Looking for a partner in crime',
+   desc:"Mostly law-abiding. Tell me about your weird obsession.",
+   gender:['Non-binary'], pronouns:['they/them'], politics:'Liberal', kids:"Doesn't want kids", relationship:'Not sure', weight:'Lanky, buzzed hair, mischief in the eyes'},
+  {id:4, name:'Casey', age:41, location:'Wicker Park, Chicago', headline:'Second act, done right',
+   desc:"Divorced, no drama, one very good dog. I know what I want now and I'm not afraid to say it. Looking for something real and unhurried.",
+   gender:['Woman'], pronouns:['she/her'], politics:'Conservative', kids:'Has kids', relationship:'Something serious', weight:'Medium build, soft features, good laugh lines'},
+  {id:5, name:'Devin', age:29, location:'Bushwick, NY', headline:'Ask me about my sourdough',
+   desc:"Baker by hobby, designer by trade. Warning: I will make you try the bread.",
+   gender:['Man'], pronouns:['he/him'], politics:'Liberal', kids:'Not sure yet', relationship:'Hookup', weight:'Broad, beard, forearms built from dough'},
+  {id:6, name:'Morgan', age:36, location:'Oak Cliff, Dallas', headline:'Low-key, high-effort',
+   desc:"Not a big texter but a relentless planner — I'll remember the small thing you mentioned once and surprise you with it three weeks later. I like early hikes, embarrassingly bad reality TV, farmers markets I always leave with too much from, and the specific quiet of a Sunday with nowhere to be. I've done the casual thing and I'm past it; I'm building something that lasts and I'd like a real teammate for it. If you're kind, a little stubborn, and you actually know what you want, we'll get along. Bonus points for a dog or strong feelings about breakfast.",
+   gender:['Woman'], pronouns:['she/her'], politics:'Centrist', kids:'Wants kids', relationship:'Something serious', weight:'Medium height, freckles, always a good coat'},
+  {id:7, name:'Alex', age:31, location:'The Mission, SF', headline:'Curious about almost everything',
+   desc:"I ask too many questions. I like tide pools, used bookstores, and people who can explain their job in a way that makes it sound interesting.",
+   gender:['Non-binary'], pronouns:['they/them'], politics:'Liberal', kids:"Doesn't want kids", relationship:'Not sure', weight:'Slight, glasses, tide-pool-ready boots'},
+  {id:8, name:'Taylor', age:38, location:'Ballard, Seattle', headline:'Steady, warm, a little sarcastic',
+   desc:"I show up when I say I will. That's the whole pitch.",
+   gender:['Woman'], pronouns:['she/her'], politics:'Conservative', kids:'Has kids', relationship:'Something serious', weight:'Average height, warm eyes, dry-humor face'},
+  {id:9, name:'Quinn', age:26, location:'East Nashville', headline:'Songs, houseplants, and long drives with the windows all the way down',
+   desc:"I play a little guitar and keep too many houseplants alive. Down for spontaneous road trips and quiet nights alike. Let's see where it goes.",
+   gender:['Woman','Non-binary'], pronouns:['she/her','they/them'], politics:'Liberal', kids:'Not sure yet', relationship:'Hookup', weight:'Wiry, calloused hands, road-trip sunburn'},
+  {id:10, name:'Priya', age:33, location:'Jackson Heights, NY', headline:"Ask me about my grandmother's recipes",
+   desc:"Software by day, cardamom evangelist by night. I feed people when I like them, so consider yourself warned. Looking for someone patient enough to let dinner take four hours.",
+   gender:['Woman'], pronouns:['she/her'], politics:'Liberal', kids:'Wants kids', relationship:'Something serious', weight:'Short, long dark hair, flour under the rings'},
+  {id:11, name:'Marcus', age:45, location:'Shaw, DC', headline:"Widower, ready when it's right",
+   desc:"Took my time, and I'm not in a hurry now either. Good father, decent cook, better listener. I'd like someone to share the ordinary evenings with.",
+   gender:['Man'], pronouns:['he/him'], politics:'Centrist', kids:'Has kids', relationship:'Something serious', weight:'Tall, greying temples, reading glasses on a cord'},
+  {id:12, name:'Nadia', age:28, location:'Pilsen, Chicago', headline:'Muralist who paints too big',
+   desc:"I take up walls and, occasionally, whole conversations. Sorry in advance. Show me something you made and I'm yours for the afternoon.",
+   gender:['Woman'], pronouns:['she/her'], politics:'Liberal', kids:'Not sure yet', relationship:'Not sure', weight:'Petite, paint-flecked overalls, a lot of rings'},
+  {id:13, name:'Theo', age:24, location:'Allston, Boston', headline:'Grad student, terrible at chess, still plays',
+   desc:"I lose gracefully and often. Physics PhD, cheap-beer connoisseur, will explain black holes if you let me. Teach me something you're good at.",
+   gender:['Man'], pronouns:['he/him'], politics:'Liberal', kids:"Doesn't want kids", relationship:'Hookup', weight:'Lanky, perpetual hoodie, hair that does its own thing'},
+  {id:14, name:'Lena', age:39, location:'Hawthorne, Portland', headline:'Two kids, one kayak, zero patience for games',
+   desc:"Weekends are chaos and I love it. I want someone who's steady, funny, and doesn't flinch at a full house. Bring your own life; I have plenty of mine.",
+   gender:['Woman'], pronouns:['she/her'], politics:'Liberal', kids:'Has kids', relationship:'Something serious', weight:'Athletic, sun-freckled, always a little windblown'},
+  {id:15, name:'Omar', age:31, location:'Montrose, Houston', headline:"I'll fix your bike and your playlist",
+   desc:"Bike mechanic with strong opinions about both derailleurs and drum fills. Low drama, high curiosity. Let's ride somewhere and get tacos after.",
+   gender:['Man'], pronouns:['he/him'], politics:'Centrist', kids:'Not sure yet', relationship:'Not sure', weight:'Medium build, grease-stained hands, easy grin'},
+  {id:16, name:'Sasha', age:27, location:'Greenpoint, NY', headline:'Night-shift nurse looking for daytime trouble',
+   desc:"I'm calm in a crisis and useless before coffee. My hours are strange but my heart's on time. Find me at brunch when everyone else is at work.",
+   gender:['Woman'], pronouns:['she/her'], politics:'Liberal', kids:'Not sure yet', relationship:'Hookup', weight:'Tall, scrubs-to-sundress quick-change artist'},
+  {id:17, name:'Diego', age:35, location:'Barrio Logan, San Diego', headline:'Salsa on Tuesdays, silence on Sundays',
+   desc:"I contain multitudes and two left feet that somehow found the beat. Teacher, uncle, aspiring bread-baker. I want a partner, not an audience.",
+   gender:['Man'], pronouns:['he/him'], politics:'Liberal', kids:'Wants kids', relationship:'Something serious', weight:'Stocky, warm brown eyes, always a clean pair of shoes'},
+  {id:18, name:'Fern', age:30, location:'Cherokee Triangle, Louisville', headline:'Botanist, bad at endings',
+   desc:"I can keep anything alive except a conversation over text. Meet me in person and I'm a different, better plant. I like slow mornings and loud thunderstorms.",
+   gender:['Non-binary'], pronouns:['they/them'], politics:'Liberal', kids:"Doesn't want kids", relationship:'Not sure', weight:'Slight, cropped hair, dirt permanently under the nails'},
+  {id:19, name:'Reggie', age:52, location:'West End, Atlanta', headline:'Grown, settled, still curious',
+   desc:"I've done the striving. Now I want good food, good jazz, and someone to argue about both with. I'm patient, I'm present, and I still open doors.",
+   gender:['Man'], pronouns:['he/him'], politics:'Conservative', kids:'Has kids', relationship:'Something serious', weight:'Broad-shouldered, salt-and-pepper beard, sharp coats'},
+  {id:20, name:'Yuki', age:29, location:'Sawtelle, LA', headline:'Ramen snob, gentle otherwise',
+   desc:"I have exactly one strong opinion (the broth) and I'm easygoing about everything else. Graphic designer, cat co-parent, terrible karaoke enthusiast.",
+   gender:['Woman'], pronouns:['she/her'], politics:'Liberal', kids:'Not sure yet', relationship:'Not sure', weight:'Small, sharp bob, an enviable collection of glasses'},
+  {id:21, name:'Cora', age:42, location:'Fountain Square, Indianapolis', headline:'Contractor by day, cellist by whim',
+   desc:"I build things and then I play sad songs about them. Practical, warm, allergic to small talk. If you own tools or a sense of humor, we'll get along.",
+   gender:['Woman'], pronouns:['she/her'], politics:'Centrist', kids:'Has kids', relationship:'Something serious', weight:'Strong hands, tan lines from a tool belt, quick smile'},
+  {id:22, name:'Amir', age:26, location:'Uptown, Minneapolis', headline:'New to the city, old soul',
+   desc:"Just moved for work and I know approximately three people. Looking for a co-conspirator to explore with — best coffee, worst dive bar, all of it.",
+   gender:['Man'], pronouns:['he/him'], politics:'Liberal', kids:'Not sure yet', relationship:'Not sure', weight:'Slim, neat beard, sweaters in every season'},
+  {id:23, name:'Bex', age:34, location:'Bloomfield, Pittsburgh', headline:'Roller derby name available on request',
+   desc:"Fast on skates, slow to trust, worth the wait. I weld for a living and bake for joy. Come to a bout, stay for the post-game fries.",
+   gender:['Non-binary'], pronouns:['they/them'], politics:'Liberal', kids:"Doesn't want kids", relationship:'Hookup', weight:'Muscular, undercut, a constellation of small scars'},
+  {id:24, name:'Sung-min', age:37, location:'Annandale, VA', headline:'Dad jokes are load-bearing',
+   desc:"Structural engineer, so I mean that literally. Divorced, amicable, one excellent teenager. I want someone kind who laughs easily and means what they say.",
+   gender:['Man'], pronouns:['he/him'], politics:'Centrist', kids:'Has kids', relationship:'Something serious', weight:'Average height, kind face, always a tucked-in shirt'},
+  {id:25, name:'Tallulah', age:25, location:'Marigny, New Orleans', headline:'I dance at funerals and mean it',
+   desc:"This city taught me joy and grief hold hands. I play trumpet, I talk to strangers, I stay out too late. Find someone who can keep up — maybe it's you.",
+   gender:['Woman'], pronouns:['she/her'], politics:'Liberal', kids:'Not sure yet', relationship:'Not sure', weight:'Tall, wild curls, always something gold catching light'},
+  {id:26, name:'Grant', age:48, location:'Sugar House, SLC', headline:'Recovering workaholic, finally home by six',
+   desc:"Learned the hard way what matters. Now I ski, I cook, I actually answer the phone. Looking for a steady, warm person to grow quietly old with.",
+   gender:['Man'], pronouns:['he/him'], politics:'Conservative', kids:'Has kids', relationship:'Something serious', weight:'Fit, weathered, the kind of tan only mountains give'},
+  {id:27, name:'Imani', age:32, location:'West End, Cincinnati', headline:'Teacher summers off, adventurer year-round',
+   desc:"Third graders by day, trail maps by night. I'm patient, I'm loud when it counts, and I plan the best low-budget trips you've ever taken.",
+   gender:['Woman'], pronouns:['she/her'], politics:'Liberal', kids:'Wants kids', relationship:'Something serious', weight:'Medium height, box braids, hiking boots by the door'},
+  {id:28, name:'Otto', age:40, location:'Deep Ellum, Dallas', headline:'Vinyl, vinyl, and more vinyl',
+   desc:"I own too many records and zero regrets. Sound engineer, homebody, excellent at making a rainy Sunday feel like a whole vacation. Bring your worst favorite album.",
+   gender:['Man'], pronouns:['he/him'], politics:'Centrist', kids:"Doesn't want kids", relationship:'Not sure', weight:'Heavyset, full beard, band tees older than some of you'},
+  {id:29, name:'Halla', age:23, location:'Fishtown, Philly', headline:'Just moved, know three people, want a fourth',
+   desc:"Fresh out of school and figuring it out loudly. I like cheap art shows, long walks with no destination, and people who ask real questions.",
+   gender:['Woman'], pronouns:['she/her'], politics:'Liberal', kids:'Not sure yet', relationship:'Hookup', weight:'Small, dyed-blonde crop, thrifted everything'},
+  {id:30, name:'Vincent', age:44, location:'Corktown, Detroit', headline:'Restoring a house and possibly myself',
+   desc:"Bought a fixer-upper and it's teaching me humility one joist at a time. Steady, handy, quietly hopeful. Looking for someone to sit on the porch with when it's finally done.",
+   gender:['Man'], pronouns:['he/him'], politics:'Centrist', kids:'Not sure yet', relationship:'Something serious', weight:'Tall, sawdust in the hair, flannel year-round'},
+];
+
+const CONVOS = [
+  {adId:1, when:'2h', last:"That sounds perfect — how's Thursday?", mine:true, unread:false},
+  {adId:4, when:'1d', last:"Ha, I promise the dog is friendlier than me.", mine:false, unread:true},
+  {adId:6, when:'3d', last:"Same here — free this weekend?", mine:true, unread:false},
+];
+
+// Ads you've already replied to today (you're now in a conversation about them).
+const repliedAdIds = new Set(CONVOS.map(c=>c.adId));
+
+// People who replied to YOUR ad, awaiting accept/decline
+const REQUESTS = [
+  {adId:2, when:'20m', msg:"Your ad made me smile — the slow-conversation thing is exactly what I'm after too. I also cook badly but enthusiastically. Coffee this week?"},
+  {adId:3, when:'5h', msg:"'Curious about almost everything' — same, dangerously so. What's the last thing you fell down a rabbit hole about?"},
+  {adId:8, when:'1d', msg:"Loved your ad. I'm not a big texter either but I'll always remember the thing you mentioned once. Say hi back?"},
+];
+
+// The logged-in user's own ad
+const MY_AD = {
+  name:'Alex', age:31, location:'The Mission, SF',
+  headline:'Curious about almost everything',
+  desc:"I ask too many questions. I like tide pools, used bookstores, and people who can explain their job in a way that makes it sound interesting. Looking for someone who's game to wander.",
+  gender:['Non-binary'], race:['Asian'], religion:'Agnostic', pronouns:['they/them'], sexuality:['Queer'], showSexuality:true, politics:'Liberal', kids:"Doesn't want kids", relationship:'Not sure', relstyle:'Monogamous', weight:'Slim, glasses, usually a little overdressed',
+  headingFont:'Instrument Serif', bodyFont:'Instrument Sans'
+};
+
+// Ad-heading font options (each carries a "personality")
+// scale = per-font size multiplier so every face lands at a similar visual size
+const HEADING_FONTS = [
+  {name:'Courier Prime',   css:"'Courier Prime', monospace",    vibe:'Shy, quiet',          scale:1.15},
+  {name:'Instrument Serif',css:"'Instrument Serif', serif",     vibe:'Classy, understated', scale:1.06},
+  {name:'Instrument Sans', css:"'Instrument Sans', sans-serif", vibe:'Safe, sane',          scale:1},
+  {name:'Monoton',         css:"'Monoton', cursive",           vibe:'Flashy, fun',         scale:0.87},
+  {name:'Ruthie',          css:"'Ruthie', cursive",            vibe:'Weird, wild',         scale:1.04},
+  {name:'Jacquard 24',     css:"'Jacquard 24', system-ui",     vibe:'Nerdy, goth',         scale:1.21},
+  {name:'Rubik Dirt',      css:"'Rubik Dirt', system-ui",      vibe:'Edgy, severe',        scale:1.02},
+  {name:'Sancreek',        css:"'Sancreek', cursive",          vibe:'Rural, homebody',     scale:0.94},
+];
+const BODY_FONTS = [
+  {name:'Courier Prime',   css:"'Courier Prime', monospace"},
+  {name:'Instrument Sans', css:"'Instrument Sans', sans-serif"},
+  {name:'Instrument Serif',css:"'Instrument Serif', serif"},
+];
+function cssFor(name){
+  const f = [...HEADING_FONTS, ...BODY_FONTS].find(x=>x.name===name);
+  return f ? f.css : 'var(--serif)';
+}
+function scaleFor(name){
+  const f = HEADING_FONTS.find(x=>x.name===name);
+  return f ? f.scale : 1;
+}
+// inline style for a heading: font family + its size-normalizing scale (--fscale)
+function hstyle(name){ return `font-family:${cssFor(name)};--fscale:${scaleFor(name)}`; }
+// Ad typography (global): the decorative font is used ONLY on the name + age;
+// the headline (ALWAYS ALL CAPS via .ad-headline) and body copy share the ad's body font.
+function adNameHTML(a){ return `<div class="ad-name" style="${hstyle(a.headingFont)}">${a.name}, ${a.age}</div>`; }
+function adHeadlineHTML(a){ return `<div class="ad-headline" style="font-family:${cssFor(a.bodyFont)}">${a.headline}</div>`; }
+
+// each ad carries its own customized fonts [heading, body] — spread across all 8 heading options
+const AD_FONTS = {
+  1:['Instrument Sans','Instrument Sans'],
+  2:['Monoton','Instrument Sans'],
+  3:['Rubik Dirt','Instrument Sans'],
+  4:['Instrument Serif','Instrument Serif'],
+  5:['Sancreek','Courier Prime'],
+  6:['Courier Prime','Courier Prime'],
+  7:['Instrument Serif','Instrument Sans'],
+  8:['Jacquard 24','Instrument Sans'],
+  9:['Ruthie','Instrument Serif'],
+  10:['Instrument Serif','Instrument Serif'], 11:['Courier Prime','Courier Prime'],
+  12:['Rubik Dirt','Instrument Sans'], 13:['Instrument Sans','Instrument Sans'],
+  14:['Instrument Serif','Instrument Sans'], 15:['Sancreek','Courier Prime'],
+  16:['Ruthie','Instrument Serif'], 17:['Monoton','Instrument Sans'],
+  18:['Jacquard 24','Instrument Sans'], 19:['Instrument Serif','Instrument Serif'],
+  20:['Instrument Sans','Instrument Sans'], 21:['Courier Prime','Courier Prime'],
+  22:['Instrument Serif','Instrument Sans'], 23:['Rubik Dirt','Instrument Sans'],
+  24:['Instrument Sans','Instrument Sans'], 25:['Ruthie','Instrument Serif'],
+  26:['Instrument Serif','Instrument Serif'], 27:['Sancreek','Courier Prime'],
+  28:['Monoton','Instrument Sans'], 29:['Jacquard 24','Instrument Sans'],
+  30:['Courier Prime','Courier Prime'],
+};
+const AD_RACE = {
+  1:['White'], 2:['Black'], 3:['Asian'], 4:['Hispanic / Latino'], 5:['White'],
+  6:['Middle Eastern'], 7:['Asian','White'], 8:['Black'], 9:['Indigenous'],
+  10:['Asian'], 11:['Black'], 12:['Hispanic / Latino'], 13:['White'], 14:['White'],
+  15:['Middle Eastern'], 16:['White'], 17:['Hispanic / Latino'], 18:['White'], 19:['Black'],
+  20:['Asian'], 21:['White'], 22:['Middle Eastern'], 23:['White'], 24:['Asian'],
+  25:['Black','White'], 26:['White'], 27:['Black'], 28:['White'], 29:['White'], 30:['White'],
+};
+const AD_RELIGION = {
+  1:'Agnostic', 2:'Christian', 3:'Buddhist', 4:'Christian', 5:'Jewish',
+  6:'Muslim', 7:'Atheist', 8:'Christian', 9:'Hindu',
+  10:'Hindu', 11:'Christian', 12:'Agnostic', 13:'Atheist', 14:'Agnostic',
+  15:'Muslim', 16:'Christian', 17:'Christian', 18:'Agnostic', 19:'Christian',
+  20:'Buddhist', 21:'Agnostic', 22:'Muslim', 23:'Atheist', 24:'Christian',
+  25:'Agnostic', 26:'Christian', 27:'Christian', 28:'Agnostic', 29:'Atheist', 30:'Christian',
+};
+ADS.forEach(a=>{ const f = AD_FONTS[a.id] || ['Instrument Serif','Instrument Sans']; a.headingFont = f[0]; a.bodyFont = f[1]; a.race = AD_RACE[a.id] || ['Prefer not to say']; a.religion = AD_RELIGION[a.id] || 'Prefer not to say'; });
+
+const titles = {feed:"Today's Picks", myad:"Your Ad", messages:"Your Messages", settings:"Settings", thread:"Your Messages", customize:"Customize your ad"};
+
+// ---------- Router ----------
+const scroll = document.getElementById('scroll');
+const titleEl = document.getElementById('title');
+let state = {view:'feed', threadAd:null, msgTab:'convos'};
+let blockedCount = 2;
+let hasAd = true; // false = user hasn't posted their own ad → feed is gated
+let feedMode = 'paper'; // 'paper' = newspaper classifieds (default) · 'feed' = masonry cards
+
+function setView(view){
+  state.view = view;
+  titleEl.textContent = titles[view] || '';
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active', b.dataset.view===view));
+  document.getElementById('viewseg').classList.toggle('show', view==='feed');
+  scroll.classList.remove('paper-mode', 'thread-mode'); // clear view-specific layouts; renderers re-add as needed
+  ({feed:renderFeed, myad:renderMyAd, messages:renderMessages, settings:renderSettings, thread:renderThread, customize:renderCustomize}[view])();
+  scroll.scrollTop = 0;
+}
+// feed view switcher
+document.querySelectorAll('#viewseg button').forEach(b=>b.addEventListener('click', ()=>{
+  feedMode = b.dataset.mode;
+  renderFeed();
+}));
+document.querySelectorAll('#nav button, .foot-row button[data-view]').forEach(b=>{
+  if(b.dataset.view) b.addEventListener('click', ()=>setView(b.dataset.view));
+});
+
+// ---------- Feed ----------
+// masonry columns adapt to the available width: 3 wide → 2 → 1 when ultra-narrow
+function feedColCount(){
+  const w = scroll.clientWidth || (window.innerWidth - 260);
+  if(w >= 820) return 3;
+  if(w >= 520) return 2;
+  return 1;
+}
+function updateSeg(){
+  document.querySelectorAll('#viewseg button').forEach(b=>b.classList.toggle('active', b.dataset.mode===feedMode));
+}
+function renderFeed(){
+  updateSeg();
+  return feedMode === 'paper' ? renderPaper() : renderMasonry();
+}
+// ----- The Newspaper: a printed classifieds page you read -----
+const CLIP_REPLIED_ICON = `<svg class="clip-rep-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-label="You replied"><path d="M4.5 12.5l5 5 10-11"/></svg>`;
+function clipHTML(a){
+  const replied = repliedAdIds.has(a.id);
+  return `<button class="clip${replied?' replied':''}" data-ad="${a.id}">
+    <div class="clip-name" style="${hstyle(a.headingFont)}"><span>${a.name}, ${a.age}</span>${replied ? CLIP_REPLIED_ICON : ''}</div>
+    <div class="clip-head" style="font-family:${cssFor(a.bodyFont)}">${a.headline}</div>
+    <div class="clip-body" style="font-family:${cssFor(a.bodyFont)}">${a.desc}</div>
+    <div class="clip-loc">${a.gender.join(' / ')} · ${a.location}</div>
+  </button>`;
+}
+function paperHTML(extraClass){
+  return `<div class="paper${extraClass||''}" id="paper">
+    <div class="masthead">
+      <div class="mast-title">Personals</div>
+      <div class="mast-sub">The Classy Classifieds · ${TODAY_STR}</div>
+    </div>
+    <div class="paper-cols">${ADS.map(clipHTML).join('')}</div>
+    <div class="paper-foot">— 30 —</div>
+  </div>`;
+}
+function renderPaper(){
+  if(hasAd){
+    scroll.classList.add('paper-mode');
+    scroll.innerHTML = `<div class="paper-viewport" id="paperVp">${paperHTML()}</div>
+      <div class="paper-hint">Drag to move · scroll to pan · ⌘/Ctrl+scroll or ± to zoom</div>
+      <div class="paper-zoom"><button id="paperZoomIn" aria-label="Zoom in">+</button><button id="paperZoomOut" aria-label="Zoom out">−</button></div>`;
+    initPaperZoom();
+  } else {
+    // gated: a static, non-interactive snapshot behind the gate
+    scroll.classList.remove('paper-mode');
+    scroll.innerHTML = `<div class="feed-locked paper-locked">${paperHTML(' static')}<div class="feed-blur"></div>
+      <div class="feed-gate"><div class="feed-gate-card">
+        <h3>You're reading over someone's shoulder</h3>
+        <p>On Classy, you have to be in the paper to read it. Post your own personal to unlock every ad — and to reply.</p>
+        <button class="btn" id="gatePost">Write my ad</button>
+      </div></div></div>`;
+    const g = document.getElementById('gatePost'); if(g) g.onclick = startOnboarding;
+  }
+}
+// Pan & zoom the fixed sheet with the mouse: drag to move, scroll to pan, ⌘/Ctrl+scroll (or ±) to zoom.
+function initPaperZoom(){
+  const vp = document.getElementById('paperVp'), paper = document.getElementById('paper');
+  const PAPER_W = paper.offsetWidth;
+  paper.style.transformOrigin = '0 0';
+  const paperH = paper.offsetHeight;
+  let minScale = .5, maxScale = 2.4, scale = .8, panX = 0, panY = 0, userAdjusted = false;
+  const clampPan = ()=>{ const vpW = vp.clientWidth, vpH = vp.clientHeight, cw = PAPER_W*scale, ch = paperH*scale;
+    panX = Math.min(Math.max(0, panX), Math.max(0, cw - vpW));
+    panY = Math.min(Math.max(0, panY), Math.max(0, ch - vpH)); };
+  const apply = ()=>{ clampPan(); paper.style.transform = `translate(${-panX}px,${-panY}px) scale(${scale})`; };
+  const clamp = s => Math.max(minScale, Math.min(maxScale, s));
+  const START_ZOOM = 1.28;   // start a touch larger than fit-to-width so the sheet spills past the frame
+  const fit = ()=>{
+    const vpW = vp.clientWidth; if(!vpW) return;
+    minScale = Math.min(1, vpW / PAPER_W); maxScale = Math.max(2.4, minScale * 4);
+    if(!userAdjusted){
+      scale = clamp(minScale * START_ZOOM);
+      panX = Math.max(0, (PAPER_W*scale - vpW) / 2);   // centered horizontally
+      panY = 0;                                        // masthead at top
+      apply();
+    }
+  };
+  const zoomAt = (ns, cx, cy)=>{
+    const r = vp.getBoundingClientRect(), oldS = scale;
+    ns = clamp(ns); if(ns === oldS) return;
+    userAdjusted = true;
+    const px = (cx - r.left + panX) / oldS, py = (cy - r.top + panY) / oldS;
+    scale = ns; panX = px*scale - (cx - r.left); panY = py*scale - (cy - r.top); apply();
+  };
+  fit();
+  if(window.ResizeObserver){ const ro = new ResizeObserver(fit); ro.observe(vp); }
+  const pointers = new Map(); let panMoved = false, startDist = 0, startScale = 1;
+  vp.addEventListener('pointerdown', e=>{
+    pointers.set(e.pointerId, {x:e.clientX, y:e.clientY}); panMoved = false; vp.classList.add('panning');
+    try{ vp.setPointerCapture(e.pointerId); }catch(_){}
+    if(pointers.size === 2){ const p = [...pointers.values()]; startDist = Math.hypot(p[0].x-p[1].x, p[0].y-p[1].y) || 1; startScale = scale; }
+  });
+  vp.addEventListener('pointermove', e=>{
+    const prev = pointers.get(e.pointerId); if(!prev) return;
+    pointers.set(e.pointerId, {x:e.clientX, y:e.clientY});
+    if(pointers.size >= 2){
+      const p = [...pointers.values()]; const d = Math.hypot(p[0].x-p[1].x, p[0].y-p[1].y) || 1;
+      zoomAt(startScale * d/startDist, (p[0].x+p[1].x)/2, (p[0].y+p[1].y)/2); panMoved = true;
+    } else {
+      const dx = e.clientX-prev.x, dy = e.clientY-prev.y;
+      if(Math.abs(dx)+Math.abs(dy) > 2){ panMoved = true; userAdjusted = true; }
+      panX -= dx; panY -= dy; apply();
+    }
+  });
+  const up = e=>{
+    const wasClick = pointers.size === 1 && !panMoved;
+    pointers.delete(e.pointerId);
+    try{ vp.releasePointerCapture(e.pointerId); }catch(_){}
+    if(pointers.size === 0) vp.classList.remove('panning');
+    // pointer capture eats the native click, so resolve clip taps ourselves
+    if(wasClick){
+      const el = document.elementFromPoint(e.clientX, e.clientY);
+      const clip = el && el.closest ? el.closest('.clip') : null;
+      if(clip) openAd(+clip.dataset.ad);
+    }
+  };
+  vp.addEventListener('pointerup', up);
+  vp.addEventListener('pointercancel', e=>{ pointers.delete(e.pointerId); vp.classList.remove('panning'); try{ vp.releasePointerCapture(e.pointerId); }catch(_){} });
+  vp.addEventListener('wheel', e=>{
+    e.preventDefault();
+    if(e.ctrlKey || e.metaKey) zoomAt(scale * (e.deltaY < 0 ? 1.12 : 0.89), e.clientX, e.clientY);
+    else { userAdjusted = true; panX += e.deltaX; panY += e.deltaY; apply(); }
+  }, {passive:false});
+  const zoomCenter = f => { const r = vp.getBoundingClientRect(); zoomAt(scale*f, r.left+vp.clientWidth/2, r.top+vp.clientHeight/2); };
+  document.getElementById('paperZoomIn').onclick  = ()=>zoomCenter(1.3);
+  document.getElementById('paperZoomOut').onclick = ()=>zoomCenter(1/1.3);
+}
+function renderMasonry(){
+  scroll.classList.remove('paper-mode');
+  const horoscope = `<div class="horoscope"><span class="horo-label">✦ Today's Horoscope ✦</span><p class="horo-text">The stars are feeling direct today. If an ad makes you laugh out loud, that's your sign — reply before you overthink it.</p></div>`;
+  const masonry = `<div class="masonry" id="masonry">${'<div class="mcol"></div>'.repeat(feedColCount())}</div>`;
+  // Users without their own ad can only glimpse the feed — the rest blurs out behind a gate.
+  if(hasAd){
+    scroll.innerHTML = horoscope + masonry;
+  } else {
+    scroll.innerHTML = horoscope + `<div class="feed-locked">${masonry}<div class="feed-blur"></div>
+      <div class="feed-gate"><div class="feed-gate-card">
+        <h3>You're reading over someone's shoulder</h3>
+        <p>On Classy, you have to be in the paper to read it. Post your own personal to unlock every ad — and to reply.</p>
+        <button class="btn" id="gatePost">Write my ad</button>
+      </div></div></div>`;
+  }
+  const cols = [...scroll.querySelectorAll('.mcol')];
+  ADS.forEach(a=>{
+    const card = document.createElement('button');
+    card.className = 'card';
+    card.dataset.ad = a.id;
+    const replied = repliedAdIds.has(a.id);
+    if(replied) card.classList.add('replied');
+    card.innerHTML = adNameHTML(a) + adHeadlineHTML(a)
+      + `<p class="ad-body" style="font-family:${cssFor(a.bodyFont)}">${a.desc}</p>`
+      + `<div class="tags"><span class="tag-chip">${a.gender.join(' / ')}</span><span class="tag-chip">${a.location}</span></div>`
+      + (replied ? '<div class="replied-note">You replied to this ad</div>' : '');
+    if(hasAd) card.addEventListener('click', ()=>openAd(a.id));
+    cols.reduce((shortest, c)=> c.offsetHeight < shortest.offsetHeight ? c : shortest).appendChild(card);
+  });
+  if(!hasAd){ const g = document.getElementById('gatePost'); if(g) g.onclick = startOnboarding; }
+}
+
+// ---------- Ad overlay ----------
+const overlay = document.getElementById('overlay');
+const sheet = document.getElementById('sheet');
+function openAd(id, showReply=true){
+  const a = ADS.find(x=>x.id===id);
+  sheet.innerHTML = `
+    <button class="close" id="closeSheet">×</button>
+    ${adNameHTML(a)}
+    <div class="ad-place">${a.location}</div>
+    ${adHeadlineHTML(a)}
+    <p class="ad-body" style="font-family:${cssFor(a.bodyFont)}">${a.desc}</p>
+    <div class="meta">
+      <div><span>Gender</span><br>${a.gender.join(', ')}</div>
+      <div><span>Race / ethnicity</span><br>${a.race.join(', ')}</div>
+      <div><span>Religion</span><br>${a.religion}</div>
+      <div><span>Pronouns</span><br>${a.pronouns.join(', ')}</div>
+      <div><span>Politics</span><br>${a.politics}</div>
+      <div><span>Kids</span><br>${a.kids}</div>
+      <div><span>Looking for</span><br>${a.relationship}</div>
+      <div><span>Appearance</span><br>${a.weight}</div>
+    </div>
+    ${showReply ? (repliedAdIds.has(id)
+      ? '<button class="btn ghost block" id="goConvoBtn">You replied to this ad — open conversation</button>'
+      : '<button class="btn block" id="replyBtn">Reply to this ad</button>') : ''}`;
+  overlay.classList.add('open');
+  document.getElementById('closeSheet').onclick = closeAd;
+  const rb = document.getElementById('replyBtn');
+  if(rb) rb.onclick = ()=>{ closeAd(); openThread(id); };
+  const gc = document.getElementById('goConvoBtn');
+  if(gc) gc.onclick = ()=>{ closeAd(); openThread(id); };
+}
+function closeAd(){ overlay.classList.remove('open'); }
+overlay.addEventListener('click', e=>{ if(e.target===overlay) closeAd(); });
+
+// shared checkbox/radio wiring for any container
+function wireChecks(container){
+  // standard option buttons (everything except the editable write-in)
+  container.querySelectorAll('.check:not(.writein-check)').forEach(c=>c.addEventListener('click',()=>{
+    const group = c.dataset.group;
+    const siblings = container.querySelectorAll(`.check[data-group="${group}"]`);
+    if(c.classList.contains('radio')){
+      siblings.forEach(x=>x.classList.remove('sel'));
+      c.classList.add('sel');
+    } else if(c.dataset.exclusive){
+      // exclusive option (e.g. "Prefer not to say", "Everyone", "No preference") clears everything else
+      const willSelect = !c.classList.contains('sel');
+      siblings.forEach(x=>x.classList.remove('sel'));
+      c.classList.toggle('sel', willSelect);
+    } else {
+      c.classList.toggle('sel');
+      siblings.forEach(x=>{ if(x.dataset.exclusive) x.classList.remove('sel'); });
+    }
+    // any write-in that got deselected clears back to empty
+    container.querySelectorAll(`.writein-check[data-group="${group}"]`).forEach(wc=>{
+      if(!wc.classList.contains('sel')) wc.querySelector('.writein-field').value = '';
+    });
+  }));
+  // write-in fields: presence of text is what selects them
+  container.querySelectorAll('.writein-check').forEach(wc=>{
+    const input = wc.querySelector('.writein-field');
+    const group = wc.dataset.group;
+    const activate = ()=>{
+      const hasText = input.value.trim().length > 0;
+      wc.classList.toggle('sel', hasText);
+      if(hasText){
+        if(wc.classList.contains('radio')){
+          container.querySelectorAll(`.check[data-group="${group}"]`).forEach(x=>{ if(x!==wc) x.classList.remove('sel'); });
+        } else {
+          container.querySelectorAll(`.check[data-group="${group}"][data-exclusive]`).forEach(x=>x.classList.remove('sel'));
+        }
+      }
+    };
+    const bx = wc.querySelector('.bx');
+    input.addEventListener('input', activate);
+    input.addEventListener('focus', ()=>{ if(input.value.trim().length > 0) activate(); });
+    // clicking the checkbox clears a filled write-in back to empty; focuses if empty
+    bx.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      if(input.value.trim().length > 0){ input.value = ''; wc.classList.remove('sel'); }
+      else input.focus();
+    });
+    // clicking the empty area of the box focuses the field
+    wc.addEventListener('click', (e)=>{ if(e.target === wc) input.focus(); });
+  });
+}
+
+// ---------- Decline request confirm ----------
+function openDeclineConfirm(adId){
+  const a = ADS.find(x=>x.id===adId);
+  sheet.innerHTML = `
+    <button class="close" id="closeSheet">×</button>
+    <div class="kicker">Decline request</div>
+    <h3>Decline ${a.name}'s request?</h3>
+    <p>Their request is removed from your inbox. They won't be notified.</p>
+    <button class="block-check" id="blockChk"><span class="bx"></span><span>Also block ${a.name} — they won't be able to see your ad or message you again.</span></button>
+    <div class="confirm-actions">
+      <button class="btn ghost" id="cancelDecline">Cancel</button>
+      <button class="btn danger-btn" id="confirmDecline">Decline</button>
+    </div>`;
+  overlay.classList.add('open');
+  let block = false;
+  const chk = document.getElementById('blockChk');
+  chk.onclick = ()=>{ block = !block; chk.classList.toggle('sel', block); };
+  document.getElementById('closeSheet').onclick = closeAd;
+  document.getElementById('cancelDecline').onclick = closeAd;
+  document.getElementById('confirmDecline').onclick = ()=>{
+    const i = REQUESTS.findIndex(r=>r.adId===adId);
+    if(i>-1) REQUESTS.splice(i,1);
+    if(block) blockedCount++;
+    closeAd(); updateMsgBadge(); renderMessages();
+  };
+}
+
+// ---------- Block member confirm (from a conversation) ----------
+function openBlockConfirm(adId){
+  const a = ADS.find(x=>x.id===adId);
+  sheet.innerHTML = `
+    <button class="close" id="closeSheet">×</button>
+    <h3>Block ${a.name}?</h3>
+    <p>${a.name} won't be able to see your ad or message you again, and this conversation will be removed. They won't be notified.</p>
+    <div class="confirm-actions">
+      <button class="btn ghost" id="cancelBlock">Cancel</button>
+      <button class="btn danger-btn" id="confirmBlock">Block ${a.name}</button>
+    </div>`;
+  overlay.classList.add('open');
+  document.getElementById('closeSheet').onclick = closeAd;
+  document.getElementById('cancelBlock').onclick = closeAd;
+  document.getElementById('confirmBlock').onclick = ()=>{
+    const i = CONVOS.findIndex(c=>c.adId===adId);
+    if(i>-1) CONVOS.splice(i,1);
+    blockedCount++;
+    closeAd(); setView('messages');
+  };
+}
+
+// ---------- Unmatch confirm (from a conversation) ----------
+function openUnmatchConfirm(adId){
+  const a = ADS.find(x=>x.id===adId);
+  sheet.innerHTML = `
+    <button class="close" id="closeSheet">×</button>
+    <h3>Unmatch with ${a.name}?</h3>
+    <p>This removes the conversation for both of you. ${a.name} won't be notified, and you can reply to their ad again if it's still running.</p>
+    <div class="confirm-actions">
+      <button class="btn ghost" id="cancelUnmatch">Cancel</button>
+      <button class="btn danger-btn" id="confirmUnmatch">Unmatch</button>
+    </div>`;
+  overlay.classList.add('open');
+  document.getElementById('closeSheet').onclick = closeAd;
+  document.getElementById('cancelUnmatch').onclick = closeAd;
+  document.getElementById('confirmUnmatch').onclick = ()=>{
+    const i = CONVOS.findIndex(c=>c.adId===adId);
+    if(i>-1) CONVOS.splice(i,1);
+    closeAd(); updateMsgBadge(); setView('messages');
+  };
+}
+
+// ---------- Face reveal (mutual, scratch-to-see) ----------
+function openFaceReveal(adId){
+  const a = ADS.find(x=>x.id===adId);
+  sheet.innerHTML = `
+    <button class="close" id="closeSheet">×</button>
+    <h3>Trade faces with ${a.name}?</h3>
+    <p>No one sees a face unless you both choose to. Once you're both ready, you can peek — hold your cursor over a photo and keep it moving to see it. Stop, and it fogs back over.</p>
+    <div class="reveal-status">✓ ${a.name} is ready to show their face</div>
+    <button class="btn block" id="readyBtn">I'm ready to show my face</button>`;
+  overlay.classList.add('open');
+  document.getElementById('closeSheet').onclick = closeAd;
+  document.getElementById('readyBtn').onclick = ()=>faceRevealStep(a);
+}
+function faceRevealStep(a){
+  // record the mutual reveal so the thread header/prompt reflect it once the overlay closes
+  revealedAdIds.add(a.id); revealOffered.delete(a.id); revealDeferred.delete(a.id);
+  if(state.view === 'thread' && state.threadAd === a.id) renderThread();
+  sheet.innerHTML = `
+    <button class="close" id="closeSheet">×</button>
+    <h3>You both said yes</h3>
+    <p>Move your cursor over ${a.name}'s photo to reveal it — keep moving, or it fogs back over.</p>
+    <div class="reveal-single">
+      <div class="reveal-tile"><div class="portrait them"></div><div class="frost"></div><div class="reveal-cap">${a.name}</div></div>
+    </div>
+    <div class="reveal-hint">This photo isn't saved anywhere — it only exists in this moment.</div>`;
+  document.getElementById('closeSheet').onclick = closeAd;
+  sheet.querySelectorAll('.reveal-tile').forEach(tile=>{
+    const frost = tile.querySelector('.frost');
+    let mx=0, my=0, radius=0, last=0; const MAXR=55;
+    const apply = ()=>{
+      if(radius<=0){ frost.style.webkitMaskImage='none'; frost.style.maskImage='none'; return; }
+      const g = `radial-gradient(circle at ${mx}px ${my}px, transparent 0, transparent ${radius}px, #000 ${radius+40}px)`;
+      frost.style.webkitMaskImage = g; frost.style.maskImage = g;
+    };
+    tile.addEventListener('mousemove', e=>{ const r = tile.getBoundingClientRect(); mx = e.clientX-r.left; my = e.clientY-r.top; radius = MAXR; last = Date.now(); apply(); });
+    tile.addEventListener('mouseleave', ()=>{ radius = 0; apply(); });
+    // fog back over when the cursor stops moving
+    const iv = setInterval(()=>{
+      if(!document.body.contains(tile)){ clearInterval(iv); return; }
+      if(Date.now()-last > 300 && radius > 0){ radius -= 5; if(radius<0) radius = 0; apply(); }
+    }, 45);
+  });
+}
+
+// ---------- Partner preferences overlay ----------
+function openPreferences(){
+  sheet.innerHTML = `
+    <button class="close" id="closeSheet">×</button>
+    <div class="kicker">Preferences</div>
+    <h3>Who you're looking for</h3>
+    <p style="margin-bottom:22px">These shape which ads appear in your Today's Picks.</p>
+    <div class="form" style="gap:20px">
+      <div class="fgroup"><label class="lab">Age range</label>
+        <div style="display:flex;align-items:center;gap:10px">
+          <input class="field-in" value="27" style="width:74px">
+          <span style="color:var(--muted)">to</span>
+          <input class="field-in" value="40" style="width:74px">
+        </div>
+      </div>
+      <div style="display:flex;gap:16px">
+        <div class="fgroup" style="flex:1"><label class="lab">ZIP code</label><input class="field-in" value="94110" placeholder="e.g. 94110" inputmode="numeric" maxlength="5"></div>
+        <div class="fgroup" style="flex:1"><label class="lab">Distance</label><input class="field-in" value="Within 25 miles"></div>
+      </div>
+      ${accField('Interested in', checkGroup('pInterest',['Men','Women','Trans men','Trans women','Non-binary','Everyone'],['Women'],false,'grid2',['Everyone']), 'pInterest')}
+      ${accField('Relationship type', checkGroup('pRel',['Hookup','Not sure','Something serious'],['Something serious'],false,'stacked'), 'pRel')}
+      ${accField('Kids', checkGroup('pKids',['Wants kids',"Doesn't want kids",'Has kids','No preference'],['No preference'],true,'grid2',['No preference']), 'pKids')}
+      ${accField('Political views', checkGroup('pPol',['Liberal','Conservative','Centrist','No preference'],['No preference'],false,'grid2',['No preference']), 'pPol')}
+      <div class="form-subhead"><div class="fsh-title">Your visibility</div><div class="fsh-sub">Controls who can see your ad — not who you see.</div></div>
+      ${accField('Who can see my ad', checkGroup('audience',['Everyone','LGBTQ+ only'],['Everyone'],true,'grid2'), 'audience')}
+    </div>
+    <button class="btn block" style="margin-top:24px" id="savePrefs">Save preferences</button>`;
+  overlay.classList.add('open');
+  document.getElementById('closeSheet').onclick = closeAd;
+  document.getElementById('savePrefs').onclick = closeAd;
+  wireChecks(sheet);
+  wireAccordions(sheet.querySelector('.form'));
+}
+
+// ---------- Messages (tabbed: conversations + requests) ----------
+function updateMsgBadge(){
+  const el = document.getElementById('navMsgCount');
+  if(!el) return;
+  if(REQUESTS.length){ el.textContent = REQUESTS.length; el.classList.add('show'); }
+  else el.classList.remove('show');
+}
+function convosHTML(){
+  if(!CONVOS.length) return `<div class="empty-msg">No conversations yet. Accept a request or reply to an ad to get started.</div>`;
+  return `<div class="mlist">${CONVOS.map(c=>{
+    const a = ADS.find(x=>x.id===c.adId);
+    return `<button class="mrow ${c.unread?'unread':''}" data-ad="${a.id}">
+      <div style="flex:1">
+        <div class="who-name" style="${hstyle(a.headingFont)}">${a.name}, ${a.age}</div>
+        <div class="who-cap">${a.headline}</div>
+        <p style="margin-top:16px"><span class="sender">${c.mine ? 'You' : a.name}:</span> ${c.last}</p>
+      </div>
+      <div class="mrow-right">
+        <div class="when">${c.when}</div>
+        ${c.unread ? '<span class="unread-dot"></span>' : ''}
+      </div>
+    </button>`;
+  }).join('')}</div>`;
+}
+function requestsHTML(){
+  if(!REQUESTS.length) return `<div class="empty-msg">No pending requests. When someone replies to your ad, it lands here for you to accept or decline.</div>`;
+  return `<div class="mlist">${REQUESTS.map(r=>{
+    const a = ADS.find(x=>x.id===r.adId);
+    return `<div class="req">
+      <div class="spread" style="align-items:flex-start">
+        <div><div class="who-name" style="${hstyle(a.headingFont)}">${a.name}, ${a.age}</div><div class="who-cap">${a.location}</div></div>
+        <div class="when">${r.when}</div>
+      </div>
+      <p class="their-msg"><span class="wrote">${a.name} wrote:</span> <span class="msg-text">${r.msg}</span></p>
+      <div class="req-actions">
+        <button class="link-btn viewlink" data-view-ad="${a.id}">View ${a.name}'s ad</button>
+        <button class="btn ghost sm" data-decline="${a.id}">Decline</button>
+        <button class="btn sm" data-accept="${a.id}">Accept</button>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+function renderMessages(){
+  const n = REQUESTS.length;
+  scroll.innerHTML = `
+    <div class="tabs">
+      <button class="tab ${state.msgTab==='convos'?'active':''}" data-tab="convos">Conversations</button>
+      <button class="tab ${state.msgTab==='requests'?'active':''}" data-tab="requests">Requests${n?`<span class="count">${n}</span>`:''}</button>
+    </div>
+    <div>${state.msgTab==='convos' ? convosHTML() : requestsHTML()}</div>`;
+
+  scroll.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{ state.msgTab = t.dataset.tab; renderMessages(); }));
+  scroll.querySelectorAll('.mrow').forEach(r=>r.addEventListener('click',()=>openThread(+r.dataset.ad)));
+  scroll.querySelectorAll('[data-view-ad]').forEach(b=>b.addEventListener('click',()=>openAd(+b.dataset.viewAd)));
+  scroll.querySelectorAll('[data-decline]').forEach(b=>b.addEventListener('click',()=>openDeclineConfirm(+b.dataset.decline)));
+  scroll.querySelectorAll('[data-accept]').forEach(b=>b.addEventListener('click',()=>{
+    const id = +b.dataset.accept, i = REQUESTS.findIndex(r=>r.adId===id);
+    if(i>-1){ const r = REQUESTS.splice(i,1)[0]; CONVOS.unshift({adId:r.adId, when:'now', last:r.msg, mine:false, unread:false}); }
+    updateMsgBadge(); state.msgTab = 'convos'; openThread(id);
+  }));
+}
+
+// ---------- Conversation thread ----------
+function openThread(adId){ const c = CONVOS.find(x=>x.adId===adId); if(c) c.unread=false; state.threadAd = adId; setView('thread'); }
+// persistent messages per thread; face reveal unlocks after this many messages
+const THREADS = {};
+const FACE_UNLOCK = 5; // EACH person must send at least this many before faces unlock
+const revealedAdIds = new Set();  // both people have traded faces
+const revealOffered = new Set();  // the OTHER person has shown their face; you haven't yet → dot on the eye
+const revealDeferred = new Set(); // you chose "let's wait until we meet" → prompt dismissed
+const REPLIES = [
+  "Ha, okay — that's a good answer.",
+  "Tell me more about that.",
+  "See, now I'm curious.",
+  "Honestly? Same.",
+  "That made me smile.",
+  "Okay, you're winning me over.",
+  "Noted — what else?",
+];
+function threadMsgs(a){
+  if(!THREADS[a.id]){
+    const convo = CONVOS.find(c=>c.adId===a.id);
+    THREADS[a.id] = convo ? [
+      {who:'me', text:`Hi ${a.name} — your ad made me smile. "${a.headline}" is a great line.`},
+      {who:'them', text:"Thank you! That's a nicer opener than most. What are you into?"},
+      {who: convo.mine ? 'me' : 'them', text: convo.last},
+    ] : [];
+  }
+  return THREADS[a.id];
+}
+// conversation-header icons
+const IC_BACK  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="11 6 5 12 11 18"/></svg>`;
+const IC_EYE   = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.6"/></svg>`;
+const IC_MORE  = `<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg>`;
+function renderThread(){
+  const a = ADS.find(x=>x.id===state.threadAd);
+  const msgs = threadMsgs(a);
+  const mine = msgs.filter(m=>m.who==='me').length;
+  const theirs = msgs.filter(m=>m.who==='them').length;
+  const unlocked = mine >= FACE_UNLOCK && theirs >= FACE_UNLOCK;
+  const revealed = revealedAdIds.has(a.id);
+  const theyOffered = unlocked && !revealed && revealOffered.has(a.id);
+  const deferred = revealDeferred.has(a.id);
+  const eyeCls = revealed ? 'th-eye' : unlocked ? ('th-eye' + (theyOffered ? ' offered' : '')) : 'th-eye locked';
+  const eyeTip = revealed ? `You and ${a.name} have traded faces — click to see again.`
+    : theyOffered ? `${a.name} showed you their face — click to reveal yours.`
+    : unlocked ? `You've been talking a while — click to reveal faces to each other.`
+    : `Keep the conversation going to unlock a mutual face reveal.`;
+  const showPrompt = msgs.length && unlocked && !revealed && !theyOffered && !deferred;
+  scroll.classList.add('thread-mode');
+  scroll.innerHTML = `
+    <div class="thread">
+      <div class="thread-head">
+        <button class="th-icon" id="back" aria-label="Back to messages">${IC_BACK}</button>
+        <button class="th-name" id="threadName" style="${hstyle(a.headingFont)}" title="View ${a.name}'s ad">${a.name}</button>
+        <div class="th-actions">
+          <span class="th-eye-wrap">
+            <button class="${eyeCls}" id="eyeBtn" aria-label="Face reveal">${IC_EYE}</button>
+            <span class="tip">${eyeTip}</span>
+          </span>
+          <div class="th-menu-wrap">
+            <button class="th-icon" id="moreBtn" aria-label="More options">${IC_MORE}</button>
+            <div class="th-menu" id="threadMenu">
+              <button id="unmatchBtn">Unmatch</button>
+              <button class="danger" id="blockBtn">Block / Report</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ad-snip" id="adSnip" title="View full ad">
+        ${adNameHTML(a)}
+        <div class="ad-place">${a.location}</div>
+        ${adHeadlineHTML(a)}
+        <p style="font-family:${cssFor(a.bodyFont)}">${a.desc}</p>
+      </div>
+      <div class="msgs">
+        ${msgs.length ? msgs.map(m=>`<div class="bubble ${m.who}">${m.text}</div>`).join('')
+          : `<div class="bubble them" style="background:transparent;color:var(--muted);font-style:italic">Start the conversation.</div>`}
+        ${revealed ? `<div class="reveal-inline"><div class="ri-text">You and ${a.name} have traded faces.</div><button class="ri-link" id="reFaceBtn">See again</button></div>`
+          : showPrompt ? `<div class="reveal-inline"><div class="ri-text">You've been talking a while — ready to see each other?</div><button class="btn sm" id="revealFaceBtn">Reveal faces</button><button class="ri-link" id="waitFaceBtn">Let's wait until we meet</button></div>` : ''}
+      </div>
+      <div class="composer">
+        <input class="field" id="composerInput" placeholder="Write a message…">
+        <button class="btn" id="sendBtn" disabled>Send</button>
+      </div>
+    </div>`;
+  document.getElementById('back').onclick = ()=>setView('messages');
+  document.getElementById('threadName').onclick = ()=>openAd(a.id, false);
+  document.getElementById('adSnip').onclick = ()=>openAd(a.id, false);
+  const moreBtn = document.getElementById('moreBtn'), threadMenu = document.getElementById('threadMenu');
+  moreBtn.onclick = (e)=>{
+    e.stopPropagation();
+    const willOpen = !threadMenu.classList.contains('open');
+    threadMenu.classList.toggle('open', willOpen);
+    if(willOpen){
+      const close = (ev)=>{ if(!threadMenu.contains(ev.target) && ev.target!==moreBtn){ threadMenu.classList.remove('open'); document.removeEventListener('click', close); } };
+      setTimeout(()=>document.addEventListener('click', close), 0);
+    }
+  };
+  document.getElementById('unmatchBtn').onclick = ()=>{ threadMenu.classList.remove('open'); openUnmatchConfirm(a.id); };
+  document.getElementById('blockBtn').onclick = ()=>{ threadMenu.classList.remove('open'); openBlockConfirm(a.id); };
+  const rf = document.getElementById('revealFaceBtn'); if(rf) rf.onclick = ()=>openFaceReveal(a.id);
+  const ra = document.getElementById('reFaceBtn'); if(ra) ra.onclick = ()=>faceRevealStep(a);
+  const wf = document.getElementById('waitFaceBtn'); if(wf) wf.onclick = ()=>{
+    revealDeferred.add(a.id); renderThread();
+    // (prototype) simulate the other person choosing to show their face a moment later → dot on the eye
+    setTimeout(()=>{ if(state.view==='thread' && state.threadAd===a.id && !revealedAdIds.has(a.id)){ revealOffered.add(a.id); renderThread(); } }, 2200);
+  };
+  const eye = document.getElementById('eyeBtn'), eyeWrap = eye.closest('.th-eye-wrap');
+  eye.onclick = ()=>{
+    if(revealed){ faceRevealStep(a); }
+    else if(unlocked){ openFaceReveal(a.id); }
+    else {  // locked: surface the tooltip (hover shows it too, but this covers a click)
+      eyeWrap.classList.add('tip-show');
+      clearTimeout(eyeWrap._tipT);
+      eyeWrap._tipT = setTimeout(()=>eyeWrap.classList.remove('tip-show'), 2800);
+    }
+  };
+  const ci = document.getElementById('composerInput'), sb = document.getElementById('sendBtn');
+  ci.addEventListener('input', ()=>{ sb.disabled = ci.value.trim().length === 0; });
+  const send = ()=>{
+    const t = ci.value.trim(); if(!t) return;
+    msgs.push({who:'me', text:t});
+    renderThread();
+    scroll.scrollTop = scroll.scrollHeight;
+    // simulated reply so both sides accumulate (prototype only)
+    setTimeout(()=>{
+      if(state.view!=='thread' || state.threadAd!==a.id) return;
+      msgs.push({who:'them', text: REPLIES[theirs % REPLIES.length]});
+      renderThread();
+      scroll.scrollTop = scroll.scrollHeight;
+    }, 650);
+  };
+  sb.addEventListener('click', send);
+  ci.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); send(); } });
+}
+
+// ---------- My Ad (edit form) ----------
+function checkGroup(name, options, selected, radio, layout, exclusive){
+  exclusive = exclusive || [];
+  const checks = options.map(o=>{
+    if(o === 'Write in…'){
+      // the write-in option is itself an editable field
+      return `<div class="check writein-check ${radio?'radio':''}" data-group="${name}" data-val="Write in…"><span class="bx"></span><input class="writein-field" type="text" maxlength="50" placeholder="Write in…"></div>`;
+    }
+    const sel = selected.includes(o);
+    const exc = exclusive.includes(o) ? ' data-exclusive="1"' : '';
+    return `<button class="check ${radio?'radio':''} ${sel?'sel':''}" data-group="${name}" data-val="${o}"${exc}><span class="bx"></span>${o}</button>`;
+  }).join('');
+  return `<div class="checks${layout?' '+layout:''}">${checks}</div>`;
+}
+// The ad's identity spec-grid, showing only fields that have a value (sexuality only if opted in).
+function adMetaGrid(a){
+  const rows = [];
+  const add = (label, val)=>{ const s = Array.isArray(val) ? val.join(', ') : (val||''); if(s) rows.push(`<div><span>${label}</span>${s}</div>`); };
+  add('Gender', a.gender);
+  add('Race / ethnicity', a.race);
+  add('Religion', a.religion);
+  add('Pronouns', a.pronouns);
+  if(a.showSexuality) add('Sexuality', a.sexuality);
+  add('Politics', a.politics);
+  add('Kids', a.kids);
+  add('Looking for', a.relationship);
+  add('Relationship style', a.relstyle);
+  add('Appearance', a.weight);
+  return rows.length ? `<div class="myad-meta">${rows.join('')}</div>` : '';
+}
+// My Ad — shows your ad as others see it, with an Edit button that opens the form overlay
+function renderMyAd(){
+  const a = MY_AD;
+  scroll.innerHTML = `
+    <div class="myad">
+      <div class="myad-card">
+        ${adNameHTML(a)}
+        <div class="ad-place">${a.location}</div>
+        ${adHeadlineHTML(a)}
+        <p class="myad-desc" style="font-family:${cssFor(a.bodyFont)}">${a.desc}</p>
+        ${adMetaGrid(a)}
+      </div>
+      <div class="myad-foot">
+        <div class="myad-hint">This is how your ad appears to other members.</div>
+        <div class="row" style="gap:10px">
+          <button class="btn ghost" id="customizeAd">Customize</button>
+          <button class="btn" id="editAd">Edit ad</button>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('editAd').onclick = openEditAd;
+  document.getElementById('customizeAd').onclick = ()=>setView('customize');
+}
+
+// Customize screen — pick the ad's heading + body fonts, with a live preview
+function renderCustomize(){
+  const a = MY_AD;
+  let heading = a.headingFont, body = a.bodyFont;
+  const previewAd = (h, b)=>`
+    <div class="myad-card">
+      <div class="ad-name" style="${hstyle(h)}">${a.name}, ${a.age}</div>
+      <div class="ad-place">${a.location}</div>
+      <div class="ad-headline" style="font-family:${cssFor(b)}">${a.headline}</div>
+      <p class="myad-desc" style="font-family:${cssFor(b)}">${a.desc}</p>
+      ${adMetaGrid(a)}
+    </div>`;
+  scroll.innerHTML = `
+    <div class="customize">
+      <button class="back" id="cBack">← Back to My Ad</button>
+      <div id="custPreview">${previewAd(heading, body)}</div>
+      <div class="cust-hint">Live preview</div>
+      <div class="cust-drops">
+        <label class="drop">
+          <span class="drop-label">Name font</span>
+          <select class="drop-select" id="headSel" style="font-family:${cssFor(heading)}">
+            ${HEADING_FONTS.map(f=>`<option value="${f.name}" style="font-family:${f.css}"${f.name===heading?' selected':''}>${f.name} · ${f.vibe}</option>`).join('')}
+          </select>
+        </label>
+        <label class="drop">
+          <span class="drop-label">Body font</span>
+          <select class="drop-select" id="bodySel" style="font-family:${cssFor(body)}">
+            ${BODY_FONTS.map(f=>`<option value="${f.name}" style="font-family:${f.css}"${f.name===body?' selected':''}>${f.name}</option>`).join('')}
+          </select>
+        </label>
+      </div>
+      <div class="form-actions"><button class="btn ghost" id="cCancel">Cancel</button><button class="btn" id="cSave">Save changes</button></div>
+    </div>`;
+  const pv = document.getElementById('custPreview');
+  const headSel = document.getElementById('headSel'), bodySel = document.getElementById('bodySel');
+  headSel.addEventListener('change', ()=>{ heading = headSel.value; headSel.style.fontFamily = cssFor(heading); pv.innerHTML = previewAd(heading, body); });
+  bodySel.addEventListener('change', ()=>{ body = bodySel.value; bodySel.style.fontFamily = cssFor(body); pv.innerHTML = previewAd(heading, body); });
+  document.getElementById('cBack').onclick = ()=>setView('myad');
+  document.getElementById('cCancel').onclick = ()=>setView('myad');
+  document.getElementById('cSave').onclick = ()=>{ MY_AD.headingFont = heading; MY_AD.bodyFont = body; setView('myad'); };
+}
+
+// collapsible field row: label + current-selection summary, expands to the picker
+function accField(label, bodyHtml, group){
+  return `<div class="acc" data-acc data-acc-group="${group}"><button type="button" class="acc-head"><span class="acc-label">${label}</span><span class="acc-value" data-acc-value>None selected</span><span class="acc-chev">▾</span></button><div class="acc-body" hidden>${bodyHtml}</div></div>`;
+}
+function updateAccSummary(container, group){
+  const acc = container.querySelector(`[data-acc][data-acc-group="${group}"]`);
+  if(!acc) return;
+  const sel = [...acc.querySelectorAll('.check.sel:not(.writein-check)')].map(c=>c.dataset.val);
+  const wf = acc.querySelector('.writein-check.sel .writein-field');
+  if(wf && wf.value.trim()) sel.push(wf.value.trim());
+  const valEl = acc.querySelector('[data-acc-value]');
+  valEl.textContent = sel.length ? sel.join(', ') : 'None selected';
+  valEl.classList.toggle('set', sel.length>0);
+}
+function wireAccordions(container){
+  container.querySelectorAll('[data-acc]').forEach(acc=>{
+    const body = acc.querySelector('.acc-body');
+    acc.querySelector('.acc-head').addEventListener('click', ()=>{ body.hidden = !acc.classList.toggle('open'); });
+  });
+  const refresh = ()=>container.querySelectorAll('[data-acc]').forEach(acc=>updateAccSummary(container, acc.dataset.accGroup));
+  refresh();
+  container.addEventListener('click', (e)=>{
+    refresh();
+    const chk = e.target.closest('.check.radio:not(.writein-check)');
+    if(chk){ const acc = chk.closest('[data-acc]'); if(acc){ acc.classList.remove('open'); acc.querySelector('.acc-body').hidden = true; } }
+  });
+  container.addEventListener('input', refresh);
+}
+
+// Edit-ad form, in an overlay
+function openEditAd(){
+  const me = MY_AD;
+  sheet.innerHTML = `
+    <button class="close" id="closeSheet">×</button>
+    <h3>Edit your ad</h3>
+    <div class="form" style="margin-top:10px">
+      <div class="fgroup"><label class="lab">Your name</label><input class="field-in" id="adName" value="${me.name}"></div>
+      <div style="display:flex;gap:16px">
+        <div class="fgroup" style="flex:0 0 110px"><label class="lab">Age</label><input class="field-in" id="adAge" value="${me.age}"></div>
+        <div class="fgroup" style="flex:1"><label class="lab">Location</label><input class="field-in" id="adLoc" value="${me.location}"></div>
+      </div>
+      <div class="fgroup">
+        <div class="lab-row"><label class="lab">Ad headline</label><span class="counter" id="cntHeadline"></span></div>
+        <input class="field-in" id="adHeadline" maxlength="250" value="${me.headline}">
+      </div>
+      <div class="fgroup">
+        <div class="lab-row"><label class="lab">Ad description</label><span class="counter" id="cntDesc"></span></div>
+        <textarea class="field-in autogrow" id="adDesc" maxlength="1000">${me.desc}</textarea>
+      </div>
+      ${accField('Gender', checkGroup('gender',['Man','Woman','Trans man','Trans woman','Non-binary','Write in…'],me.gender,false,'grid2'), 'gender')}
+      ${accField('Race / ethnicity', checkGroup('race',['Asian','Black','Hispanic / Latino','Indigenous','Middle Eastern','Pacific Islander','White','Mixed','Prefer not to say','Write in…'],me.race,false,'grid2',['Prefer not to say']), 'race')}
+      ${accField('Religion', checkGroup('religion',['Agnostic','Atheist','Buddhist','Christian','Hindu','Jewish','Muslim','Sikh','Prefer not to say','Write in…'],[me.religion],true,'grid2'), 'religion')}
+      ${accField('Pronouns', checkGroup('pronouns',['he/him','she/her','they/them','Write in…'],me.pronouns,false,'grid2'), 'pronouns')}
+      ${accField('Sexuality', `<div class="soa-row"><span class="soa-lab">Show on my ad</span><button class="toggle ${me.showSexuality?'on':''}" data-toggle></button></div>${checkGroup('sexuality',['Straight','Gay','Lesbian','Bisexual','Pansexual','Queer','Asexual','Prefer not to say','Write in…'],me.sexuality,false,'stacked',['Prefer not to say'])}`, 'sexuality')}
+      ${accField('Political views', checkGroup('politics',['Liberal','Conservative','Centrist','Write in…'],[me.politics],true,'grid2'), 'politics')}
+      ${accField('Kids', checkGroup('kids',['Wants kids',"Doesn't want kids",'Has kids','Not sure yet'],[me.kids],true,'grid2'), 'kids')}
+      ${accField('Looking for', checkGroup('rel',['Hookup','Not sure','Something serious'],[me.relationship],true,'stacked'), 'rel')}
+      ${accField('Relationship style', checkGroup('relstyle',['Monogamous','Non-monogamous','Open to non-monogamy'],[me.relstyle],true,'stacked'), 'relstyle')}
+      <div class="fgroup"><div class="lab-row"><label class="lab">Appearance <span class="hint">optional</span></label><span class="counter" id="cntAppearance"></span></div><input class="field-in" id="adAppearance" maxlength="50" value="${me.weight}" placeholder="e.g. tall, glasses, always in boots"></div>
+      <div class="form-actions"><button class="btn ghost" id="cancelAd">Cancel</button><button class="btn" id="saveAd">Save ad</button></div>
+    </div>`;
+  overlay.classList.add('open');
+  document.getElementById('closeSheet').onclick = closeAd;
+  document.getElementById('cancelAd').onclick = closeAd;
+  document.getElementById('saveAd').onclick = ()=>{
+    const gv = id => (document.getElementById(id)?.value || '');
+    me.name = gv('adName').trim() || me.name;
+    me.age = gv('adAge').trim() || me.age;
+    me.location = gv('adLoc').trim() || me.location;
+    me.headline = gv('adHeadline'); me.desc = gv('adDesc'); me.weight = gv('adAppearance').trim();
+    me.gender = obChecked(sheet,'gender'); me.pronouns = obChecked(sheet,'pronouns'); me.race = obChecked(sheet,'race'); me.sexuality = obChecked(sheet,'sexuality');
+    me.religion = obChecked(sheet,'religion')[0]||''; me.politics = obChecked(sheet,'politics')[0]||''; me.kids = obChecked(sheet,'kids')[0]||'';
+    me.relationship = obChecked(sheet,'rel')[0]||''; me.relstyle = obChecked(sheet,'relstyle')[0]||'';
+    me.showSexuality = !!sheet.querySelector('[data-toggle]')?.classList.contains('on');
+    closeAd(); setView('myad');
+  };
+  wireChecks(sheet);
+  sheet.querySelectorAll('[data-toggle]').forEach(t=>t.addEventListener('click',()=>t.classList.toggle('on')));
+  // collapsible field rows
+  wireAccordions(sheet.querySelector('.form'));
+
+  // live character counters
+  function bindCounter(id, cntId, max){
+    const el = document.getElementById(id), cnt = document.getElementById(cntId);
+    const update = ()=>{ cnt.textContent = `${el.value.length}/${max}`; cnt.classList.toggle('at-max', el.value.length >= max); };
+    el.addEventListener('input', update); update();
+    return el;
+  }
+  bindCounter('adHeadline', 'cntHeadline', 250);
+  bindCounter('adAppearance', 'cntAppearance', 50);
+  const descEl = bindCounter('adDesc', 'cntDesc', 1000);
+
+  // auto-grow the description box to fit its content
+  const grow = ()=>{ descEl.style.height = 'auto'; descEl.style.height = descEl.scrollHeight + 'px'; };
+  descEl.addEventListener('input', grow);
+  grow();
+}
+
+// ---------- Settings ----------
+function setRow(label, sub, control){
+  return `<div class="set-row"><div class="rl-wrap"><div class="rl">${label}</div>${sub?`<div class="rs">${sub}</div>`:''}</div>${control}</div>`;
+}
+function renderSettings(){
+  scroll.innerHTML = `
+    <div class="settings">
+
+      <div class="set-section">
+        <h3 class="sec-head">Preferences</h3>
+        <p class="sec-sub">What you're looking for in a partner.</p>
+        <div class="set-card">
+          ${setRow('Partner preferences','Age, distance, who you’re interested in, and more. Shapes your Today’s Picks.', `<button class="btn ghost" data-prefs>Edit preferences</button>`)}
+        </div>
+      </div>
+
+      <div class="set-section">
+        <h3 class="sec-head">Account</h3>
+        <div class="set-card">
+          ${setRow('Email','alex@email.com', `<button class="link-btn">Change</button>`)}
+          ${setRow('Password','Last changed 3 months ago', `<button class="link-btn">Change password</button>`)}
+          ${setRow('Onboarding','Replay the new-member flow', `<button class="link-btn" id="replayOb">Replay</button>`)}
+          ${setRow('Guest view','Preview the feed as someone who hasn\'t posted an ad', `<button class="toggle ${!hasAd?'on':''}" id="guestToggle"></button>`)}
+          ${setRow('<span class="danger">Delete account</span>','Permanently remove your ad, messages, and data.', `<button class="link-btn danger">Delete</button>`)}
+        </div>
+      </div>
+
+      <div class="set-section">
+        <h3 class="sec-head">Subscription &amp; billing</h3>
+        <p class="sec-sub">You're on the free plan.</p>
+        <div class="set-card">
+          ${setRow('Free plan','Reply to a limited number of ads per day.', `<button class="btn">Upgrade</button>`)}
+          ${setRow('Payment method','None on file', `<button class="link-btn">Add</button>`)}
+        </div>
+      </div>
+
+      <div class="set-section">
+        <h3 class="sec-head">Pause my ad</h3>
+        <p class="sec-sub">Take a break without deleting anything.</p>
+        <div class="set-card">
+          ${setRow('Hide my ad from the feed',"Your ad stops appearing in Today's Picks. Existing conversations stay open.", `<button class="toggle" data-toggle></button>`)}
+        </div>
+      </div>
+
+      <div class="set-section">
+        <h3 class="sec-head">Privacy &amp; safety</h3>
+        <p class="sec-sub">Control who can reach you.</p>
+        <div class="set-card">
+          ${setRow('Blocked members',`${blockedCount} members blocked`, `<button class="link-btn">Manage</button>`)}
+        </div>
+      </div>
+
+      <div class="set-section">
+        <h3 class="sec-head">Notifications</h3>
+        <p class="sec-sub">How we reach you.</p>
+        <div class="set-card">
+          ${setRow('Email — new replies','When someone replies to your ad.', `<button class="toggle on" data-toggle></button>`)}
+          ${setRow('Email — new messages','', `<button class="toggle on" data-toggle></button>`)}
+          ${setRow('Email — account &amp; billing','', `<button class="toggle on" data-toggle></button>`)}
+          ${setRow('Push — new replies','', `<button class="toggle" data-toggle></button>`)}
+          ${setRow('Push — new messages','', `<button class="toggle" data-toggle></button>`)}
+        </div>
+      </div>
+
+      <div class="form-actions" style="justify-content:space-between">
+        <button class="btn ghost">Log out</button>
+        <button class="btn">Save changes</button>
+      </div>
+    </div>`;
+
+  // partner preferences overlay
+  scroll.querySelector('[data-prefs]')?.addEventListener('click', openPreferences);
+  scroll.querySelector('#replayOb')?.addEventListener('click', startOnboarding);
+  scroll.querySelector('#guestToggle')?.addEventListener('click', function(){ hasAd = !this.classList.toggle('on'); });
+  // toggles
+  scroll.querySelectorAll('[data-toggle]').forEach(t=>t.addEventListener('click',()=>t.classList.toggle('on')));
+  // single-select segmented (who can message)
+  scroll.querySelectorAll('.check').forEach(c=>c.addEventListener('click',()=>{
+    scroll.querySelectorAll(`.check[data-group="${c.dataset.group}"]`).forEach(x=>x.classList.remove('sel'));
+    c.classList.add('sel');
+  }));
+}
+
+// ---------- Dark mode ----------
+// dark-mode button shows the target theme: moon in light mode (tap to go dark), sun in dark mode
+const IC_SUN  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.6v2.3M12 19.1v2.3M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.6 12h2.3M19.1 12h2.3M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>`;
+const IC_MOON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.4A7.6 7.6 0 0 1 9.6 4 7.6 7.6 0 1 0 20 14.4z"/></svg>`;
+const darkBtn = document.getElementById('darkToggle');
+function updateDarkIcon(){ darkBtn.innerHTML = document.body.classList.contains('dark') ? IC_SUN : IC_MOON; }
+darkBtn.addEventListener('click',()=>{ document.body.classList.toggle('dark'); updateDarkIcon(); });
+updateDarkIcon();
+
+// ---------- re-balance masonry on resize (debounced, feed only) ----------
+let feedResizeTimer;
+window.addEventListener('resize', ()=>{
+  if(state.view !== 'feed' || feedMode === 'paper') return; // paper refits via its own ResizeObserver
+  clearTimeout(feedResizeTimer);
+  feedResizeTimer = setTimeout(()=>{
+    const y = scroll.scrollTop;
+    renderFeed();
+    scroll.scrollTop = y;
+  }, 150);
+});
+
+// ---------- Onboarding (write your first ad) ----------
+let obStep = 0;
+const OB_DEFAULT_HFONT = 'Instrument Serif', OB_DEFAULT_BFONT = 'Instrument Sans';
+const obData = { name:'', age:'', location:'', headline:'', desc:'', photo:'', headingFont:OB_DEFAULT_HFONT, bodyFont:OB_DEFAULT_BFONT,
+  gender:[], pronouns:[], rel:'', race:[], religion:'', sexuality:[], showSexuality:false, politics:'', kids:'', relstyle:'', build:'' };
+const obVal = id => { const el = document.getElementById(id); return el ? el.value : ''; };
+function obResetData(){ for(const k in obData) obData[k]=''; obData.headingFont=OB_DEFAULT_HFONT; obData.bodyFont=OB_DEFAULT_BFONT; obData.gender=[]; obData.pronouns=[]; obData.race=[]; obData.sexuality=[]; obData.showSexuality=false; }
+function startOnboarding(){ obStep = 0; obResetData(); document.getElementById('onboarding').classList.add('open'); renderOnboarding(); }
+// Read the selected values of a checkGroup out of a container (mirrors updateAccSummary).
+function obChecked(container, group){
+  const acc = container.querySelector(`[data-acc][data-acc-group="${group}"]`);
+  if(!acc) return [];
+  const sel = [...acc.querySelectorAll('.check.sel:not(.writein-check)')].map(c=>c.dataset.val);
+  const wf = acc.querySelector('.writein-check.sel .writein-field');
+  if(wf && wf.value.trim()) sel.push(wf.value.trim());
+  return sel;
+}
+function endOnboarding(){ document.getElementById('onboarding').classList.remove('open'); }
+function obSaveStep(){
+  if(obStep===1){ obData.name=obVal('obName'); obData.age=obVal('obAge'); obData.location=obVal('obLoc'); }
+  if(obStep===2){ obData.headline=obVal('obHead'); obData.desc=obVal('obDesc'); }
+  if(obStep===3){ obSaveAbout(); }
+  // step 4 (photo) is saved on upload
+}
+// Read the About-you identity fields out of the DOM into obData.
+function obSaveAbout(){
+  const c = document.getElementById('obBody'); if(!c || !c.querySelector('[data-acc]')) return;
+  obData.gender    = obChecked(c,'gender');
+  obData.pronouns  = obChecked(c,'pronouns');
+  obData.rel       = obChecked(c,'rel')[0] || '';
+  obData.race      = obChecked(c,'race');
+  obData.religion  = obChecked(c,'religion')[0] || '';
+  obData.sexuality = obChecked(c,'sexuality');
+  obData.politics  = obChecked(c,'politics')[0] || '';
+  obData.kids      = obChecked(c,'kids')[0] || '';
+  obData.relstyle  = obChecked(c,'relstyle')[0] || '';
+  obData.build     = (obVal('obApp') || '').trim();
+  const tog = c.querySelector('[data-toggle]');
+  obData.showSexuality = tog ? tog.classList.contains('on') : obData.showSexuality;
+}
+// Required fields per step — the Next/Post button stays disabled until they're filled.
+function obValidate(){
+  const btn = document.getElementById('obNext') || document.getElementById('obPost');
+  if(!btn) return;
+  let ok = true;
+  if(obStep===1) ok = ['obName','obAge','obLoc'].every(id=>obVal(id).trim());
+  else if(obStep===2) ok = ['obHead','obDesc'].every(id=>obVal(id).trim());
+  else if(obStep===3){ const c=document.getElementById('obBody'); ok = ['gender','pronouns','rel'].every(g=>obChecked(c,g).length>0); }
+  else if(obStep===4) ok = !!obData.photo;
+  else if(obStep>=5) ok = ['name','age','location','headline','desc'].every(k=>String(obData[k]).trim()) && !!obData.photo && obData.gender.length>0 && obData.pronouns.length>0 && !!obData.rel;
+  btn.disabled = !ok;
+}
+function photoSlotHtml(){
+  if(obData.photo){
+    return `<div class="photo-prev">
+      <img class="thumb" src="${obData.photo}" alt="Your photo">
+      <div class="pp-meta">
+        <span class="pp-lock">🔒 Only you can see this now</span>
+        <button class="pp-replace" id="photoReplace">Replace photo</button>
+      </div></div>`;
+  }
+  return `<div class="photo-drop" id="photoDrop"><div class="pu-ico">⬆</div><strong>Upload a photo</strong><span>PNG or JPG</span></div>`;
+}
+function rebindPhoto(){
+  const input = document.getElementById('photoInput'); if(!input) return;
+  const drop = document.getElementById('photoDrop'); if(drop) drop.onclick = ()=>input.click();
+  const rep = document.getElementById('photoReplace'); if(rep) rep.onclick = ()=>input.click();
+}
+// The whole ad in one card (used by the confirm + customize steps), rendered with the chosen fonts.
+function obAdCard(){
+  const d = obData;
+  // map onboarding keys → ad keys so the shared grid can render it
+  const meta = adMetaGrid({ gender:d.gender, race:d.race, religion:d.religion, pronouns:d.pronouns, showSexuality:d.showSexuality, sexuality:d.sexuality, politics:d.politics, kids:d.kids, relationship:d.rel, relstyle:d.relstyle, weight:d.build });
+  return `<div class="myad-card">
+    <div class="ad-name" style="${hstyle(d.headingFont)}">${d.name||'Your name'}, ${d.age||'—'}</div>
+    <div class="ad-place">${d.location||'Your city'}</div>
+    <div class="ad-headline" style="font-family:${cssFor(d.bodyFont)}">${d.headline||'Your headline'}</div>
+    <p class="myad-desc" style="font-family:${cssFor(d.bodyFont)}">${d.desc||'Your ad copy will show here.'}</p>
+    ${meta}
+  </div>`;
+}
+// Reminder that a (hidden) photo is attached, with a tiny thumbnail.
+function obPhotoNote(){
+  if(!obData.photo) return '';
+  return `<div class="photo-attached"><img class="pa-thumb" src="${obData.photo}" alt="Your photo"><span>🔒 Photo attached — hidden until you both choose to reveal.</span></div>`;
+}
+function finishOnboarding(){
+  const d = obData;
+  if(d.name) MY_AD.name=d.name; if(d.age) MY_AD.age=d.age; if(d.location) MY_AD.location=d.location;
+  if(d.headline) MY_AD.headline=d.headline; if(d.desc) MY_AD.desc=d.desc; if(d.photo) MY_AD.photo=d.photo;
+  if(d.headingFont) MY_AD.headingFont=d.headingFont; if(d.bodyFont) MY_AD.bodyFont=d.bodyFont;
+  // identity — write everything the user entered; blanks clear the sample defaults so nothing phantom shows
+  MY_AD.gender=d.gender; MY_AD.pronouns=d.pronouns; MY_AD.relationship=d.rel;
+  MY_AD.race=d.race; MY_AD.sexuality=d.sexuality; MY_AD.showSexuality=d.showSexuality;
+  MY_AD.religion=d.religion; MY_AD.politics=d.politics; MY_AD.kids=d.kids; MY_AD.relstyle=d.relstyle; MY_AD.weight=d.build;
+  hasAd = true; // posting your ad unlocks the feed
+  endOnboarding(); setView('myad');
+}
+function renderOnboarding(){
+  const body = document.getElementById('obBody'), nav = document.getElementById('obNav'), dots = document.getElementById('obDots');
+  const TOTAL = 4; // basics · personal · about you · photo (confirm + customize are terminal, no dots)
+  dots.innerHTML = (obStep>=1 && obStep<=TOTAL) ? Array.from({length:TOTAL},(_,k)=>`<span class="ob-dot ${k===obStep-1?'on':''}"></span>`).join('') : '';
+  if(obStep===0){
+    body.innerHTML = `<div class="ob-welcome"><div class="ob-brand">Classy</div><div class="ob-tag">Seek. Find.</div><h2>No photos. Just words.</h2><p>On Classy you meet through what you write. Let's put your personal in tomorrow's paper.</p></div>`;
+    nav.innerHTML = `<button class="btn block" id="obNext">Write my ad</button>`;
+  } else if(obStep===1){
+    body.innerHTML = `<div class="ob-step"><div class="ob-kicker">Step 1 of 4</div><h2>The basics</h2>
+      <div class="fgroup"><label class="lab">Your name <span class="req-mark">*</span></label><input class="field-in" id="obName" value="${obData.name}" placeholder="First name"></div>
+      <div style="display:flex;gap:16px">
+        <div class="fgroup" style="flex:0 0 110px"><label class="lab">Age <span class="req-mark">*</span></label><input class="field-in" id="obAge" value="${obData.age}" placeholder="e.g. 30"></div>
+        <div class="fgroup" style="flex:1"><label class="lab">Location <span class="req-mark">*</span></label><input class="field-in" id="obLoc" value="${obData.location}" placeholder="Neighborhood, City"></div>
+      </div></div>`;
+    nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obNext">Next</button>`;
+  } else if(obStep===2){
+    body.innerHTML = `<div class="ob-step"><div class="ob-kicker">Step 2 of 4</div><h2>Your personal</h2>
+      <p class="ob-sub">A headline to catch the eye, then the ad itself. Specifics beat adjectives.</p>
+      <div class="fgroup"><div class="lab-row"><label class="lab">Headline <span class="req-mark">*</span></label><span class="counter" id="obHeadCnt"></span></div><input class="field-in" id="obHead" maxlength="250" value="${obData.headline}" placeholder="e.g. Quiet but not shy"></div>
+      <div class="fgroup"><div class="lab-row"><label class="lab">Description <span class="req-mark">*</span></label><span class="counter" id="obDescCnt"></span></div><textarea class="field-in autogrow" id="obDesc" maxlength="1000" placeholder="I read a lot, take long walks and notice small things…">${obData.desc}</textarea></div></div>`;
+    nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obNext">Next</button>`;
+  } else if(obStep===3){
+    body.innerHTML = `<div class="ob-step"><div class="ob-kicker">Step 3 of 4</div><h2>About you</h2>
+      <p class="ob-sub">A few details for your ad. Only gender, pronouns, and what you're looking for are required — the rest is up to you.</p>
+      ${accField('Gender <span class="req-mark">*</span>', checkGroup('gender',['Man','Woman','Trans man','Trans woman','Non-binary','Write in…'],obData.gender,false,'grid2'), 'gender')}
+      ${accField('Pronouns <span class="req-mark">*</span>', checkGroup('pronouns',['he/him','she/her','they/them','Write in…'],obData.pronouns,false,'grid2'), 'pronouns')}
+      ${accField('Looking for <span class="req-mark">*</span>', checkGroup('rel',['Hookup','Not sure','Something serious'],[obData.rel],true,'stacked'), 'rel')}
+      <div class="ob-optional-head">Optional — add anything you'd like on your ad</div>
+      ${accField('Race / ethnicity', checkGroup('race',['Asian','Black','Hispanic / Latino','Indigenous','Middle Eastern','Pacific Islander','White','Mixed','Prefer not to say','Write in…'],obData.race,false,'grid2',['Prefer not to say']), 'race')}
+      ${accField('Religion', checkGroup('religion',['Agnostic','Atheist','Buddhist','Christian','Hindu','Jewish','Muslim','Sikh','Prefer not to say','Write in…'],[obData.religion],true,'grid2'), 'religion')}
+      ${accField('Sexuality', `<div class="soa-row"><span class="soa-lab">Show on my ad</span><button class="toggle ${obData.showSexuality?'on':''}" data-toggle></button></div>${checkGroup('sexuality',['Straight','Gay','Lesbian','Bisexual','Pansexual','Queer','Asexual','Prefer not to say','Write in…'],obData.sexuality,false,'stacked',['Prefer not to say'])}`, 'sexuality')}
+      ${accField('Political views', checkGroup('politics',['Liberal','Conservative','Centrist','Write in…'],[obData.politics],true,'grid2'), 'politics')}
+      ${accField('Kids', checkGroup('kids',['Wants kids',"Doesn't want kids",'Has kids','Not sure yet'],[obData.kids],true,'grid2'), 'kids')}
+      ${accField('Relationship style', checkGroup('relstyle',['Monogamous','Non-monogamous','Open to non-monogamy'],[obData.relstyle],true,'stacked'), 'relstyle')}
+      <div class="fgroup"><div class="lab-row"><label class="lab">Appearance</label><span class="counter" id="obAppCnt"></span></div><input class="field-in" id="obApp" maxlength="50" value="${obData.build}" placeholder="e.g. tall, glasses, always in boots"></div></div>`;
+    nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obNext">Next</button>`;
+  } else if(obStep===4){
+    body.innerHTML = `<div class="ob-step"><div class="ob-kicker">Step 4 of 4</div><h2>Add your photo <span class="req-mark">*</span></h2>
+      <p class="ob-sub">No one sees this on your ad. It stays hidden until you and someone both choose to trade faces.</p>
+      <input type="file" accept="image/*" id="photoInput" hidden>
+      <div id="photoSlot">${photoSlotHtml()}</div>
+      <div class="photo-privacy">🔒 Hidden until a mutual face reveal — never shown on your public ad.</div></div>`;
+    nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obNext">Next</button>`;
+  } else if(obStep===5){
+    body.innerHTML = `<div class="ob-step"><div class="ob-kicker">Review</div><h2>Here's your personal</h2>
+      <p class="ob-sub">Your whole ad in one place. Confirm when it looks right — you can refine it anytime in My Ad.</p>
+      ${obAdCard()}
+      ${obPhotoNote()}</div>`;
+    nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obNext">Confirm</button>`;
+  } else {
+    body.innerHTML = `<div class="ob-step"><div class="ob-kicker">Optional</div><h2>Make it yours</h2>
+      <p class="ob-sub">Give your headline and text a font that fits your vibe — or skip it and change it anytime in My Ad.</p>
+      <div id="obCustPreview">${obAdCard()}</div>
+      <div class="cust-drops">
+        <label class="drop"><span class="drop-label">Name font</span>
+          <select class="drop-select" id="obHeadSel" style="font-family:${cssFor(obData.headingFont)}">
+            ${HEADING_FONTS.map(f=>`<option value="${f.name}" style="font-family:${f.css}"${f.name===obData.headingFont?' selected':''}>${f.name} · ${f.vibe}</option>`).join('')}
+          </select></label>
+        <label class="drop"><span class="drop-label">Body font</span>
+          <select class="drop-select" id="obBodySel" style="font-family:${cssFor(obData.bodyFont)}">
+            ${BODY_FONTS.map(f=>`<option value="${f.name}" style="font-family:${f.css}"${f.name===obData.bodyFont?' selected':''}>${f.name}</option>`).join('')}
+          </select></label>
+      </div></div>`;
+    nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><div style="display:flex;gap:12px"><button class="btn ghost" id="obLater">Customize later</button><button class="btn" id="obPost">Post my ad</button></div>`;
+  }
+  const next=document.getElementById('obNext'), back=document.getElementById('obBack'), post=document.getElementById('obPost');
+  if(next) next.onclick=()=>{ obSaveStep(); obStep++; renderOnboarding(); };
+  if(back) back.onclick=()=>{ obSaveStep(); obStep--; renderOnboarding(); };
+  if(post) post.onclick=()=>{ obSaveStep(); finishOnboarding(); };
+  const later=document.getElementById('obLater');
+  if(later) later.onclick=()=>{ finishOnboarding(); };
+  // optional customization — live font preview
+  const obHeadSel=document.getElementById('obHeadSel'), obBodySel=document.getElementById('obBodySel'), obPv=document.getElementById('obCustPreview');
+  if(obHeadSel) obHeadSel.addEventListener('change', ()=>{ obData.headingFont=obHeadSel.value; obHeadSel.style.fontFamily=cssFor(obData.headingFont); if(obPv) obPv.innerHTML=obAdCard(); });
+  if(obBodySel) obBodySel.addEventListener('change', ()=>{ obData.bodyFont=obBodySel.value; obBodySel.style.fontFamily=cssFor(obData.bodyFont); if(obPv) obPv.innerHTML=obAdCard(); });
+  const bindCnt=(id,cntId,max)=>{ const el=document.getElementById(id),cnt=document.getElementById(cntId); if(!el||!cnt)return; const u=()=>{cnt.textContent=`${el.value.length}/${max}`;cnt.classList.toggle('at-max',el.value.length>=max);}; el.addEventListener('input',u); u(); };
+  bindCnt('obHead','obHeadCnt',250); bindCnt('obDesc','obDescCnt',1000); bindCnt('obApp','obAppCnt',50);
+  const desc=document.getElementById('obDesc');
+  if(desc){ const grow=()=>{desc.style.height='auto';desc.style.height=desc.scrollHeight+'px';}; desc.addEventListener('input',grow); grow(); }
+  // live required-field validation + photo upload
+  ['obName','obAge','obLoc','obHead','obDesc'].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('input', obValidate); });
+  const photoInput=document.getElementById('photoInput');
+  if(photoInput){ photoInput.onchange=()=>{ const f=photoInput.files&&photoInput.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=e=>{ obData.photo=e.target.result; const slot=document.getElementById('photoSlot'); if(slot) slot.innerHTML=photoSlotHtml(); rebindPhoto(); obValidate(); }; rd.readAsDataURL(f); }; }
+  rebindPhoto();
+  // About-you identity fields — wire to the fresh step element so listeners don't accumulate on #obBody
+  if(obStep===3){
+    const stepEl = body.querySelector('.ob-step');
+    if(stepEl){
+      wireChecks(stepEl);
+      stepEl.querySelectorAll('[data-toggle]').forEach(t=>t.addEventListener('click',()=>t.classList.toggle('on')));
+      wireAccordions(stepEl);
+      stepEl.addEventListener('click', obValidate);
+      stepEl.addEventListener('input', obValidate);
+    }
+  }
+  obValidate();
+}
+
+// ---------- boot ----------
+document.getElementById('topDate').innerHTML = '<span class="date-label">Issue Date</span><span class="date-val">' + TODAY_STR + '</span>';
+updateMsgBadge();
+setView('feed');
+// fonts change card heights — re-balance the masonry once they've loaded
+if(document.fonts) document.fonts.ready.then(()=>{ if(state.view==='feed') renderFeed(); });
+</script>
+</body>
+</html>

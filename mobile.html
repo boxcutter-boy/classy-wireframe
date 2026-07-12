@@ -1,0 +1,1737 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Classy — Mobile Wireframe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Instrument+Sans:ital@0;1&family=Instrument+Serif:ital@0;1&family=Jacquard+24&family=Monoton&family=Rubik+Dirt&family=Ruthie&family=Sancreek&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f4f4f4;
+    --panel:#ffffff;
+    --page:#e6e6e6;          /* backdrop behind the phone column */
+    --rail-ink:#f4f4f4;
+    --line:#c9c9c9;
+    --line-strong:#8f8f8f;
+    --fill:#ececec;
+    --fill-2:#f7f7f7;
+    --ink:#1f1f1f;
+    --muted:#828282;
+    --news-bg:#fcfcf8; --news-ink:#161616; --news-rule:#bcbcb2; --news-muted:#6d6d66;
+    --radius:6px;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  }
+  body.dark{
+    --bg:#242424; --panel:#2e2e2e; --page:#101010; --rail-ink:#e8e8e8;
+    --line:#484848; --line-strong:#6a6a6a; --fill:#3a3a3a; --fill-2:#333; --ink:#e8e8e8; --muted:#ababab;
+    --news-bg:#262624; --news-ink:#e9e9e4; --news-rule:#4c4c48; --news-muted:#a7a79f;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font-family:var(--font);color:var(--ink);background:var(--page);display:flex;justify-content:center;overflow:hidden}
+  button{font-family:inherit;cursor:pointer;color:inherit}
+
+  /* ---------- Phone shell ---------- */
+  .app{
+    position:relative;width:100%;max-width:430px;height:100dvh;background:var(--bg);
+    display:flex;flex-direction:column;overflow:hidden;
+    box-shadow:0 0 0 1px var(--line), 0 18px 60px rgba(0,0,0,.22);
+  }
+  @media (min-width:470px){ .app{height:min(100dvh,900px);margin:auto;border-radius:26px} }
+
+  /* ---------- Top app bar ---------- */
+  .appbar{
+    flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:14px 18px 12px;border-bottom:1px solid var(--line);background:var(--bg);
+  }
+  .appbar-titles{min-width:0}
+  .appbar h2{font-family:var(--serif);font-weight:500;font-size:24px;margin:0;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .issue{font-family:var(--serif);font-size:12.5px;color:var(--muted);margin-top:3px}
+  .appbar-actions{display:flex;gap:7px;flex:0 0 auto}
+  .iconbtn{width:38px;height:38px;border:1px solid var(--line-strong);border-radius:10px;background:var(--panel);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;padding:0}
+  .iconbtn svg{width:20px;height:20px}
+  .iconbtn.on{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+  /* feed view toggle: newspaper ⇄ feed (icon-only segmented control) */
+  .viewseg{display:inline-flex;align-items:center;height:38px;border:1px solid var(--line-strong);border-radius:10px;overflow:hidden;flex:0 0 auto}
+  .viewseg button{display:flex;align-items:center;justify-content:center;background:var(--panel);border:0;color:var(--muted);padding:0 11px;height:100%}
+  .viewseg button + button{border-left:1px solid var(--line-strong)}
+  .viewseg button.active{background:var(--ink);color:var(--panel)}
+  .viewseg button svg{width:19px;height:19px;display:block}
+
+  /* ---------- Scroll region ---------- */
+  .scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 18px 30px}
+
+  /* ---------- Bottom tab bar ---------- */
+  .tabbar{
+    flex:0 0 auto;display:flex;border-top:1px solid var(--line);background:var(--panel);
+    padding:7px 6px calc(7px + env(safe-area-inset-bottom));
+  }
+  .tab{flex:1;position:relative;background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:5px 0;color:var(--muted);font-size:10.5px;letter-spacing:.02em}
+  .tab svg{width:23px;height:23px}
+  .tab.active{color:var(--ink)}
+  .tab.active .tlab{font-weight:600}
+  .tab-badge{position:absolute;top:1px;left:calc(50% + 6px);min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:var(--ink);color:var(--panel);font-size:10px;font-weight:700;display:none;align-items:center;justify-content:center}
+  body.dark .tab-badge{color:#1c1c1c}
+  .tab-badge.show{display:inline-flex}
+
+  /* ---------- Feed: horoscope ---------- */
+  .horoscope{text-align:center;margin:0 0 22px;padding-bottom:20px;border-bottom:1px solid var(--line)}
+  .horo-label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+  .horo-text{font-family:var(--serif);font-style:italic;font-size:15px;line-height:1.55;color:var(--ink);margin:8px 0 0}
+
+  /* ---------- Feed: read (single column) ---------- */
+  .feed-col{display:flex;flex-direction:column;gap:16px}
+  .card{
+    background:var(--panel);border:1.5px solid var(--line-strong);border-radius:var(--radius);
+    padding:18px;text-align:left;display:block;width:100%;margin:0;cursor:pointer;
+    transition:border-color .12s ease, box-shadow .12s ease, transform .08s ease;
+  }
+  .card:active{transform:scale(.992)}
+  /* ad typography (global): decorative font ONLY on the name; all-caps headline + body share the body font */
+  .ad-name{font-weight:500;font-size:calc(26px * var(--fscale,1));line-height:1.05;color:var(--ink);margin:0 0 6px}
+  .ad-place{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+  .ad-headline{font-weight:700;font-size:13px;letter-spacing:.07em;text-transform:uppercase;line-height:1.3;color:var(--ink);margin:0 0 11px}
+  .ad-body{font-size:13.5px;line-height:1.5;color:var(--ink);margin:0}
+  .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+  .tag-chip{font-size:11px;padding:4px 9px;background:var(--fill);border:1px solid var(--line);border-radius:4px;color:var(--muted)}
+  .card.replied{background:var(--fill-2)}
+  .card.replied .ad-name,.card.replied .ad-headline,.card.replied .ad-body,.card.replied .tags{opacity:.45}
+  .card.replied:active{transform:none}
+  .replied-note{display:flex;align-items:center;gap:7px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:12px;font-weight:600;color:var(--muted)}
+  .replied-note::before{content:'✓';display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--ink);color:var(--panel);font-size:10px;flex:none}
+
+  /* ---------- Feed: The Paper (zoomed-out classifieds page) ---------- */
+  .scroll.paper-mode{padding:0;overflow:hidden;position:relative}
+  .paper-viewport{position:absolute;inset:0;overflow:hidden;background:var(--news-bg);touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+  .paper-viewport:active{cursor:grabbing}
+  .paper{transform-origin:0 0;background:var(--news-bg);color:var(--news-ink);padding:16px 20px 22px;font-family:var(--serif);will-change:transform}
+  .masthead{text-align:center;border-bottom:3px double var(--news-ink);padding-bottom:9px;margin-bottom:13px}
+  .mast-title{font-family:var(--serif);font-weight:700;font-size:56px;line-height:.86;letter-spacing:-.01em}
+  .mast-sub{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--news-muted);margin-top:9px;border-top:1px solid var(--news-rule);padding-top:6px}
+  .paper-cols{column-count:5;column-gap:14px;column-rule:1px solid var(--news-rule)}
+  .clip{display:block;width:100%;text-align:left;background:none;border:0;padding:0 0 9px;margin:0 0 9px;border-bottom:1px solid var(--news-rule);break-inside:avoid;cursor:pointer;color:inherit;font-family:inherit}
+  .clip-name{display:flex;align-items:center;justify-content:space-between;gap:6px;font-weight:500;font-size:calc(12px * var(--fscale,1));line-height:1.05;color:var(--news-ink)}
+  .clip-rep-ic{width:12px;height:12px;flex:0 0 auto;color:var(--news-ink)}
+  .clip-head{font-weight:700;font-size:8.5px;letter-spacing:.04em;text-transform:uppercase;line-height:1.18;margin:3px 0;color:var(--news-ink)}
+  .clip-body{font-size:9px;line-height:1.34;color:var(--news-ink);opacity:.92}
+  .clip-loc{font-size:8px;font-style:italic;color:var(--news-muted);margin-top:3px}
+  .clip.replied{opacity:.66}
+  .paper-foot{text-align:center;font-size:12px;letter-spacing:.22em;color:var(--news-muted);margin-top:16px;font-family:var(--font)}
+  .paper-zoom{position:absolute;right:12px;bottom:14px;z-index:5;display:flex;flex-direction:column;gap:7px}
+  .paper-zoom button{width:40px;height:40px;border:1px solid var(--line-strong);border-radius:11px;background:var(--panel);color:var(--ink);font-size:22px;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 9px rgba(0,0,0,.14)}
+  .paper-hint{position:absolute;left:12px;bottom:20px;z-index:5;font-size:11px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 12px;box-shadow:0 2px 9px rgba(0,0,0,.12)}
+
+  /* ---------- Feed: end of the paper ---------- */
+  .endpaper{text-align:center;padding:38px 12px 8px;color:var(--muted)}
+  .endpaper .rule{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:14px}
+  .endpaper .rule::before,.endpaper .rule::after{content:'';height:1px;background:var(--line-strong);width:52px;opacity:.7}
+  .endpaper .mark{font-size:18px;color:var(--muted)}
+  .endpaper h4{font-family:var(--serif);font-weight:500;font-size:20px;margin:0 0 6px;color:var(--ink)}
+  .endpaper p{font-size:13px;line-height:1.55;margin:0 auto;max-width:270px}
+
+  /* ---------- Feed gate (no ad posted) ---------- */
+  .feed-locked{position:relative;overflow:hidden;max-height:560px}
+  .feed-locked .card{pointer-events:none}
+  .feed-blur{position:absolute;left:-12px;right:-12px;bottom:0;height:70%;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);background:linear-gradient(to bottom, rgba(0,0,0,0), var(--bg) 82%)}
+  .feed-gate{position:absolute;left:0;right:0;bottom:20px;display:flex;justify-content:center;z-index:2;padding:0 6px}
+  .feed-gate-card{background:var(--panel);border:1.5px solid var(--ink);border-radius:14px;padding:24px 22px;text-align:center;box-shadow:0 12px 34px rgba(0,0,0,.16)}
+  .feed-gate-card h3{font-family:var(--serif);font-weight:500;font-size:21px;margin:0 0 10px}
+  .feed-gate-card p{font-size:14px;color:var(--muted);line-height:1.55;margin:0 0 18px}
+
+  /* ---------- Bottom sheet overlay ---------- */
+  .overlay{position:absolute;inset:0;background:rgba(0,0,0,.42);display:none;align-items:flex-end;z-index:50}
+  .overlay.open{display:flex}
+  .sheet{
+    background:var(--panel);width:100%;max-height:92%;overflow-y:auto;
+    border-radius:20px 20px 0 0;padding:14px 20px calc(24px + env(safe-area-inset-bottom));
+    box-shadow:0 -10px 34px rgba(0,0,0,.24);animation:sheetUp .22s ease;
+  }
+  @keyframes sheetUp{from{transform:translateY(24px);opacity:.4}to{transform:none;opacity:1}}
+  .sheet::before{content:'';display:block;width:38px;height:4px;border-radius:2px;background:var(--line-strong);opacity:.55;margin:0 auto 12px}
+  .sheet .close{float:right;border:1px solid var(--line-strong);background:var(--panel);color:var(--ink);border-radius:8px;width:34px;height:34px;font-size:18px}
+  .sheet .kicker{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .sheet h3{font-family:var(--serif);font-weight:500;font-size:calc(25px * var(--fscale,1));margin:8px 0 16px;line-height:1.15}
+  .sheet p{font-size:14px;line-height:1.6;margin:0 0 18px}
+  .sheet .meta{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px;border-top:1px solid var(--line);padding-top:16px;margin-bottom:20px}
+  .sheet .meta div{font-size:13px}
+  .sheet .meta span{color:var(--muted)}
+  /* ad detail as a centered card modal (not a bottom sheet) */
+  .overlay.card-modal{align-items:center;justify-content:center;padding:22px 18px}
+  .overlay.card-modal .sheet{max-width:440px;border-radius:16px;max-height:88vh;padding:24px 22px;box-shadow:0 18px 46px rgba(0,0,0,.3);animation:modalIn .18s ease}
+  .overlay.card-modal .sheet::before{display:none}
+  @keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:none}}
+
+  /* ---------- Buttons ---------- */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:8px;font-size:14px;border:1.5px solid var(--ink);background:var(--ink);color:var(--panel)}
+  body.dark .btn{color:#1c1c1c;background:var(--ink);border-color:var(--ink)}
+  .btn.ghost{background:var(--panel);color:var(--ink)}
+  .btn.block{width:100%}
+  .btn.sm{padding:9px 15px;font-size:13px}
+  .btn:disabled{background:var(--fill);color:var(--muted);border-color:var(--line-strong);cursor:default}
+
+  /* ---------- Messages list ---------- */
+  .mlist{display:flex;flex-direction:column;gap:12px}
+  .mrow{background:var(--panel);border:1.5px solid var(--line-strong);border-radius:var(--radius);padding:16px;text-align:left;display:flex;gap:14px;align-items:flex-start;width:100%}
+  .mrow .kicker{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .mrow p{font-size:13px;line-height:1.5;color:var(--muted);margin:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .mrow-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:0 0 auto}
+  .unread-dot{width:9px;height:9px;border-radius:50%;background:var(--ink)}
+  .mrow.unread .who-name{font-weight:700}
+  .mrow.unread p{color:var(--ink)}
+  .when{font-size:12px;color:var(--muted);white-space:nowrap}
+  .who-name{font-family:var(--serif);font-weight:500;font-size:calc(19px * var(--fscale,1));line-height:1.2;margin:0}
+  .who-cap{font-size:12.5px;color:var(--muted);margin-top:3px}
+  .sender{font-weight:600;color:var(--ink)}
+
+  /* ---------- Messages tabs & requests ---------- */
+  .tabs{display:flex;margin-bottom:20px;border-bottom:1px solid var(--line)}
+  .mtab{background:none;border:0;padding:11px 2px;margin-right:24px;font-size:14px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+  .mtab.active{color:var(--ink);font-weight:600;border-bottom-color:var(--ink)}
+  .mtab .count{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--ink);color:var(--panel);font-size:11px;margin-left:7px;font-weight:600;vertical-align:middle}
+  body.dark .mtab .count{color:#1c1c1c}
+  .req{background:var(--panel);border:1.5px solid var(--line-strong);border-radius:var(--radius);padding:16px}
+  .req .kicker{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .req .their-msg{font-size:14px;line-height:1.55;margin:14px 0}
+  .req .their-msg .wrote{font-weight:600;color:var(--ink)}
+  .req .their-msg .msg-text{font-style:italic}
+  .req-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .req-actions .link-btn{margin-right:auto}
+  .spread{display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .empty-msg{color:var(--muted);font-size:14px;line-height:1.6;padding:20px 0}
+  .link-btn{background:none;border:0;color:var(--ink);font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:2px;padding:4px}
+
+  /* ---------- Confirm sheets / block ---------- */
+  .block-check{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;font-size:13px;color:var(--ink);line-height:1.45;border:1.5px solid var(--line-strong);border-radius:6px;padding:12px 14px;margin:16px 0 20px;background:var(--panel)}
+  .block-check .bx{width:16px;height:16px;border:1.5px solid var(--line-strong);border-radius:3px;flex:0 0 auto;margin-top:1px}
+  .block-check.sel{border-color:var(--ink);background:var(--fill)}
+  .block-check.sel .bx{background:var(--ink);border-color:var(--ink)}
+  .confirm-actions{display:flex;justify-content:flex-end;gap:12px}
+  .btn.danger-btn{background:#b23b3b;border-color:#b23b3b;color:#fff}
+  body.dark .btn.danger-btn{background:#c25454;border-color:#c25454;color:#fff}
+
+  /* ---------- Thread ---------- */
+  .thread{display:flex;flex-direction:column;min-height:100%}
+  .back{background:none;border:0;color:var(--muted);font-size:13px;padding:0;display:flex;gap:6px;align-items:center}
+  .scroll.thread-mode{padding-top:0;padding-bottom:0}
+  .thread-head{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;align-items:center;gap:10px;margin:0 -18px 16px;padding:16px 18px 12px;border-bottom:1px solid var(--line-strong)}
+  .th-icon{background:none;border:0;color:var(--ink);display:flex;align-items:center;justify-content:center;padding:5px;flex:0 0 auto}
+  .th-icon svg{width:22px;height:22px}
+  .th-name{background:none;border:0;color:var(--ink);font-family:var(--serif);font-weight:500;font-size:calc(21px * var(--fscale,1));line-height:1.05;padding:2px 0;cursor:pointer;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
+  .th-name:hover{text-decoration:underline;text-underline-offset:3px}
+  .th-actions{margin-left:auto;display:flex;align-items:center;gap:2px;flex:0 0 auto}
+  .th-block{color:var(--muted)}
+  .th-block:active{color:#b23b3b}
+  /* face-reveal eye + tooltip (greyed until a mutual reveal is unlocked) */
+  .th-eye-wrap{position:relative;display:flex}
+  .th-eye{position:relative;background:none;border:0;padding:5px;display:flex;align-items:center;justify-content:center;color:var(--ink)}
+  .th-eye svg{width:22px;height:22px}
+  .th-eye.locked{color:var(--line-strong);cursor:default}
+  .th-eye.offered::after{content:'';position:absolute;top:1px;right:1px;width:9px;height:9px;border-radius:50%;background:#c0392b;border:2px solid var(--bg)}
+  .th-eye-wrap .tip{position:absolute;top:calc(100% + 9px);right:-4px;width:200px;background:var(--ink);color:var(--panel);font-size:12px;line-height:1.45;padding:10px 12px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.24);opacity:0;pointer-events:none;transform:translateY(-4px);transition:opacity .14s,transform .14s;z-index:30;text-align:left}
+  body.dark .th-eye-wrap .tip{background:var(--panel);color:var(--ink);border:1px solid var(--line-strong)}
+  .th-eye-wrap .tip::before{content:'';position:absolute;bottom:100%;right:12px;border:6px solid transparent;border-bottom-color:var(--ink)}
+  body.dark .th-eye-wrap .tip::before{border-bottom-color:var(--panel)}
+  .th-eye-wrap:hover .tip,.th-eye-wrap.tip-show .tip{opacity:1;transform:none}
+  /* conversation "more" menu (unmatch / block) */
+  .th-menu-wrap{position:relative;display:flex}
+  .th-menu{position:absolute;top:calc(100% + 6px);right:0;min-width:170px;background:var(--panel);border:1px solid var(--line-strong);border-radius:10px;box-shadow:0 10px 28px rgba(0,0,0,.2);padding:6px;display:none;z-index:40}
+  .th-menu.open{display:block}
+  .th-menu button{display:block;width:100%;text-align:left;background:none;border:0;padding:11px 12px;border-radius:6px;font-size:15px;color:var(--ink)}
+  .th-menu button:active{background:var(--fill)}
+  .th-menu button.danger{color:#b23b3b}
+  .msgs{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+  .bubble{max-width:80%;padding:10px 14px;border-radius:14px;font-size:14px;line-height:1.45}
+  .bubble.them{background:var(--fill);align-self:flex-start;border-bottom-left-radius:3px}
+  .bubble.me{background:var(--ink);color:var(--panel);align-self:flex-end;border-bottom-right-radius:3px}
+  body.dark .bubble.me{color:#1c1c1c}
+  .composer{position:sticky;bottom:0;z-index:10;background:var(--bg);display:flex;gap:10px;border-top:1px solid var(--line);margin:auto -18px 0;padding:14px 18px calc(16px + env(safe-area-inset-bottom))}
+  .composer .field{flex:1;height:46px;border:1.5px solid var(--line-strong);border-radius:10px;background:var(--panel);padding:0 14px;color:var(--ink);font-size:14px;font-family:inherit;outline:none}
+  .composer .field::placeholder{color:var(--muted)}
+  /* pinned ad preview at the top of a conversation */
+  .ad-snip{background:var(--fill-2);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-bottom:18px;cursor:pointer}
+  .ad-snip .ad-name{font-size:calc(16px * var(--fscale,1));margin:0 0 2px}
+  .ad-snip .ad-place{font-size:10px;margin:0 0 6px}
+  .ad-snip .ad-headline{font-size:11px;margin:0 0 6px}
+  .ad-snip p{font-size:12.5px;color:var(--muted);margin:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  /* inline face-reveal prompt in the conversation body (only once a mutual reveal is unlocked) */
+  .reveal-inline{align-self:center;max-width:300px;margin:8px auto 2px;padding:15px 16px;border:1px solid var(--line);border-radius:14px;background:var(--fill-2);display:flex;flex-direction:column;align-items:center;gap:11px;text-align:center}
+  .reveal-inline .ri-text{font-size:13px;color:var(--muted);line-height:1.45}
+  .reveal-inline .ri-eye{width:22px;height:22px;color:var(--ink)}
+  .reveal-inline .ri-link{background:none;border:0;color:var(--ink);font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:2px;padding:2px}
+
+  /* ---------- Face reveal ---------- */
+  .reveal-status{font-size:13px;color:var(--ink);background:var(--fill-2);border:1px solid var(--line);border-radius:6px;padding:10px 12px;margin:16px 0 18px;display:flex;align-items:center;gap:8px}
+  .reveal-single{display:flex;justify-content:center;margin:18px 0 4px}
+  .reveal-single .reveal-tile{flex:0 0 240px;width:240px}
+  .reveal-tile{position:relative;aspect-ratio:3/4;border-radius:12px;overflow:hidden;border:1.5px solid var(--line-strong);touch-action:none;user-select:none}
+  .portrait{position:absolute;inset:0;background:linear-gradient(155deg,#aebccb,#7d899c)}
+  .portrait.them{background:linear-gradient(155deg,#c9b49f,#9a8770)}
+  .portrait::before{content:'';position:absolute;left:50%;top:35%;width:40%;aspect-ratio:1;background:rgba(255,255,255,.9);border-radius:50%;transform:translate(-50%,-50%)}
+  .portrait::after{content:'';position:absolute;left:50%;bottom:-32%;width:78%;height:62%;background:rgba(255,255,255,.9);border-radius:50%;transform:translateX(-50%)}
+  .frost{position:absolute;inset:0;background:rgba(226,227,231,.96);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+  .reveal-cap{position:absolute;left:0;right:0;bottom:0;text-align:center;font-size:12px;color:#fff;background:rgba(0,0,0,.35);padding:6px}
+  .reveal-hint{font-size:12px;color:var(--muted);text-align:center;margin-top:12px}
+
+  /* ---------- Forms (My Ad / Settings / Onboarding) ---------- */
+  .form{display:flex;flex-direction:column;gap:22px}
+  .fgroup{display:block}
+  .fgroup label.lab,.lab{display:block;font-size:13px;font-weight:600;margin-bottom:8px}
+  .hint{font-size:12px;color:var(--muted);font-weight:400;margin-left:6px}
+  .field-in{width:100%;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--panel);padding:12px 13px;font-size:15px;color:var(--muted)}
+  textarea.field-in{resize:none;height:96px}
+  textarea.field-in.autogrow{height:auto;min-height:84px;overflow:hidden}
+  .lab-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+  .lab-row .lab{margin-bottom:0}
+  .counter{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .counter.at-max{color:#b23b3b}
+  .soa-lab{font-size:12px;color:var(--muted)}
+  .form-subhead{border-top:1px solid var(--line);padding-top:18px}
+  .fsh-title{font-family:var(--serif);font-size:17px;margin-bottom:3px}
+  .fsh-sub{font-size:12px;color:var(--muted)}
+  .checks{display:flex;flex-wrap:wrap;gap:9px}
+  .check{display:flex;align-items:center;gap:8px;border:1.5px solid var(--line-strong);border-radius:8px;padding:11px 13px;font-size:13px;background:var(--panel);color:var(--ink);text-align:left}
+  .check .bx{width:15px;height:15px;border:1.5px solid var(--line-strong);border-radius:3px;flex:0 0 auto}
+  .check.sel{border-color:var(--ink);background:var(--fill)}
+  .check.sel .bx{background:var(--ink);border-color:var(--ink)}
+  .check.radio .bx{border-radius:50%}
+  .checks.stacked{flex-direction:column;gap:8px}
+  .checks.stacked .check{width:100%;justify-content:flex-start}
+  .checks.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:1fr;gap:8px}
+  .checks.grid2 .check{width:100%;height:100%;justify-content:flex-start;min-width:0}
+  .writein-check{cursor:text}
+  .writein-check .bx{cursor:pointer}
+  .writein-field{border:0;background:transparent;padding:0;margin:0;font:inherit;color:var(--ink);flex:1;min-width:0;outline:none}
+  .writein-field::placeholder{color:var(--muted)}
+  .writein-check:not(.sel) .writein-field{color:var(--muted)}
+  .acc{border:1.5px solid var(--line-strong);border-radius:10px;background:var(--panel);overflow:hidden}
+  .acc-head{display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;padding:14px 15px;cursor:pointer;text-align:left;font-family:inherit}
+  .acc-label{font-size:14px;font-weight:600;flex:0 0 auto}
+  .acc-value{flex:1;text-align:right;font-size:14px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .acc-value.set{color:var(--ink)}
+  .acc-chev{color:var(--muted);font-size:11px;flex:0 0 auto;transition:transform .15s}
+  .acc.open .acc-chev{transform:rotate(180deg)}
+  .acc-body{padding:0 15px 15px;border-top:1px solid var(--line)}
+  .acc-body .checks{margin-top:14px}
+  .acc-body .lab-row{margin-top:14px}
+  .acc-text-field{width:100%;height:56px;resize:none;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--panel);padding:10px 12px;font-size:14px;color:var(--ink);font-family:inherit;outline:none}
+  .acc-text-field::placeholder{color:var(--muted)}
+  .soa-row{display:flex;align-items:center;justify-content:space-between;margin:14px 0 2px}
+  .form-actions{display:flex;justify-content:flex-end;gap:12px;border-top:1px solid var(--line);padding-top:20px}
+
+  /* ---------- My Ad ---------- */
+  .myad-card{background:var(--panel);border:1.5px solid var(--line-strong);border-radius:10px;padding:22px}
+  .myad-headline{font-family:var(--serif);font-weight:500;font-size:calc(25px * var(--fscale,1));margin:8px 0 16px;line-height:1.15}
+  .myad-desc{font-size:14px;line-height:1.6;margin:0 0 20px}
+  .kicker{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .myad-meta{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;border-top:1px solid var(--line);padding-top:18px}
+  .myad-meta div{font-size:13px}
+  .myad-meta span{color:var(--muted);display:block;margin-bottom:2px}
+  .myad-foot{margin-top:16px;display:flex;flex-direction:column;gap:12px}
+  .myad-hint{font-size:12px;color:var(--muted);text-align:center}
+  .myad-actions{display:flex;gap:10px}
+  .myad-actions .btn{flex:1}
+
+  /* ---------- Customize ---------- */
+  .cust-hint{text-align:center;font-size:12px;color:var(--muted);margin:14px 0 22px}
+  .cust-drops{display:flex;flex-direction:column;gap:16px;margin-bottom:22px}
+  .drop{display:flex;flex-direction:column;gap:8px;position:relative}
+  .drop::after{content:'▾';position:absolute;right:14px;bottom:14px;font-size:11px;color:var(--muted);pointer-events:none}
+  .drop-label{font-size:13px;font-weight:600}
+  .drop-select{appearance:none;-webkit-appearance:none;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--panel);padding:12px 34px 12px 14px;font-size:15px;color:var(--ink);width:100%}
+
+  /* ---------- Settings ---------- */
+  .settings{display:flex;flex-direction:column;gap:30px}
+  .set-section .sec-head{font-family:var(--serif);font-size:18px;margin:0 0 2px}
+  .set-section .sec-sub{font-size:12px;color:var(--muted);margin:0 0 14px}
+  .set-card{background:var(--panel);border:1.5px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .set-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 16px}
+  .set-row + .set-row{border-top:1px solid var(--line)}
+  .set-row .rl{font-size:14px;font-weight:600}
+  .set-row .rs{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.45}
+  .set-row .rl-wrap{min-width:0}
+  .toggle{width:44px;height:26px;border-radius:999px;border:1.5px solid var(--line-strong);background:var(--fill);position:relative;flex:0 0 auto;padding:0}
+  .toggle::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--panel);border:1px solid var(--line-strong);transition:left .12s}
+  .toggle.on{background:var(--ink);border-color:var(--ink)}
+  .toggle.on::after{left:20px;border-color:var(--ink)}
+  .danger{color:#b23b3b}
+  .req-mark{color:#b23b3b;font-weight:600}
+  /* dark mode: light text everywhere; danger stays an accessible red (~5:1 on the dark panel, WCAG AA) */
+  body.dark .req-mark,
+  body.dark .counter.at-max,
+  body.dark .th-block:active{color:var(--ink)}
+  body.dark .danger{color:#ff7a7a}
+
+  /* ---------- Onboarding ---------- */
+  .onboarding{position:absolute;inset:0;background:var(--bg);z-index:100;display:none;flex-direction:column;padding:22px 20px calc(22px + env(safe-area-inset-bottom))}
+  .onboarding.open{display:flex}
+  .ob-card{flex:1;display:flex;flex-direction:column;gap:18px;min-height:0}
+  .ob-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .ob-optional-head{font-size:12px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-top:8px;padding-top:16px;border-top:1px solid var(--line)}
+  .ob-dots{display:flex;gap:7px;justify-content:center;min-height:8px}
+  .ob-dot{width:7px;height:7px;border-radius:50%;background:var(--line-strong);opacity:.45}
+  .ob-dot.on{opacity:1;background:var(--ink)}
+  .ob-kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+  .ob-body h2{font-family:var(--serif);font-weight:500;font-size:28px;margin:0 0 8px}
+  .ob-body h2 .req-mark{font-size:.5em;vertical-align:super;font-weight:700}
+  .ob-sub{font-size:14px;color:var(--muted);margin:0 0 20px;line-height:1.5}
+  .ob-step{display:flex;flex-direction:column;gap:16px}
+  .ob-welcome{text-align:center;padding:24px 0}
+  .ob-brand{font-family:var(--serif);font-size:52px;line-height:1}
+  .ob-tag{font-size:11px;letter-spacing:.24em;color:var(--muted);text-transform:uppercase;margin:10px 0 30px}
+  .ob-welcome h2{font-family:var(--serif);font-weight:500;font-size:26px;margin:0 0 10px}
+  .ob-welcome p{font-size:15px;color:var(--muted);line-height:1.6;margin:0 auto}
+  .ob-nav{display:flex;justify-content:space-between;gap:12px}
+  .ob-nav .btn{flex:1}
+  .photo-drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:34px 20px;border:1.5px dashed var(--line-strong);border-radius:12px;background:var(--fill-2);cursor:pointer;text-align:center}
+  .photo-drop .pu-ico{font-size:24px;line-height:1;margin-bottom:2px}
+  .photo-drop strong{font-size:15px;font-weight:600;color:var(--ink)}
+  .photo-drop span{font-size:12px;color:var(--muted)}
+  .photo-prev{display:flex;gap:16px;align-items:center}
+  .photo-prev .thumb{width:96px;height:120px;border-radius:10px;object-fit:cover;border:1px solid var(--line);flex:none}
+  .photo-prev .pp-meta{display:flex;flex-direction:column;gap:7px}
+  .photo-prev .pp-lock{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink)}
+  .photo-prev .pp-replace{font-size:13px;color:var(--muted);text-decoration:underline;background:none;border:0;padding:0;cursor:pointer;text-align:left}
+  .photo-privacy,.photo-attached{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--muted);background:var(--fill-2);border:1px solid var(--line);border-radius:8px;padding:11px 13px;line-height:1.4}
+  .photo-attached{margin-top:14px}
+  .pa-thumb{width:34px;height:42px;border-radius:5px;object-fit:cover;border:1px solid var(--line);flex:none}
+</style>
+</head>
+<body>
+
+  <!-- ===================== APP (phone column) ===================== -->
+  <div class="app">
+    <header class="appbar">
+      <div class="appbar-titles">
+        <h2 id="title">Today's Picks</h2>
+        <div class="issue" id="issue">March 31st, 2026 · No. 0331</div>
+      </div>
+      <div class="appbar-actions">
+        <div class="viewseg" id="viewseg">
+          <button data-fv="paper" title="Newspaper view" aria-label="Newspaper view">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5h11v12H5.5A1.5 1.5 0 0 1 4 17V6.5z"/><path d="M15 9.5h3.5A1.5 1.5 0 0 1 20 11v6a1.5 1.5 0 0 1-1.5 1.5H15"/><line x1="6.6" y1="9.5" x2="12.4" y2="9.5"/><line x1="6.6" y1="12.5" x2="12.4" y2="12.5"/><line x1="6.6" y1="15.5" x2="10" y2="15.5"/></svg>
+          </button>
+          <button data-fv="list" title="Feed view" aria-label="Feed view">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="4" y="5" width="16" height="6" rx="1.4"/><rect x="4" y="13" width="16" height="6" rx="1.4"/></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="scroll" id="scroll"><!-- view renders here --></div>
+
+    <nav class="tabbar" id="tabbar">
+      <button class="tab active" data-view="feed">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5h11v12H5.5A1.5 1.5 0 0 1 4 17V6.5z"/><path d="M15 9.5h3.5A1.5 1.5 0 0 1 20 11v6a1.5 1.5 0 0 1-1.5 1.5H15"/><line x1="6.6" y1="9.5" x2="12.4" y2="9.5"/><line x1="6.6" y1="12.5" x2="12.4" y2="12.5"/><line x1="6.6" y1="15.5" x2="10" y2="15.5"/></svg>
+        <span class="tlab">Feed</span>
+      </button>
+      <button class="tab" data-view="myad">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.4"/><path d="M5.6 19c.7-3.2 3.2-4.9 6.4-4.9s5.7 1.7 6.4 4.9"/></svg>
+        <span class="tlab">My Ad</span>
+      </button>
+      <button class="tab" data-view="messages">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/><path d="M4 7.5l8 5.5 8-5.5"/></svg>
+        <span class="tlab">Messages</span>
+        <span class="tab-badge" id="tabMsgCount"></span>
+      </button>
+      <button class="tab" data-view="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span class="tlab">Settings</span>
+      </button>
+    </nav>
+
+    <!-- ===================== BOTTOM SHEET ===================== -->
+    <div class="overlay" id="overlay">
+      <div class="sheet" id="sheet"></div>
+    </div>
+
+    <!-- ===================== ONBOARDING ===================== -->
+    <div class="onboarding" id="onboarding">
+      <div class="ob-card">
+        <div class="ob-dots" id="obDots"></div>
+        <div class="ob-body" id="obBody"></div>
+        <div class="ob-nav" id="obNav"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+// ---------- Today's date (formatted like "July 11th, 2026") ----------
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+function ordinalSuffix(n){ const v = n % 100; if(v >= 11 && v <= 13) return 'th'; return ({1:'st',2:'nd',3:'rd'})[n % 10] || 'th'; }
+const TODAY_STR = (()=>{ const d = new Date(); return `${MONTHS[d.getMonth()]} ${d.getDate()}${ordinalSuffix(d.getDate())}, ${d.getFullYear()}`; })();
+
+// ---------- Sample data ----------
+const ADS = [
+  {id:1, name:'Riley', age:30, location:'Bushwick, NY', headline:'Quiet but not shy',
+   desc:"I read a lot, take long walks, and notice small things. I'm genuinely interested in people — what they think, what they've changed their mind about, what embarrasses them a little. Looking for someone who likes a slow conversation.",
+   gender:['Woman'], pronouns:['she/her'], politics:'Liberal', kids:'Not sure yet', relationship:'Something serious', weight:'Average height, always mid-book, big cardigan'},
+  {id:2, name:'Sam', age:34, location:'Silver Lake, LA', headline:'Will cook you dinner, badly',
+   desc:"Enthusiastic amateur in the kitchen, genuinely dangerous with a cast-iron pan but improving. Great at picking restaurants when the cooking fails, which is often. I run most mornings, argue about movies most nights, and I text back quickly — probably too quickly. I'm looking for someone who has opinions and isn't precious about them, who likes a long dinner that turns into a longer walk. Tell me what you're reading, what you quit, and the last thing that genuinely surprised you. Let's skip the small talk and get to the good part.",
+   gender:['Man'], pronouns:['he/him'], politics:'Centrist', kids:'Wants kids', relationship:'Something serious', weight:'Tall, runner build, flour on everything'},
+  {id:3, name:'Jordan', age:27, location:'Capitol Hill, Seattle', headline:'Looking for a partner in crime',
+   desc:"Mostly law-abiding. Tell me about your weird obsession.",
+   gender:['Non-binary'], pronouns:['they/them'], politics:'Liberal', kids:"Doesn't want kids", relationship:'Not sure', weight:'Lanky, buzzed hair, mischief in the eyes'},
+  {id:4, name:'Casey', age:41, location:'Wicker Park, Chicago', headline:'Second act, done right',
+   desc:"Divorced, no drama, one very good dog. I know what I want now and I'm not afraid to say it. Looking for something real and unhurried.",
+   gender:['Woman'], pronouns:['she/her'], politics:'Conservative', kids:'Has kids', relationship:'Something serious', weight:'Medium build, soft features, good laugh lines'},
+  {id:5, name:'Devin', age:29, location:'Bushwick, NY', headline:'Ask me about my sourdough',
+   desc:"Baker by hobby, designer by trade. Warning: I will make you try the bread.",
+   gender:['Man'], pronouns:['he/him'], politics:'Liberal', kids:'Not sure yet', relationship:'Hookup', weight:'Broad, beard, forearms built from dough'},
+  {id:6, name:'Morgan', age:36, location:'Oak Cliff, Dallas', headline:'Low-key, high-effort',
+   desc:"Not a big texter but a relentless planner — I'll remember the small thing you mentioned once and surprise you with it three weeks later. I like early hikes, embarrassingly bad reality TV, farmers markets I always leave with too much from, and the specific quiet of a Sunday with nowhere to be. I've done the casual thing and I'm past it; I'm building something that lasts and I'd like a real teammate for it. If you're kind, a little stubborn, and you actually know what you want, we'll get along. Bonus points for a dog or strong feelings about breakfast.",
+   gender:['Woman'], pronouns:['she/her'], politics:'Centrist', kids:'Wants kids', relationship:'Something serious', weight:'Medium height, freckles, always a good coat'},
+  {id:7, name:'Alex', age:31, location:'The Mission, SF', headline:'Curious about almost everything',
+   desc:"I ask too many questions. I like tide pools, used bookstores, and people who can explain their job in a way that makes it sound interesting.",
+   gender:['Non-binary'], pronouns:['they/them'], politics:'Liberal', kids:"Doesn't want kids", relationship:'Not sure', weight:'Slight, glasses, tide-pool-ready boots'},
+  {id:8, name:'Taylor', age:38, location:'Ballard, Seattle', headline:'Steady, warm, a little sarcastic',
+   desc:"I show up when I say I will. That's the whole pitch.",
+   gender:['Woman'], pronouns:['she/her'], politics:'Conservative', kids:'Has kids', relationship:'Something serious', weight:'Average height, warm eyes, dry-humor face'},
+  {id:9, name:'Quinn', age:26, location:'East Nashville', headline:'Songs, houseplants, and long drives with the windows all the way down',
+   desc:"I play a little guitar and keep too many houseplants alive. Down for spontaneous road trips and quiet nights alike. Let's see where it goes.",
+   gender:['Woman','Non-binary'], pronouns:['she/her','they/them'], politics:'Liberal', kids:'Not sure yet', relationship:'Hookup', weight:'Wiry, calloused hands, road-trip sunburn'},
+  {id:10, name:'Priya', age:33, location:'Andersonville, Chicago', headline:'Bring a book recommendation',
+   desc:"Bookish and easily delighted. I want tea, a good museum, and someone who texts me the thing that reminded them of me.",
+   gender:['Woman'], pronouns:['she/her'], politics:'Liberal', kids:'Not sure yet', relationship:'Something serious', weight:'Petite, dark curls, paint under the nails'},
+  {id:11, name:'Marcus', age:45, location:'Fishtown, Philadelphia', headline:'Dad jokes, no apologies',
+   desc:"One kid, one grill, zero chill about barbecue. Looking for someone patient and quick to laugh.",
+   gender:['Man'], pronouns:['he/him'], politics:'Centrist', kids:'Has kids', relationship:'Something serious', weight:'Tall, easy slouch, band-tee uniform'},
+  {id:12, name:'Nadia', age:28, location:'Highland Park, LA', headline:"Let's get lost on purpose",
+   desc:"Film photographer who plans trips around good light. Come wander and get a little lost with me.",
+   gender:['Woman'], pronouns:['she/her'], politics:'Liberal', kids:"Doesn't want kids", relationship:'Not sure', weight:'Round face, kind eyes, sensible shoes'},
+  {id:13, name:'Tomás', age:39, location:'Pilsen, Chicago', headline:'Salsa Tuesdays, tacos always',
+   desc:"I cook for people I like and dance badly on purpose — salsa on Tuesdays whether or not anyone joins me, tacos at midnight, a kitchen that's always a little too loud. I think the fastest way to know someone is to feed them and watch what they do with a bad joke. I've got a big family, a longer memory for small things you mention, and no interest in games. Come hungry, stay curious, and tell me the recipe you'd never admit you love.",
+   gender:['Man'], pronouns:['he/him'], politics:'Liberal', kids:'Wants kids', relationship:'Something serious', weight:'Lean, salt-and-pepper, reading glasses'},
+  {id:14, name:'Grace', age:31, location:'Cole Valley, SF', headline:'Trail miles and thrift finds',
+   desc:"Long runs, longer thrift hauls. Looking for a partner for both the hills and the racks.",
+   gender:['Woman'], pronouns:['she/her'], politics:'Liberal', kids:'Not sure yet', relationship:'Something serious', weight:'Short, strong, always a little sun-kissed'},
+  {id:15, name:'Eli', age:37, location:'Greenpoint, NY', headline:'Vinyl, ramen, slow Sundays',
+   desc:"Records, ramen, and long comfortable silences.",
+   gender:['Man'], pronouns:['he/him'], politics:'Liberal', kids:"Doesn't want kids", relationship:'Not sure', weight:'Willowy, freckled, hair with opinions'},
+  {id:16, name:'Harper', age:24, location:'The Gulch, Nashville', headline:'New in town, big feelings',
+   desc:"Just moved for a music job and know three people. Show me your city and your favorite bad idea.",
+   gender:['Non-binary'], pronouns:['they/them'], politics:'Liberal', kids:'Not sure yet', relationship:'Hookup', weight:'Sturdy, warm, sleeves always rolled up'},
+  {id:17, name:'Rosa', age:52, location:'Coconut Grove, Miami', headline:'Grown, grateful, and dancing',
+   desc:"Raised my kids and kept my joy. I want a partner to travel light and laugh loud with.",
+   gender:['Woman'], pronouns:['she/her'], politics:'Centrist', kids:'Has kids', relationship:'Something serious', weight:'Slim, sharp jaw, perpetual tote bag'},
+  {id:18, name:'Dev', age:30, location:'Capitol Hill, Denver', headline:'Ski bum with a 401(k)',
+   desc:"Powder days and spreadsheets, somehow both. Looking for someone who's fun and has a plan.",
+   gender:['Man'], pronouns:['he/him'], politics:'Centrist', kids:'Not sure yet', relationship:'Something serious', weight:'Average build, dimples, coffee-stained tees'},
+  {id:19, name:'Yuki', age:35, location:'Sunset District, SF', headline:"I'll out-plan your weekend",
+   desc:"Give me a map, a snack, and a vague sense of a plan and I'll build you the best Saturday of your life — trailhead by eight, the good bakery by ten, home before you're tired of me. I'm a relentless planner slowly learning to leave room for the detour, and I'm looking for a real teammate, not a project. Hikers, wanderers, and people with strong opinions about breakfast burritos especially welcome.",
+   gender:['Woman'], pronouns:['she/her'], politics:'Liberal', kids:'Wants kids', relationship:'Something serious', weight:'Broad shoulders, soft heart, bad posture'},
+  {id:20, name:'Cormac', age:42, location:'South Boston', headline:'Loud family, soft heart',
+   desc:"Big Sunday dinners, bad singing, real loyalty. I'm a project, but a good one.",
+   gender:['Man'], pronouns:['he/him'], politics:'Conservative', kids:'Has kids', relationship:'Something serious', weight:'Compact, quick smile, ink down one arm'},
+  {id:21, name:'Aisha', age:27, location:'U Street, DC', headline:'Policy by day, poetry by night',
+   desc:"Ambitious and a little intense — working on the intense part. Argue with me kindly.",
+   gender:['Woman'], pronouns:['she/her'], politics:'Liberal', kids:"Doesn't want kids", relationship:'Not sure', weight:'Tall and lanky, glasses, forever windblown'},
+  {id:22, name:'Beau', age:48, location:'Marigny, New Orleans', headline:'I know a good porch',
+   desc:"Come sit a while and let's see.",
+   gender:['Man'], pronouns:['he/him'], politics:'Centrist', kids:'Has kids', relationship:'Not sure', weight:'Curvy, bold lips, thrift-store treasures'},
+  {id:23, name:'Lena', age:29, location:'Wicker Park, Chicago', headline:'Ceramics, dogs, cold plunges',
+   desc:"I make mugs, foster dogs, and swim when it's stupid cold. Bring warmth and curiosity.",
+   gender:['Woman'], pronouns:['she/her'], politics:'Liberal', kids:'Not sure yet', relationship:'Something serious', weight:'Wiry, weathered hands, boots with stories'},
+  {id:24, name:'Theo', age:34, location:'Los Feliz, LA', headline:'Rewatching the same three movies',
+   desc:"Homebody with elite snacks.",
+   gender:['Man'], pronouns:['he/him'], politics:'Liberal', kids:"Doesn't want kids", relationship:'Something serious', weight:'Medium build, gap tooth, big first laugh'},
+  {id:25, name:'Simone', age:40, location:'Park Slope, NY', headline:'Full life, room for one more',
+   desc:"Single mom, big job, small dog. My time is precious and I'd love to spend some of it on you.",
+   gender:['Woman'], pronouns:['she/her'], politics:'Liberal', kids:'Has kids', relationship:'Something serious', weight:'Soft, freckled, cardigan in every season'},
+];
+
+const CONVOS = [
+  {adId:1, when:'2h', last:"That sounds perfect — how's Thursday?", mine:true, unread:false},
+  {adId:4, when:'1d', last:"Ha, I promise the dog is friendlier than me.", mine:false, unread:true},
+  {adId:6, when:'3d', last:"Same here — free this weekend?", mine:true, unread:false},
+];
+
+// Ads you've already replied to today (you're now in a conversation about them).
+const repliedAdIds = new Set(CONVOS.map(c=>c.adId));
+
+// People who replied to YOUR ad, awaiting accept/decline
+const REQUESTS = [
+  {adId:2, when:'20m', msg:"Your ad made me smile — the slow-conversation thing is exactly what I'm after too. I also cook badly but enthusiastically. Coffee this week?"},
+  {adId:3, when:'5h', msg:"'Curious about almost everything' — same, dangerously so. What's the last thing you fell down a rabbit hole about?"},
+  {adId:8, when:'1d', msg:"Loved your ad. I'm not a big texter either but I'll always remember the thing you mentioned once. Say hi back?"},
+];
+
+// The logged-in user's own ad
+const MY_AD = {
+  name:'Alex', age:31, location:'The Mission, SF',
+  headline:'Curious about almost everything',
+  desc:"I ask too many questions. I like tide pools, used bookstores, and people who can explain their job in a way that makes it sound interesting. Looking for someone who's game to wander.",
+  gender:['Non-binary'], race:['Asian'], religion:'Agnostic', pronouns:['they/them'], sexuality:['Queer'], showSexuality:true, politics:'Liberal', kids:"Doesn't want kids", relationship:'Not sure', relstyle:'Monogamous', weight:'Slim, glasses, usually a little overdressed',
+  headingFont:'Instrument Serif', bodyFont:'Instrument Sans'
+};
+
+// Ad-heading font options (each carries a "personality")
+const HEADING_FONTS = [
+  {name:'Courier Prime',   css:"'Courier Prime', monospace",    vibe:'Shy, quiet',          scale:1.15},
+  {name:'Instrument Serif',css:"'Instrument Serif', serif",     vibe:'Classy, understated', scale:1.06},
+  {name:'Instrument Sans', css:"'Instrument Sans', sans-serif", vibe:'Safe, sane',          scale:1},
+  {name:'Monoton',         css:"'Monoton', cursive",           vibe:'Flashy, fun',         scale:0.87},
+  {name:'Ruthie',          css:"'Ruthie', cursive",            vibe:'Weird, wild',         scale:1.04},
+  {name:'Jacquard 24',     css:"'Jacquard 24', system-ui",     vibe:'Nerdy, goth',         scale:1.21},
+  {name:'Rubik Dirt',      css:"'Rubik Dirt', system-ui",      vibe:'Edgy, severe',        scale:1.02},
+  {name:'Sancreek',        css:"'Sancreek', cursive",          vibe:'Rural, homebody',     scale:0.94},
+];
+const BODY_FONTS = [
+  {name:'Courier Prime',   css:"'Courier Prime', monospace"},
+  {name:'Instrument Sans', css:"'Instrument Sans', sans-serif"},
+  {name:'Instrument Serif',css:"'Instrument Serif', serif"},
+];
+function cssFor(name){
+  const f = [...HEADING_FONTS, ...BODY_FONTS].find(x=>x.name===name);
+  return f ? f.css : 'var(--serif)';
+}
+function scaleFor(name){
+  const f = HEADING_FONTS.find(x=>x.name===name);
+  return f ? f.scale : 1;
+}
+function hstyle(name){ return `font-family:${cssFor(name)};--fscale:${scaleFor(name)}`; }
+
+const AD_FONTS = {
+  1:['Instrument Sans','Instrument Sans'],
+  2:['Monoton','Instrument Sans'],
+  3:['Rubik Dirt','Instrument Sans'],
+  4:['Instrument Serif','Instrument Serif'],
+  5:['Sancreek','Courier Prime'],
+  6:['Courier Prime','Courier Prime'],
+  7:['Instrument Serif','Instrument Sans'],
+  8:['Jacquard 24','Instrument Sans'],
+  9:['Ruthie','Instrument Serif'],
+  10:['Instrument Serif','Instrument Serif'], 11:['Rubik Dirt','Instrument Sans'],
+  12:['Ruthie','Instrument Serif'], 13:['Sancreek','Courier Prime'],
+  14:['Instrument Sans','Instrument Sans'], 15:['Courier Prime','Courier Prime'],
+  16:['Monoton','Instrument Sans'], 17:['Instrument Serif','Instrument Serif'],
+  18:['Jacquard 24','Instrument Sans'], 19:['Instrument Serif','Instrument Sans'],
+  20:['Sancreek','Instrument Serif'], 21:['Rubik Dirt','Instrument Sans'],
+  22:['Courier Prime','Courier Prime'], 23:['Instrument Sans','Instrument Sans'],
+  24:['Monoton','Instrument Sans'], 25:['Jacquard 24','Instrument Serif'],
+};
+const AD_RACE = {
+  1:['White'], 2:['Black'], 3:['Asian'], 4:['Hispanic / Latino'], 5:['White'],
+  6:['Middle Eastern'], 7:['Asian','White'], 8:['Black'], 9:['Indigenous'],
+  10:['Asian'], 11:['White'], 12:['Middle Eastern'], 13:['Hispanic / Latino'],
+  14:['White'], 15:['White'], 16:['Black'], 17:['Hispanic / Latino'], 18:['White'],
+  19:['Asian'], 20:['White'], 21:['Black'], 22:['Black'], 23:['White'], 24:['White'], 25:['Mixed'],
+};
+const AD_RELIGION = {
+  1:'Agnostic', 2:'Christian', 3:'Buddhist', 4:'Christian', 5:'Jewish',
+  6:'Muslim', 7:'Atheist', 8:'Christian', 9:'Hindu',
+  10:'Hindu', 11:'Christian', 12:'Muslim', 13:'Christian', 14:'Agnostic', 15:'Jewish',
+  16:'Atheist', 17:'Christian', 18:'Agnostic', 19:'Buddhist', 20:'Christian', 21:'Muslim',
+  22:'Christian', 23:'Agnostic', 24:'Atheist', 25:'Jewish',
+};
+ADS.forEach(a=>{ const f = AD_FONTS[a.id] || ['Instrument Serif','Instrument Sans']; a.headingFont = f[0]; a.bodyFont = f[1]; a.race = AD_RACE[a.id] || ['Prefer not to say']; a.religion = AD_RELIGION[a.id] || 'Prefer not to say'; });
+
+const titles = {feed:"Today's Picks", myad:"Your Ad", messages:"Your Messages", settings:"Settings", thread:"Your Messages", customize:"Customize"};
+
+// ---------- Router ----------
+const scroll = document.getElementById('scroll');
+const titleEl = document.getElementById('title');
+const issueEl = document.getElementById('issue');
+const viewSeg = document.getElementById('viewseg');
+let state = {view:'feed', threadAd:null, msgTab:'convos'};
+let blockedCount = 2;
+let hasAd = true;         // false = user hasn't posted their own ad → feed is gated
+let feedView = 'paper';   // 'paper' = zoomed-out classifieds page · 'list' = single-column reading view
+const revealedAdIds = new Set();  // conversations where both people have traded faces
+const revealOffered = new Set();  // the OTHER person has shown their face; you haven't yet → dot on the eye
+const revealDeferred = new Set(); // you chose "let's wait until we meet" → prompt dismissed
+
+function setView(view){
+  state.view = view;
+  titleEl.textContent = titles[view] || '';
+  const onFeed = view === 'feed';
+  issueEl.style.display = onFeed ? '' : 'none';
+  viewSeg.style.display = onFeed ? '' : 'none';
+  scroll.classList.remove('paper-mode', 'thread-mode');
+  document.querySelectorAll('#tabbar .tab').forEach(b=>b.classList.toggle('active', b.dataset.view===view));
+  ({feed:renderFeed, myad:renderMyAd, messages:renderMessages, settings:renderSettings, thread:renderThread, customize:renderCustomize}[view])();
+  scroll.scrollTop = 0;
+}
+document.querySelectorAll('#tabbar .tab').forEach(b=>b.addEventListener('click', ()=>setView(b.dataset.view)));
+viewSeg.querySelectorAll('button').forEach(b=>b.addEventListener('click', ()=>{ feedView = b.dataset.fv; renderFeed(); }));
+
+// ---------- Feed ----------
+const HOROSCOPE = `<div class="horoscope"><span class="horo-label">✦ Today's Horoscope ✦</span><p class="horo-text">The stars are feeling direct today. If an ad makes you laugh out loud, that's your sign — reply before you overthink it.</p></div>`;
+function updateViewToggle(){
+  viewSeg.querySelectorAll('button').forEach(b=>b.classList.toggle('active', b.dataset.fv===feedView));
+}
+function endPaperHTML(){
+  return `<div class="endpaper"><div class="rule"><span class="mark">❦</span></div>
+    <h4>End of today's paper</h4>
+    <p>You've read all ${ADS.length} of today's personals. New ones are printed every morning.</p></div>`;
+}
+// Ad typography (global): the decorative font is used ONLY on the name + age;
+// the headline (ALWAYS ALL CAPS) and the body copy share the ad's body font.
+function adNameHTML(a){ return `<div class="ad-name" style="${hstyle(a.headingFont)}">${a.name}, ${a.age}</div>`; }
+function adHeadlineHTML(a){ return `<div class="ad-headline" style="font-family:${cssFor(a.bodyFont)}">${a.headline}</div>`; }
+function feedCard(a){
+  const replied = repliedAdIds.has(a.id);
+  const card = document.createElement('button');
+  card.className = 'card' + (replied ? ' replied' : '');
+  card.dataset.ad = a.id;
+  card.innerHTML = adNameHTML(a) + adHeadlineHTML(a)
+    + `<p class="ad-body" style="font-family:${cssFor(a.bodyFont)}">${a.desc}</p>`
+    + `<div class="tags"><span class="tag-chip">${a.gender.join(' / ')}</span><span class="tag-chip">${a.location}</span></div>`
+    + (replied ? '<div class="replied-note">You replied to this ad</div>' : '');
+  if(hasAd) card.addEventListener('click', ()=>openAd(a.id));
+  return card;
+}
+function renderFeed(){
+  updateViewToggle();
+  if(hasAd && feedView==='paper') renderPaper();
+  else renderList();
+}
+// single-column reading view
+function renderList(){
+  scroll.classList.remove('paper-mode');
+  if(hasAd){
+    scroll.innerHTML = HOROSCOPE + `<div class="feed-col" id="feedList"></div>` + endPaperHTML();
+  } else {
+    scroll.innerHTML = HOROSCOPE + `<div class="feed-locked"><div class="feed-col" id="feedList"></div><div class="feed-blur"></div>
+      <div class="feed-gate"><div class="feed-gate-card">
+        <h3>You're reading over someone's shoulder</h3>
+        <p>On Classy, you have to be in the paper to read it. Post your own personal to unlock every ad — and to reply.</p>
+        <button class="btn" id="gatePost">Write my ad</button>
+      </div></div></div>`;
+  }
+  const list = document.getElementById('feedList');
+  ADS.forEach(a=> list.appendChild(feedCard(a)));
+  if(!hasAd){ const g = document.getElementById('gatePost'); if(g) g.onclick = startOnboarding; }
+}
+// ---------- The Paper (zoomed-out classifieds page you browse) ----------
+// checkmark = "you already replied to this ad"
+const CLIP_REPLIED_ICON = `<svg class="clip-rep-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-label="You replied"><path d="M4.5 12.5l5 5 10-11"/></svg>`;
+function clipHTML(a){
+  const replied = repliedAdIds.has(a.id);
+  return `<button class="clip${replied?' replied':''}" data-ad="${a.id}">
+    <div class="clip-name" style="${hstyle(a.headingFont)}"><span>${a.name}, ${a.age}</span>${replied ? CLIP_REPLIED_ICON : ''}</div>
+    <div class="clip-head" style="font-family:${cssFor(a.bodyFont)}">${a.headline}</div>
+    <div class="clip-body" style="font-family:${cssFor(a.bodyFont)}">${a.desc}</div>
+    <div class="clip-loc">${a.gender.join(' / ')} · ${a.location}</div>
+  </button>`;
+}
+function renderPaper(){
+  scroll.classList.add('paper-mode');
+  scroll.innerHTML = `
+    <div class="paper-viewport" id="paperVp">
+      <div class="paper" id="paper">
+        <div class="masthead">
+          <div class="mast-title">Personals</div>
+          <div class="mast-sub">The Classy Classifieds · ${TODAY_STR}</div>
+        </div>
+        <div class="paper-cols">${ADS.map(clipHTML).join('')}</div>
+        <div class="paper-foot">— 30 —</div>
+      </div>
+    </div>
+    <div class="paper-hint">Pinch or ± to zoom · tap an ad to read</div>
+    <div class="paper-zoom"><button id="paperZoomIn" aria-label="Zoom in">+</button><button id="paperZoomOut" aria-label="Zoom out">−</button></div>`;
+  initPaperZoom();
+}
+function initPaperZoom(){
+  const vp = document.getElementById('paperVp'), paper = document.getElementById('paper');
+  const PAPER_W = 720;
+  paper.style.width = PAPER_W + 'px';
+  paper.style.transformOrigin = '0 0';
+  const paperH = paper.offsetHeight;            // natural (unscaled) height
+  let minScale = 0.5, maxScale = 2.2, scale = 0.5, panX = 0, panY = 0, userZoomed = false;
+  const clampPan = ()=>{ const vpW = vp.clientWidth, vpH = vp.clientHeight, cw = PAPER_W*scale, ch = paperH*scale;
+    panX = Math.min(Math.max(0, panX), Math.max(0, cw - vpW));
+    panY = Math.min(Math.max(0, panY), Math.max(0, ch - vpH)); };
+  const apply = ()=>{ clampPan(); paper.style.transform = `translate(${-panX}px,${-panY}px) scale(${scale})`; };
+  const clamp = s => Math.max(minScale, Math.min(maxScale, s));
+  // fit-to-width = fully zoomed out; keeps re-fitting until the user zooms/pans
+  const START_ZOOM = 2.2;   // start slightly zoomed IN (min = fit-to-width) to invite panning
+  const fit = ()=>{
+    const vpW = vp.clientWidth; if(!vpW) return;
+    minScale = vpW / PAPER_W; maxScale = Math.max(2.4, minScale * 4);
+    if(!userZoomed){
+      scale = Math.min(maxScale, minScale * START_ZOOM);
+      panX = (PAPER_W*scale - vpW) / 2;   // centered horizontally
+      panY = 0;                           // masthead at top
+      apply();
+    }
+  };
+  const zoomAt = (ns, cx, cy)=>{
+    const r = vp.getBoundingClientRect(), oldS = scale;
+    ns = clamp(ns); if(ns === oldS) return;
+    userZoomed = true;
+    const px = (cx - r.left + panX) / oldS, py = (cy - r.top + panY) / oldS;
+    scale = ns; panX = px*scale - (cx - r.left); panY = py*scale - (cy - r.top); apply();
+  };
+  fit();
+  if(window.ResizeObserver){ const ro = new ResizeObserver(fit); ro.observe(vp); }
+  const pointers = new Map(); let panMoved = false, startDist = 0, startScale = 1;
+  vp.addEventListener('pointerdown', e=>{
+    pointers.set(e.pointerId, {x:e.clientX, y:e.clientY}); panMoved = false;
+    try{ vp.setPointerCapture(e.pointerId); }catch(_){}  // can throw NotFoundError; must not abort pointer bookkeeping
+    if(pointers.size === 2){ const p = [...pointers.values()]; startDist = Math.hypot(p[0].x-p[1].x, p[0].y-p[1].y) || 1; startScale = scale; }
+  });
+  vp.addEventListener('pointermove', e=>{
+    const prev = pointers.get(e.pointerId); if(!prev) return;
+    pointers.set(e.pointerId, {x:e.clientX, y:e.clientY});
+    if(pointers.size >= 2){
+      const p = [...pointers.values()]; const d = Math.hypot(p[0].x-p[1].x, p[0].y-p[1].y) || 1;
+      zoomAt(startScale * d/startDist, (p[0].x+p[1].x)/2, (p[0].y+p[1].y)/2); panMoved = true;
+    } else {
+      const dx = e.clientX-prev.x, dy = e.clientY-prev.y;
+      if(Math.abs(dx)+Math.abs(dy) > 2){ panMoved = true; userZoomed = true; }
+      panX -= dx; panY -= dy; apply();
+    }
+  });
+  const up = e=>{
+    const wasSingleTap = pointers.size === 1 && !panMoved;
+    pointers.delete(e.pointerId);
+    try{ vp.releasePointerCapture(e.pointerId); }catch(_){}
+    // pointer capture steals the native click, so resolve taps ourselves
+    if(wasSingleTap){
+      const clip = (document.elementFromPoint(e.clientX, e.clientY) || {}).closest?.('.clip');
+      if(clip) openAd(+clip.dataset.ad);
+    }
+  };
+  vp.addEventListener('pointerup', up);
+  vp.addEventListener('pointercancel', e=>{ pointers.delete(e.pointerId); try{ vp.releasePointerCapture(e.pointerId); }catch(_){} });
+  vp.addEventListener('wheel', e=>{
+    e.preventDefault();
+    if(e.ctrlKey) zoomAt(scale * (e.deltaY < 0 ? 1.12 : 0.89), e.clientX, e.clientY);
+    else { userZoomed = true; panX += e.deltaX; panY += e.deltaY; apply(); }
+  }, {passive:false});
+  const zoomCenter = f => { const r = vp.getBoundingClientRect(); zoomAt(scale*f, r.left+vp.clientWidth/2, r.top+vp.clientHeight/2); };
+  document.getElementById('paperZoomIn').onclick  = ()=>zoomCenter(1.4);
+  document.getElementById('paperZoomOut').onclick = ()=>zoomCenter(1/1.4);
+}
+
+// ---------- Ad sheet ----------
+const overlay = document.getElementById('overlay');
+const sheet = document.getElementById('sheet');
+// Another member's ad — opens as a centered card modal in the same layout as My Ad.
+function openAd(id, showReply=true){
+  const a = ADS.find(x=>x.id===id);
+  const replied = repliedAdIds.has(id);
+  sheet.innerHTML = `
+    <button class="close" id="closeSheet">×</button>
+    ${adNameHTML(a)}
+    <div class="ad-place">${a.location}</div>
+    ${adHeadlineHTML(a)}
+    <p class="myad-desc" style="font-family:${cssFor(a.bodyFont)}">${a.desc}</p>
+    ${adMetaGrid(a)}
+    ${showReply ? (replied
+      ? '<button class="btn ghost block" id="goConvoBtn" style="margin-top:20px">You replied — open conversation</button>'
+      : '<button class="btn block" id="replyBtn" style="margin-top:20px">Reply to this ad</button>') : ''}`;
+  overlay.classList.add('open', 'card-modal');
+  document.getElementById('closeSheet').onclick = closeSheet;
+  const rb = document.getElementById('replyBtn');
+  if(rb) rb.onclick = ()=>{ closeSheet(); openThread(id); };
+  const gc = document.getElementById('goConvoBtn');
+  if(gc) gc.onclick = ()=>{ closeSheet(); openThread(id); };
+}
+function closeSheet(){ overlay.classList.remove('open', 'card-modal'); }
+overlay.addEventListener('click', e=>{ if(e.target===overlay) closeSheet(); });
+
+// shared checkbox/radio wiring for any container
+function wireChecks(container){
+  container.querySelectorAll('.check:not(.writein-check)').forEach(c=>c.addEventListener('click',()=>{
+    const group = c.dataset.group;
+    const siblings = container.querySelectorAll(`.check[data-group="${group}"]`);
+    if(c.classList.contains('radio')){
+      siblings.forEach(x=>x.classList.remove('sel'));
+      c.classList.add('sel');
+    } else if(c.dataset.exclusive){
+      const willSelect = !c.classList.contains('sel');
+      siblings.forEach(x=>x.classList.remove('sel'));
+      c.classList.toggle('sel', willSelect);
+    } else {
+      c.classList.toggle('sel');
+      siblings.forEach(x=>{ if(x.dataset.exclusive) x.classList.remove('sel'); });
+    }
+    container.querySelectorAll(`.writein-check[data-group="${group}"]`).forEach(wc=>{
+      if(!wc.classList.contains('sel')) wc.querySelector('.writein-field').value = '';
+    });
+  }));
+  container.querySelectorAll('.writein-check').forEach(wc=>{
+    const input = wc.querySelector('.writein-field');
+    const group = wc.dataset.group;
+    const activate = ()=>{
+      const hasText = input.value.trim().length > 0;
+      wc.classList.toggle('sel', hasText);
+      if(hasText){
+        if(wc.classList.contains('radio')){
+          container.querySelectorAll(`.check[data-group="${group}"]`).forEach(x=>{ if(x!==wc) x.classList.remove('sel'); });
+        } else {
+          container.querySelectorAll(`.check[data-group="${group}"][data-exclusive]`).forEach(x=>x.classList.remove('sel'));
+        }
+      }
+    };
+    const bx = wc.querySelector('.bx');
+    input.addEventListener('input', activate);
+    input.addEventListener('focus', ()=>{ if(input.value.trim().length > 0) activate(); });
+    bx.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      if(input.value.trim().length > 0){ input.value = ''; wc.classList.remove('sel'); }
+      else input.focus();
+    });
+    wc.addEventListener('click', (e)=>{ if(e.target === wc) input.focus(); });
+  });
+}
+
+// ---------- Decline request confirm ----------
+function openDeclineConfirm(adId){
+  const a = ADS.find(x=>x.id===adId);
+  sheet.innerHTML = `
+    <button class="close" id="closeSheet">×</button>
+    <div class="kicker">Decline request</div>
+    <h3>Decline ${a.name}'s request?</h3>
+    <p>Their request is removed from your inbox. They won't be notified.</p>
+    <button class="block-check" id="blockChk"><span class="bx"></span><span>Also block ${a.name} — they won't be able to see your ad or message you again.</span></button>
+    <div class="confirm-actions">
+      <button class="btn ghost" id="cancelDecline">Cancel</button>
+      <button class="btn danger-btn" id="confirmDecline">Decline</button>
+    </div>`;
+  overlay.classList.add('open');
+  let block = false;
+  const chk = document.getElementById('blockChk');
+  chk.onclick = ()=>{ block = !block; chk.classList.toggle('sel', block); };
+  document.getElementById('closeSheet').onclick = closeSheet;
+  document.getElementById('cancelDecline').onclick = closeSheet;
+  document.getElementById('confirmDecline').onclick = ()=>{
+    const i = REQUESTS.findIndex(r=>r.adId===adId);
+    if(i>-1) REQUESTS.splice(i,1);
+    if(block) blockedCount++;
+    closeSheet(); updateMsgBadge(); renderMessages();
+  };
+}
+
+// ---------- Block member confirm ----------
+function openBlockConfirm(adId){
+  const a = ADS.find(x=>x.id===adId);
+  sheet.innerHTML = `
+    <button class="close" id="closeSheet">×</button>
+    <h3>Block ${a.name}?</h3>
+    <p>${a.name} won't be able to see your ad or message you again, and this conversation will be removed. They won't be notified.</p>
+    <div class="confirm-actions">
+      <button class="btn ghost" id="cancelBlock">Cancel</button>
+      <button class="btn danger-btn" id="confirmBlock">Block ${a.name}</button>
+    </div>`;
+  overlay.classList.add('open');
+  document.getElementById('closeSheet').onclick = closeSheet;
+  document.getElementById('cancelBlock').onclick = closeSheet;
+  document.getElementById('confirmBlock').onclick = ()=>{
+    const i = CONVOS.findIndex(c=>c.adId===adId);
+    if(i>-1) CONVOS.splice(i,1);
+    blockedCount++;
+    closeSheet(); setView('messages');
+  };
+}
+
+// ---------- Unmatch confirm ----------
+function openUnmatchConfirm(adId){
+  const a = ADS.find(x=>x.id===adId);
+  sheet.innerHTML = `
+    <button class="close" id="closeSheet">×</button>
+    <h3>Unmatch with ${a.name}?</h3>
+    <p>This removes the conversation for both of you. ${a.name} won't be notified, and you can reply to their ad again if it's still running.</p>
+    <div class="confirm-actions">
+      <button class="btn ghost" id="cancelUnmatch">Cancel</button>
+      <button class="btn danger-btn" id="confirmUnmatch">Unmatch</button>
+    </div>`;
+  overlay.classList.add('open');
+  document.getElementById('closeSheet').onclick = closeSheet;
+  document.getElementById('cancelUnmatch').onclick = closeSheet;
+  document.getElementById('confirmUnmatch').onclick = ()=>{
+    const i = CONVOS.findIndex(c=>c.adId===adId);
+    if(i>-1) CONVOS.splice(i,1);
+    closeSheet(); updateMsgBadge(); setView('messages');
+  };
+}
+
+// ---------- Face reveal (mutual, press-and-hold to see) ----------
+function openFaceReveal(adId){
+  const a = ADS.find(x=>x.id===adId);
+  sheet.innerHTML = `
+    <button class="close" id="closeSheet">×</button>
+    <h3>Trade faces with ${a.name}?</h3>
+    <p>No one sees a face unless you both choose to. Once you're both ready, press and hold the photo to peek — lift your finger and it fogs back over.</p>
+    <div class="reveal-status">✓ ${a.name} is ready to show their face</div>
+    <button class="btn block" id="readyBtn">I'm ready to show my face</button>`;
+  overlay.classList.add('open', 'card-modal');
+  document.getElementById('closeSheet').onclick = closeSheet;
+  document.getElementById('readyBtn').onclick = ()=>faceRevealStep(a);
+}
+function faceRevealStep(a){
+  // both sides have now traded faces — clear any pending offer/defer + refresh the header eye state
+  revealedAdIds.add(a.id);
+  revealOffered.delete(a.id); revealDeferred.delete(a.id);
+  if(state.view === 'thread' && state.threadAd === a.id) renderThread();
+  sheet.innerHTML = `
+    <button class="close" id="closeSheet">×</button>
+    <h3>You both said yes</h3>
+    <p>Press and hold ${a.name}'s photo to reveal it — lift your finger and it fogs back over.</p>
+    <div class="reveal-single">
+      <div class="reveal-tile"><div class="portrait them"></div><div class="frost"></div><div class="reveal-cap">${a.name}</div></div>
+    </div>
+    <div class="reveal-hint">This photo isn't saved anywhere — it only exists in this moment.</div>`;
+  document.getElementById('closeSheet').onclick = closeSheet;
+  sheet.querySelectorAll('.reveal-tile').forEach(tile=>{
+    const frost = tile.querySelector('.frost');
+    let mx=0, my=0, radius=0, last=0; const MAXR=60;
+    const apply = ()=>{
+      if(radius<=0){ frost.style.webkitMaskImage='none'; frost.style.maskImage='none'; return; }
+      const g = `radial-gradient(circle at ${mx}px ${my}px, transparent 0, transparent ${radius}px, #000 ${radius+40}px)`;
+      frost.style.webkitMaskImage = g; frost.style.maskImage = g;
+    };
+    const at = (clientX, clientY)=>{ const r = tile.getBoundingClientRect(); mx = clientX-r.left; my = clientY-r.top; radius = MAXR; last = Date.now(); apply(); };
+    // desktop: cursor-follow · mobile: press-and-hold
+    tile.addEventListener('mousemove', e=>at(e.clientX, e.clientY));
+    tile.addEventListener('mouseleave', ()=>{ radius = 0; apply(); });
+    tile.addEventListener('touchstart', e=>{ const t=e.touches[0]; at(t.clientX, t.clientY); }, {passive:true});
+    tile.addEventListener('touchmove', e=>{ e.preventDefault(); const t=e.touches[0]; at(t.clientX, t.clientY); }, {passive:false});
+    const release = ()=>{ radius = 0; apply(); };
+    tile.addEventListener('touchend', release);
+    tile.addEventListener('touchcancel', release);
+    // fog back over when the touch/cursor stops moving
+    const iv = setInterval(()=>{
+      if(!document.body.contains(tile)){ clearInterval(iv); return; }
+      if(Date.now()-last > 260 && radius > 0){ radius -= 5; if(radius<0) radius = 0; apply(); }
+    }, 45);
+  });
+}
+
+// ---------- Partner preferences sheet ----------
+function openPreferences(){
+  sheet.innerHTML = `
+    <button class="close" id="closeSheet">×</button>
+    <div class="kicker">Preferences</div>
+    <h3>Who you're looking for</h3>
+    <p style="margin-bottom:20px">These shape which ads appear in your Today's Picks.</p>
+    <div class="form" style="gap:18px">
+      <div class="fgroup"><label class="lab">Age range</label>
+        <div style="display:flex;align-items:center;gap:10px">
+          <input class="field-in" value="27" style="width:80px">
+          <span style="color:var(--muted)">to</span>
+          <input class="field-in" value="40" style="width:80px">
+        </div>
+      </div>
+      <div style="display:flex;gap:14px">
+        <div class="fgroup" style="flex:1"><label class="lab">ZIP code</label><input class="field-in" value="94110" inputmode="numeric" maxlength="5"></div>
+        <div class="fgroup" style="flex:1"><label class="lab">Distance</label><input class="field-in" value="25 miles"></div>
+      </div>
+      ${accField('Interested in', checkGroup('pInterest',['Men','Women','Trans men','Trans women','Non-binary','Everyone'],['Women'],false,'grid2',['Everyone']), 'pInterest')}
+      ${accField('Relationship type', checkGroup('pRel',['Hookup','Not sure','Something serious'],['Something serious'],false,'stacked'), 'pRel')}
+      ${accField('Kids', checkGroup('pKids',['Wants kids',"Doesn't want kids",'Has kids','No preference'],['No preference'],true,'grid2',['No preference']), 'pKids')}
+      ${accField('Political views', checkGroup('pPol',['Liberal','Conservative','Centrist','No preference'],['No preference'],false,'grid2',['No preference']), 'pPol')}
+      <div class="form-subhead"><div class="fsh-title">Your visibility</div><div class="fsh-sub">Controls who can see your ad — not who you see.</div></div>
+      ${accField('Who can see my ad', checkGroup('audience',['Everyone','LGBTQ+ only'],['Everyone'],true,'grid2'), 'audience')}
+    </div>
+    <button class="btn block" style="margin-top:22px" id="savePrefs">Save preferences</button>`;
+  overlay.classList.add('open');
+  document.getElementById('closeSheet').onclick = closeSheet;
+  document.getElementById('savePrefs').onclick = closeSheet;
+  wireChecks(sheet);
+  wireAccordions(sheet.querySelector('.form'));
+}
+
+// ---------- Messages (tabbed) ----------
+function updateMsgBadge(){
+  const el = document.getElementById('tabMsgCount');
+  if(!el) return;
+  if(REQUESTS.length){ el.textContent = REQUESTS.length; el.classList.add('show'); }
+  else el.classList.remove('show');
+}
+function convosHTML(){
+  if(!CONVOS.length) return `<div class="empty-msg">No conversations yet. Accept a request or reply to an ad to get started.</div>`;
+  return `<div class="mlist">${CONVOS.map(c=>{
+    const a = ADS.find(x=>x.id===c.adId);
+    return `<button class="mrow ${c.unread?'unread':''}" data-ad="${a.id}">
+      <div style="flex:1;min-width:0">
+        <div class="who-name" style="${hstyle(a.headingFont)}">${a.name}, ${a.age}</div>
+        <div class="who-cap">${a.headline}</div>
+        <p style="margin-top:12px"><span class="sender">${c.mine ? 'You' : a.name}:</span> ${c.last}</p>
+      </div>
+      <div class="mrow-right">
+        <div class="when">${c.when}</div>
+        ${c.unread ? '<span class="unread-dot"></span>' : ''}
+      </div>
+    </button>`;
+  }).join('')}</div>`;
+}
+function requestsHTML(){
+  if(!REQUESTS.length) return `<div class="empty-msg">No pending requests. When someone replies to your ad, it lands here for you to accept or decline.</div>`;
+  return `<div class="mlist">${REQUESTS.map(r=>{
+    const a = ADS.find(x=>x.id===r.adId);
+    return `<div class="req">
+      <div class="spread" style="align-items:flex-start">
+        <div><div class="who-name" style="${hstyle(a.headingFont)}">${a.name}, ${a.age}</div><div class="who-cap">${a.location}</div></div>
+        <div class="when">${r.when}</div>
+      </div>
+      <p class="their-msg"><span class="wrote">${a.name} wrote:</span> <span class="msg-text">${r.msg}</span></p>
+      <div class="req-actions">
+        <button class="link-btn" data-view-ad="${a.id}">View ad</button>
+        <button class="btn ghost sm" data-decline="${a.id}">Decline</button>
+        <button class="btn sm" data-accept="${a.id}">Accept</button>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+function renderMessages(){
+  const n = REQUESTS.length;
+  scroll.innerHTML = `
+    <div class="tabs">
+      <button class="mtab ${state.msgTab==='convos'?'active':''}" data-tab="convos">Conversations</button>
+      <button class="mtab ${state.msgTab==='requests'?'active':''}" data-tab="requests">Requests${n?`<span class="count">${n}</span>`:''}</button>
+    </div>
+    <div>${state.msgTab==='convos' ? convosHTML() : requestsHTML()}</div>`;
+
+  scroll.querySelectorAll('.mtab').forEach(t=>t.addEventListener('click',()=>{ state.msgTab = t.dataset.tab; renderMessages(); }));
+  scroll.querySelectorAll('.mrow').forEach(r=>r.addEventListener('click',()=>openThread(+r.dataset.ad)));
+  scroll.querySelectorAll('[data-view-ad]').forEach(b=>b.addEventListener('click',()=>openAd(+b.dataset.viewAd)));
+  scroll.querySelectorAll('[data-decline]').forEach(b=>b.addEventListener('click',()=>openDeclineConfirm(+b.dataset.decline)));
+  scroll.querySelectorAll('[data-accept]').forEach(b=>b.addEventListener('click',()=>{
+    const id = +b.dataset.accept, i = REQUESTS.findIndex(r=>r.adId===id);
+    if(i>-1){ const r = REQUESTS.splice(i,1)[0]; CONVOS.unshift({adId:r.adId, when:'now', last:r.msg, mine:false, unread:false}); }
+    updateMsgBadge(); state.msgTab = 'convos'; openThread(id);
+  }));
+}
+
+// ---------- Conversation thread ----------
+function openThread(adId){ const c = CONVOS.find(x=>x.adId===adId); if(c) c.unread=false; state.threadAd = adId; setView('thread'); }
+const THREADS = {};
+const FACE_UNLOCK = 5;
+const REPLIES = [
+  "Ha, okay — that's a good answer.",
+  "Tell me more about that.",
+  "See, now I'm curious.",
+  "Honestly? Same.",
+  "That made me smile.",
+  "Okay, you're winning me over.",
+  "Noted — what else?",
+];
+function threadMsgs(a){
+  if(!THREADS[a.id]){
+    const convo = CONVOS.find(c=>c.adId===a.id);
+    THREADS[a.id] = convo ? [
+      {who:'me', text:`Hi ${a.name} — your ad made me smile. "${a.headline}" is a great line.`},
+      {who:'them', text:"Thank you! That's a nicer opener than most. What are you into?"},
+      {who: convo.mine ? 'me' : 'them', text: convo.last},
+    ] : [];
+  }
+  return THREADS[a.id];
+}
+// conversation-header icons
+const IC_BACK  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="11 6 5 12 11 18"/></svg>`;
+const IC_EYE   = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.6"/></svg>`;
+const IC_MORE  = `<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg>`;
+// inline face-reveal prompt shown in the conversation body once a reveal is unlocked
+function revealInlineHTML(a, s){
+  if(s.revealed){
+    return `<div class="reveal-inline done">
+      <svg class="ri-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.6"/></svg>
+      <div class="ri-text">You and ${a.name} have traded faces.</div>
+      <button class="ri-link" id="reFaceBtn">See again</button>
+    </div>`;
+  }
+  // Once they've offered (dot on the eye) or you've said "let's wait", the chat prompt goes away.
+  if(s.unlocked && !s.theyOffered && !s.deferred){
+    return `<div class="reveal-inline">
+      <div class="ri-text">You've been talking a while — ready to see each other?</div>
+      <button class="btn sm" id="revealFaceBtn">Reveal faces</button>
+      <button class="ri-link" id="waitFaceBtn">Let's wait until we meet</button>
+    </div>`;
+  }
+  return '';  // locked / offered / deferred: nothing in the chat body
+}
+function renderThread(){
+  const a = ADS.find(x=>x.id===state.threadAd);
+  const msgs = threadMsgs(a);
+  const mine = msgs.filter(m=>m.who==='me').length;
+  const theirs = msgs.filter(m=>m.who==='them').length;
+  const unlocked = mine >= FACE_UNLOCK && theirs >= FACE_UNLOCK;
+  const revealed = revealedAdIds.has(a.id);
+  const theyOffered = unlocked && !revealed && revealOffered.has(a.id);
+  const deferred = revealDeferred.has(a.id);
+  const eyeCls = revealed ? 'th-eye' : unlocked ? ('th-eye' + (theyOffered ? ' offered' : '')) : 'th-eye locked';
+  const eyeTip = revealed ? `You and ${a.name} have traded faces — tap to see again.`
+    : theyOffered ? `${a.name} showed you their face — tap to reveal yours.`
+    : unlocked ? `You've been talking a while — tap to reveal faces to each other.`
+    : `Keep the conversation going to unlock a mutual face reveal.`;
+  scroll.classList.add('thread-mode');
+  scroll.innerHTML = `
+    <div class="thread">
+      <div class="thread-head">
+        <button class="th-icon" id="back" aria-label="Back to messages">${IC_BACK}</button>
+        <button class="th-name" id="threadName" style="${hstyle(a.headingFont)}" title="View ${a.name}'s ad">${a.name}</button>
+        <div class="th-actions">
+          <span class="th-eye-wrap">
+            <button class="${eyeCls}" id="eyeBtn" aria-label="Face reveal">${IC_EYE}</button>
+            <span class="tip">${eyeTip}</span>
+          </span>
+          <div class="th-menu-wrap">
+            <button class="th-icon" id="moreBtn" aria-label="More options">${IC_MORE}</button>
+            <div class="th-menu" id="threadMenu">
+              <button id="unmatchBtn">Unmatch</button>
+              <button class="danger" id="blockBtn">Block / Report</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ad-snip" id="adSnip" title="View full ad">
+        <div class="ad-name" style="${hstyle(a.headingFont)}">${a.name}, ${a.age}</div>
+        <div class="ad-place">${a.location}</div>
+        <div class="ad-headline" style="font-family:${cssFor(a.bodyFont)}">${a.headline}</div>
+        <p style="font-family:${cssFor(a.bodyFont)}">${a.desc}</p>
+      </div>
+      <div class="msgs">
+        ${msgs.length ? msgs.map(m=>`<div class="bubble ${m.who}">${m.text}</div>`).join('')
+          : `<div class="bubble them" style="background:transparent;color:var(--muted);font-style:italic">Start the conversation.</div>`}
+        ${msgs.length ? revealInlineHTML(a, {unlocked, revealed, theyOffered, deferred}) : ''}
+      </div>
+      <div class="composer">
+        <input class="field" id="composerInput" placeholder="Write a message…">
+        <button class="btn" id="sendBtn" disabled>Send</button>
+      </div>
+    </div>`;
+  document.getElementById('back').onclick = ()=>setView('messages');
+  document.getElementById('threadName').onclick = ()=>openAd(a.id, false);
+  document.getElementById('adSnip').onclick = ()=>openAd(a.id, false);
+  const moreBtn = document.getElementById('moreBtn'), threadMenu = document.getElementById('threadMenu');
+  moreBtn.onclick = (e)=>{
+    e.stopPropagation();
+    const willOpen = !threadMenu.classList.contains('open');
+    threadMenu.classList.toggle('open', willOpen);
+    if(willOpen){
+      const close = (ev)=>{ if(!threadMenu.contains(ev.target) && ev.target!==moreBtn){ threadMenu.classList.remove('open'); document.removeEventListener('click', close); } };
+      setTimeout(()=>document.addEventListener('click', close), 0);
+    }
+  };
+  document.getElementById('unmatchBtn').onclick = ()=>{ threadMenu.classList.remove('open'); openUnmatchConfirm(a.id); };
+  document.getElementById('blockBtn').onclick = ()=>{ threadMenu.classList.remove('open'); openBlockConfirm(a.id); };
+  const rf = document.getElementById('revealFaceBtn'); if(rf) rf.onclick = ()=>openFaceReveal(a.id);
+  const ra = document.getElementById('reFaceBtn'); if(ra) ra.onclick = ()=>{ overlay.classList.add('open','card-modal'); faceRevealStep(a); };
+  const wf = document.getElementById('waitFaceBtn'); if(wf) wf.onclick = ()=>{
+    revealDeferred.add(a.id); renderThread();
+    // (prototype) simulate the other person choosing to show their face a moment later → dot on the eye
+    setTimeout(()=>{ if(state.view==='thread' && state.threadAd===a.id && !revealedAdIds.has(a.id)){ revealOffered.add(a.id); renderThread(); } }, 2200);
+  };
+  const eye = document.getElementById('eyeBtn'), eyeWrap = eye.closest('.th-eye-wrap');
+  eye.onclick = ()=>{
+    if(revealed){ overlay.classList.add('open','card-modal'); faceRevealStep(a); }
+    else if(unlocked){ openFaceReveal(a.id); }
+    else {  // locked: surface the tooltip (tap on mobile; hover already shows it on desktop)
+      eyeWrap.classList.add('tip-show');
+      clearTimeout(eyeWrap._tipT);
+      eyeWrap._tipT = setTimeout(()=>eyeWrap.classList.remove('tip-show'), 2800);
+    }
+  };
+  const ci = document.getElementById('composerInput'), sb = document.getElementById('sendBtn');
+  ci.addEventListener('input', ()=>{ sb.disabled = ci.value.trim().length === 0; });
+  const send = ()=>{
+    const t = ci.value.trim(); if(!t) return;
+    msgs.push({who:'me', text:t});
+    renderThread();
+    scroll.scrollTop = scroll.scrollHeight;
+    setTimeout(()=>{
+      if(state.view!=='thread' || state.threadAd!==a.id) return;
+      msgs.push({who:'them', text: REPLIES[theirs % REPLIES.length]});
+      renderThread();
+      scroll.scrollTop = scroll.scrollHeight;
+    }, 650);
+  };
+  sb.addEventListener('click', send);
+  ci.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); send(); } });
+}
+
+// ---------- My Ad ----------
+function checkGroup(name, options, selected, radio, layout, exclusive){
+  exclusive = exclusive || [];
+  const checks = options.map(o=>{
+    if(o === 'Write in…'){
+      return `<div class="check writein-check ${radio?'radio':''}" data-group="${name}" data-val="Write in…"><span class="bx"></span><input class="writein-field" type="text" maxlength="50" placeholder="Write in…"></div>`;
+    }
+    const sel = selected.includes(o);
+    const exc = exclusive.includes(o) ? ' data-exclusive="1"' : '';
+    return `<button class="check ${radio?'radio':''} ${sel?'sel':''}" data-group="${name}" data-val="${o}"${exc}><span class="bx"></span>${o}</button>`;
+  }).join('');
+  return `<div class="checks${layout?' '+layout:''}">${checks}</div>`;
+}
+function adMetaGrid(a){
+  const rows = [];
+  const add = (label, val)=>{ const s = Array.isArray(val) ? val.join(', ') : (val||''); if(s) rows.push(`<div><span>${label}</span>${s}</div>`); };
+  add('Gender', a.gender);
+  add('Race / ethnicity', a.race);
+  add('Religion', a.religion);
+  add('Pronouns', a.pronouns);
+  if(a.showSexuality) add('Sexuality', a.sexuality);
+  add('Politics', a.politics);
+  add('Kids', a.kids);
+  add('Looking for', a.relationship);
+  add('Relationship style', a.relstyle);
+  add('Appearance', a.weight);
+  return rows.length ? `<div class="myad-meta">${rows.join('')}</div>` : '';
+}
+function renderMyAd(){
+  const a = MY_AD;
+  scroll.innerHTML = `
+    <div class="myad">
+      <div class="myad-card">
+        ${adNameHTML(a)}
+        <div class="ad-place">${a.location}</div>
+        ${adHeadlineHTML(a)}
+        <p class="myad-desc" style="font-family:${cssFor(a.bodyFont)}">${a.desc}</p>
+        ${adMetaGrid(a)}
+      </div>
+      <div class="myad-foot">
+        <div class="myad-actions">
+          <button class="btn ghost" id="customizeAd">Customize</button>
+          <button class="btn" id="editAd">Edit ad</button>
+        </div>
+        <div class="myad-hint">This is how your ad appears to other members.</div>
+      </div>
+    </div>`;
+  document.getElementById('editAd').onclick = openEditAd;
+  document.getElementById('customizeAd').onclick = ()=>setView('customize');
+}
+
+function renderCustomize(){
+  const a = MY_AD;
+  let heading = a.headingFont, body = a.bodyFont;
+  const previewAd = (h, b)=>`
+    <div class="myad-card">
+      <div class="ad-name" style="${hstyle(h)}">${a.name}, ${a.age}</div>
+      <div class="ad-place">${a.location}</div>
+      <div class="ad-headline" style="font-family:${cssFor(b)}">${a.headline}</div>
+      <p class="myad-desc" style="font-family:${cssFor(b)}">${a.desc}</p>
+      ${adMetaGrid(a)}
+    </div>`;
+  scroll.innerHTML = `
+    <div class="customize">
+      <button class="back" id="cBack" style="margin-bottom:14px">← Back to My Ad</button>
+      <div id="custPreview">${previewAd(heading, body)}</div>
+      <div class="cust-hint">Live preview</div>
+      <div class="cust-drops">
+        <label class="drop">
+          <span class="drop-label">Name font</span>
+          <select class="drop-select" id="headSel" style="font-family:${cssFor(heading)}">
+            ${HEADING_FONTS.map(f=>`<option value="${f.name}" style="font-family:${f.css}"${f.name===heading?' selected':''}>${f.name} · ${f.vibe}</option>`).join('')}
+          </select>
+        </label>
+        <label class="drop">
+          <span class="drop-label">Body font</span>
+          <select class="drop-select" id="bodySel" style="font-family:${cssFor(body)}">
+            ${BODY_FONTS.map(f=>`<option value="${f.name}" style="font-family:${f.css}"${f.name===body?' selected':''}>${f.name}</option>`).join('')}
+          </select>
+        </label>
+      </div>
+      <div class="form-actions"><button class="btn ghost" id="cCancel">Cancel</button><button class="btn" id="cSave">Save changes</button></div>
+    </div>`;
+  const pv = document.getElementById('custPreview');
+  const headSel = document.getElementById('headSel'), bodySel = document.getElementById('bodySel');
+  headSel.addEventListener('change', ()=>{ heading = headSel.value; headSel.style.fontFamily = cssFor(heading); pv.innerHTML = previewAd(heading, body); });
+  bodySel.addEventListener('change', ()=>{ body = bodySel.value; bodySel.style.fontFamily = cssFor(body); pv.innerHTML = previewAd(heading, body); });
+  document.getElementById('cBack').onclick = ()=>setView('myad');
+  document.getElementById('cCancel').onclick = ()=>setView('myad');
+  document.getElementById('cSave').onclick = ()=>{ MY_AD.headingFont = heading; MY_AD.bodyFont = body; setView('myad'); };
+}
+
+// collapsible field row (emptyText = summary shown when nothing is entered)
+function accField(label, bodyHtml, group, emptyText){
+  emptyText = emptyText || 'None selected';
+  return `<div class="acc" data-acc data-acc-group="${group}" data-acc-empty="${emptyText}"><button type="button" class="acc-head"><span class="acc-label">${label}</span><span class="acc-value" data-acc-value>${emptyText}</span><span class="acc-chev">▾</span></button><div class="acc-body" hidden>${bodyHtml}</div></div>`;
+}
+// free-text accordion body (e.g. Appearance): "Describe yourself" + a 50-char counter
+function appearanceBody(value){
+  value = value || '';
+  return `<div class="lab-row" style="margin-bottom:8px"><label class="lab">Describe yourself</label><span class="counter" data-acc-counter>${value.length}/50</span></div>
+    <textarea class="acc-text-field" data-acc-text maxlength="50" placeholder="ex. tall, glasses, goth">${value}</textarea>`;
+}
+// read a free-text accordion's value out of a container
+function accText(container, group){
+  const t = container.querySelector(`[data-acc][data-acc-group="${group}"] [data-acc-text]`);
+  return t ? t.value.trim() : '';
+}
+function updateAccSummary(container, group){
+  const acc = container.querySelector(`[data-acc][data-acc-group="${group}"]`);
+  if(!acc) return;
+  const valEl = acc.querySelector('[data-acc-value]');
+  const empty = acc.dataset.accEmpty || 'None selected';
+  // free-text field (e.g. Appearance) — summary is the typed text
+  const txt = acc.querySelector('[data-acc-text]');
+  if(txt){
+    const v = txt.value.trim();
+    valEl.textContent = v || empty;
+    valEl.classList.toggle('set', v.length>0);
+    return;
+  }
+  const sel = [...acc.querySelectorAll('.check.sel:not(.writein-check)')].map(c=>c.dataset.val);
+  const wf = acc.querySelector('.writein-check.sel .writein-field');
+  if(wf && wf.value.trim()) sel.push(wf.value.trim());
+  valEl.textContent = sel.length ? sel.join(', ') : empty;
+  valEl.classList.toggle('set', sel.length>0);
+}
+function wireAccordions(container){
+  container.querySelectorAll('[data-acc]').forEach(acc=>{
+    const body = acc.querySelector('.acc-body');
+    acc.querySelector('.acc-head').addEventListener('click', ()=>{ body.hidden = !acc.classList.toggle('open'); });
+  });
+  // live counter for free-text accordion bodies (Appearance)
+  container.querySelectorAll('[data-acc-text]').forEach(t=>{
+    const cnt = t.parentElement.querySelector('[data-acc-counter]');
+    const max = +t.getAttribute('maxlength') || 50;
+    const upd = ()=>{ if(cnt){ cnt.textContent = `${t.value.length}/${max}`; cnt.classList.toggle('at-max', t.value.length>=max); } };
+    t.addEventListener('input', upd); upd();
+  });
+  const refresh = ()=>container.querySelectorAll('[data-acc]').forEach(acc=>updateAccSummary(container, acc.dataset.accGroup));
+  refresh();
+  container.addEventListener('click', (e)=>{
+    refresh();
+    const chk = e.target.closest('.check.radio:not(.writein-check)');
+    if(chk){ const acc = chk.closest('[data-acc]'); if(acc){ acc.classList.remove('open'); acc.querySelector('.acc-body').hidden = true; } }
+  });
+  container.addEventListener('input', refresh);
+}
+
+// Edit-ad form, in a bottom sheet
+function openEditAd(){
+  const me = MY_AD;
+  sheet.innerHTML = `
+    <button class="close" id="closeSheet">×</button>
+    <h3>Edit your ad</h3>
+    <div class="form" style="margin-top:10px">
+      <div class="fgroup"><label class="lab">Your name</label><input class="field-in" id="adName" value="${me.name}"></div>
+      <div style="display:flex;gap:14px">
+        <div class="fgroup" style="flex:0 0 96px"><label class="lab">Age</label><input class="field-in" id="adAge" value="${me.age}"></div>
+        <div class="fgroup" style="flex:1"><label class="lab">Location</label><input class="field-in" id="adLoc" value="${me.location}"></div>
+      </div>
+      <div class="fgroup">
+        <div class="lab-row"><label class="lab">Ad headline</label><span class="counter" id="cntHeadline"></span></div>
+        <input class="field-in" id="adHeadline" maxlength="250" value="${me.headline}">
+      </div>
+      <div class="fgroup">
+        <div class="lab-row"><label class="lab">Ad description</label><span class="counter" id="cntDesc"></span></div>
+        <textarea class="field-in autogrow" id="adDesc" maxlength="1000">${me.desc}</textarea>
+      </div>
+      ${accField('Gender', checkGroup('gender',['Man','Woman','Trans man','Trans woman','Non-binary','Write in…'],me.gender,false,'grid2'), 'gender')}
+      ${accField('Race / ethnicity', checkGroup('race',['Asian','Black','Hispanic / Latino','Indigenous','Middle Eastern','Pacific Islander','White','Mixed','Prefer not to say','Write in…'],me.race,false,'grid2',['Prefer not to say']), 'race')}
+      ${accField('Religion', checkGroup('religion',['Agnostic','Atheist','Buddhist','Christian','Hindu','Jewish','Muslim','Sikh','Prefer not to say','Write in…'],[me.religion],true,'grid2'), 'religion')}
+      ${accField('Pronouns', checkGroup('pronouns',['he/him','she/her','they/them','Write in…'],me.pronouns,false,'grid2'), 'pronouns')}
+      ${accField('Sexuality', `<div class="soa-row"><span class="soa-lab">Show on my ad</span><button class="toggle ${me.showSexuality?'on':''}" data-toggle></button></div>${checkGroup('sexuality',['Straight','Gay','Lesbian','Bisexual','Pansexual','Queer','Asexual','Prefer not to say','Write in…'],me.sexuality,false,'stacked',['Prefer not to say'])}`, 'sexuality')}
+      ${accField('Political views', checkGroup('politics',['Liberal','Conservative','Centrist','Write in…'],[me.politics],true,'grid2'), 'politics')}
+      ${accField('Kids', checkGroup('kids',['Wants kids',"Doesn't want kids",'Has kids','Not sure yet'],[me.kids],true,'grid2'), 'kids')}
+      ${accField('Looking for', checkGroup('rel',['Hookup','Not sure','Something serious'],[me.relationship],true,'stacked'), 'rel')}
+      ${accField('Relationship style', checkGroup('relstyle',['Monogamous','Non-monogamous','Open to non-monogamy'],[me.relstyle],true,'stacked'), 'relstyle')}
+      ${accField('Appearance', appearanceBody(me.weight), 'appearance', 'Write in…')}
+      <div class="form-actions"><button class="btn ghost" id="cancelAd">Cancel</button><button class="btn" id="saveAd">Save ad</button></div>
+    </div>`;
+  overlay.classList.add('open');
+  document.getElementById('closeSheet').onclick = closeSheet;
+  document.getElementById('cancelAd').onclick = closeSheet;
+  document.getElementById('saveAd').onclick = ()=>{
+    const gv = id => (document.getElementById(id)?.value || '');
+    me.name = gv('adName').trim() || me.name;
+    me.age = gv('adAge').trim() || me.age;
+    me.location = gv('adLoc').trim() || me.location;
+    me.headline = gv('adHeadline'); me.desc = gv('adDesc'); me.weight = accText(sheet,'appearance');
+    me.gender = obChecked(sheet,'gender'); me.pronouns = obChecked(sheet,'pronouns'); me.race = obChecked(sheet,'race'); me.sexuality = obChecked(sheet,'sexuality');
+    me.religion = obChecked(sheet,'religion')[0]||''; me.politics = obChecked(sheet,'politics')[0]||''; me.kids = obChecked(sheet,'kids')[0]||'';
+    me.relationship = obChecked(sheet,'rel')[0]||''; me.relstyle = obChecked(sheet,'relstyle')[0]||'';
+    me.showSexuality = !!sheet.querySelector('[data-toggle]')?.classList.contains('on');
+    closeSheet(); setView('myad');
+  };
+  wireChecks(sheet);
+  sheet.querySelectorAll('[data-toggle]').forEach(t=>t.addEventListener('click',()=>t.classList.toggle('on')));
+  wireAccordions(sheet.querySelector('.form'));
+
+  function bindCounter(id, cntId, max){
+    const el = document.getElementById(id), cnt = document.getElementById(cntId);
+    const update = ()=>{ cnt.textContent = `${el.value.length}/${max}`; cnt.classList.toggle('at-max', el.value.length >= max); };
+    el.addEventListener('input', update); update();
+    return el;
+  }
+  bindCounter('adHeadline', 'cntHeadline', 250);
+  const descEl = bindCounter('adDesc', 'cntDesc', 1000);
+  const grow = ()=>{ descEl.style.height = 'auto'; descEl.style.height = descEl.scrollHeight + 'px'; };
+  descEl.addEventListener('input', grow); grow();
+}
+
+// ---------- Settings ----------
+function setRow(label, sub, control){
+  return `<div class="set-row"><div class="rl-wrap"><div class="rl">${label}</div>${sub?`<div class="rs">${sub}</div>`:''}</div>${control}</div>`;
+}
+function renderSettings(){
+  scroll.innerHTML = `
+    <div class="settings">
+      <div class="set-section">
+        <h3 class="sec-head">Preferences</h3>
+        <p class="sec-sub">What you're looking for in a partner.</p>
+        <div class="set-card">
+          ${setRow('Partner preferences','Age, distance, who you’re interested in, and more.', `<button class="btn ghost sm" data-prefs>Edit</button>`)}
+        </div>
+      </div>
+
+      <div class="set-section">
+        <h3 class="sec-head">Appearance</h3>
+        <div class="set-card">
+          ${setRow('Dark mode','Easier on the eyes at night.', `<button class="toggle ${document.body.classList.contains('dark')?'on':''}" id="darkModeToggle"></button>`)}
+        </div>
+      </div>
+
+      <div class="set-section">
+        <h3 class="sec-head">Account</h3>
+        <div class="set-card">
+          ${setRow('Email','alex@email.com', `<button class="link-btn">Change</button>`)}
+          ${setRow('Password','Last changed 3 months ago', `<button class="link-btn">Change</button>`)}
+          ${setRow('Onboarding','Replay the new-member flow', `<button class="link-btn" id="replayOb">Replay</button>`)}
+          ${setRow('Guest view','Preview the feed as someone who hasn\'t posted an ad', `<button class="toggle ${!hasAd?'on':''}" id="guestToggle"></button>`)}
+          ${setRow('<span class="danger">Delete account</span>','Permanently remove your ad, messages, and data.', `<button class="link-btn danger">Delete</button>`)}
+        </div>
+      </div>
+
+      <div class="set-section">
+        <h3 class="sec-head">Subscription &amp; billing</h3>
+        <p class="sec-sub">You're on the free plan.</p>
+        <div class="set-card">
+          ${setRow('Free plan','Reply to a limited number of ads per day.', `<button class="btn sm">Upgrade</button>`)}
+          ${setRow('Payment method','None on file', `<button class="link-btn">Add</button>`)}
+        </div>
+      </div>
+
+      <div class="set-section">
+        <h3 class="sec-head">Pause my ad</h3>
+        <p class="sec-sub">Take a break without deleting anything.</p>
+        <div class="set-card">
+          ${setRow('Hide my ad from the feed',"Your ad stops appearing in Today's Picks. Existing conversations stay open.", `<button class="toggle" data-toggle></button>`)}
+        </div>
+      </div>
+
+      <div class="set-section">
+        <h3 class="sec-head">Privacy &amp; safety</h3>
+        <div class="set-card">
+          ${setRow('Blocked members',`${blockedCount} members blocked`, `<button class="link-btn">Manage</button>`)}
+        </div>
+      </div>
+
+      <div class="set-section">
+        <h3 class="sec-head">Notifications</h3>
+        <div class="set-card">
+          ${setRow('Email — new replies','When someone replies to your ad.', `<button class="toggle on" data-toggle></button>`)}
+          ${setRow('Email — new messages','', `<button class="toggle on" data-toggle></button>`)}
+          ${setRow('Push — new replies','', `<button class="toggle" data-toggle></button>`)}
+          ${setRow('Push — new messages','', `<button class="toggle" data-toggle></button>`)}
+        </div>
+      </div>
+
+      <div class="form-actions" style="justify-content:space-between">
+        <button class="btn ghost">Log out</button>
+        <button class="btn">Save changes</button>
+      </div>
+    </div>`;
+
+  scroll.querySelector('[data-prefs]')?.addEventListener('click', openPreferences);
+  scroll.querySelector('#replayOb')?.addEventListener('click', startOnboarding);
+  scroll.querySelector('#guestToggle')?.addEventListener('click', function(){ hasAd = !this.classList.toggle('on'); });
+  scroll.querySelector('#darkModeToggle')?.addEventListener('click', function(){ this.classList.toggle('on', document.body.classList.toggle('dark')); });
+  scroll.querySelectorAll('[data-toggle]').forEach(t=>t.addEventListener('click',()=>t.classList.toggle('on')));
+}
+
+// ---------- Onboarding ----------
+let obStep = 0;
+const OB_DEFAULT_HFONT = 'Instrument Serif', OB_DEFAULT_BFONT = 'Instrument Sans';
+const obData = { name:'', age:'', location:'', headline:'', desc:'', photo:'', headingFont:OB_DEFAULT_HFONT, bodyFont:OB_DEFAULT_BFONT,
+  gender:[], pronouns:[], rel:'', race:[], religion:'', sexuality:[], showSexuality:false, politics:'', kids:'', relstyle:'', build:'' };
+const obVal = id => { const el = document.getElementById(id); return el ? el.value : ''; };
+function obResetData(){ for(const k in obData) obData[k]=''; obData.headingFont=OB_DEFAULT_HFONT; obData.bodyFont=OB_DEFAULT_BFONT; obData.gender=[]; obData.pronouns=[]; obData.race=[]; obData.sexuality=[]; obData.showSexuality=false; }
+function startOnboarding(){ obStep = 0; obResetData(); document.getElementById('onboarding').classList.add('open'); renderOnboarding(); }
+function obChecked(container, group){
+  const acc = container.querySelector(`[data-acc][data-acc-group="${group}"]`);
+  if(!acc) return [];
+  const sel = [...acc.querySelectorAll('.check.sel:not(.writein-check)')].map(c=>c.dataset.val);
+  const wf = acc.querySelector('.writein-check.sel .writein-field');
+  if(wf && wf.value.trim()) sel.push(wf.value.trim());
+  return sel;
+}
+function endOnboarding(){ document.getElementById('onboarding').classList.remove('open'); }
+function obSaveStep(){
+  if(obStep===1){ obData.name=obVal('obName'); obData.age=obVal('obAge'); obData.location=obVal('obLoc'); }
+  if(obStep===2){ obData.headline=obVal('obHead'); obData.desc=obVal('obDesc'); }
+  if(obStep===3){ obSaveAbout(); }
+}
+function obSaveAbout(){
+  const c = document.getElementById('obBody'); if(!c || !c.querySelector('[data-acc]')) return;
+  obData.gender    = obChecked(c,'gender');
+  obData.pronouns  = obChecked(c,'pronouns');
+  obData.rel       = obChecked(c,'rel')[0] || '';
+  obData.race      = obChecked(c,'race');
+  obData.religion  = obChecked(c,'religion')[0] || '';
+  obData.sexuality = obChecked(c,'sexuality');
+  obData.politics  = obChecked(c,'politics')[0] || '';
+  obData.kids      = obChecked(c,'kids')[0] || '';
+  obData.relstyle  = obChecked(c,'relstyle')[0] || '';
+  obData.build     = accText(c, 'appearance');
+  const tog = c.querySelector('[data-toggle]');
+  obData.showSexuality = tog ? tog.classList.contains('on') : obData.showSexuality;
+}
+function obValidate(){
+  const btn = document.getElementById('obNext') || document.getElementById('obPost');
+  if(!btn) return;
+  let ok = true;
+  if(obStep===1) ok = ['obName','obAge','obLoc'].every(id=>obVal(id).trim());
+  else if(obStep===2) ok = ['obHead','obDesc'].every(id=>obVal(id).trim());
+  else if(obStep===3){ const c=document.getElementById('obBody'); ok = ['gender','pronouns','rel'].every(g=>obChecked(c,g).length>0); }
+  else if(obStep===4) ok = !!obData.photo;
+  else if(obStep>=5) ok = ['name','age','location','headline','desc'].every(k=>String(obData[k]).trim()) && !!obData.photo && obData.gender.length>0 && obData.pronouns.length>0 && !!obData.rel;
+  btn.disabled = !ok;
+}
+function photoSlotHtml(){
+  if(obData.photo){
+    return `<div class="photo-prev">
+      <img class="thumb" src="${obData.photo}" alt="Your photo">
+      <div class="pp-meta">
+        <span class="pp-lock">🔒 Only you can see this now</span>
+        <button class="pp-replace" id="photoReplace">Replace photo</button>
+      </div></div>`;
+  }
+  return `<div class="photo-drop" id="photoDrop"><div class="pu-ico">⬆</div><strong>Upload a photo</strong><span>PNG or JPG</span></div>`;
+}
+function rebindPhoto(){
+  const input = document.getElementById('photoInput'); if(!input) return;
+  const drop = document.getElementById('photoDrop'); if(drop) drop.onclick = ()=>input.click();
+  const rep = document.getElementById('photoReplace'); if(rep) rep.onclick = ()=>input.click();
+}
+function obAdCard(){
+  const d = obData;
+  const meta = adMetaGrid({ gender:d.gender, race:d.race, religion:d.religion, pronouns:d.pronouns, showSexuality:d.showSexuality, sexuality:d.sexuality, politics:d.politics, kids:d.kids, relationship:d.rel, relstyle:d.relstyle, weight:d.build });
+  return `<div class="myad-card">
+    <div class="ad-name" style="${hstyle(d.headingFont)}">${d.name||'Your name'}, ${d.age||'—'}</div>
+    <div class="ad-place">${d.location||'Your city'}</div>
+    <div class="ad-headline" style="font-family:${cssFor(d.bodyFont)}">${d.headline||'Your headline'}</div>
+    <p class="myad-desc" style="font-family:${cssFor(d.bodyFont)}">${d.desc||'Your ad copy will show here.'}</p>
+    ${meta}
+  </div>`;
+}
+function obPhotoNote(){
+  if(!obData.photo) return '';
+  return `<div class="photo-attached"><img class="pa-thumb" src="${obData.photo}" alt="Your photo"><span>🔒 Photo attached — hidden until you both choose to reveal.</span></div>`;
+}
+function finishOnboarding(){
+  const d = obData;
+  if(d.name) MY_AD.name=d.name; if(d.age) MY_AD.age=d.age; if(d.location) MY_AD.location=d.location;
+  if(d.headline) MY_AD.headline=d.headline; if(d.desc) MY_AD.desc=d.desc; if(d.photo) MY_AD.photo=d.photo;
+  if(d.headingFont) MY_AD.headingFont=d.headingFont; if(d.bodyFont) MY_AD.bodyFont=d.bodyFont;
+  MY_AD.gender=d.gender; MY_AD.pronouns=d.pronouns; MY_AD.relationship=d.rel;
+  MY_AD.race=d.race; MY_AD.sexuality=d.sexuality; MY_AD.showSexuality=d.showSexuality;
+  MY_AD.religion=d.religion; MY_AD.politics=d.politics; MY_AD.kids=d.kids; MY_AD.relstyle=d.relstyle; MY_AD.weight=d.build;
+  hasAd = true;
+  endOnboarding(); setView('myad');
+}
+function renderOnboarding(){
+  const body = document.getElementById('obBody'), nav = document.getElementById('obNav'), dots = document.getElementById('obDots');
+  const TOTAL = 4;
+  dots.innerHTML = (obStep>=1 && obStep<=TOTAL) ? Array.from({length:TOTAL},(_,k)=>`<span class="ob-dot ${k===obStep-1?'on':''}"></span>`).join('') : '';
+  if(obStep===0){
+    body.innerHTML = `<div class="ob-welcome"><div class="ob-brand">Classy</div><div class="ob-tag">Seek. Find.</div><h2>No photos. Just words.</h2><p>On Classy you meet through what you write. Let's put your personal in tomorrow's paper.</p></div>`;
+    nav.innerHTML = `<button class="btn block" id="obNext">Write my ad</button>`;
+  } else if(obStep===1){
+    body.innerHTML = `<div class="ob-step"><div class="ob-kicker">Step 1 of 4</div><h2>The basics</h2>
+      <div class="fgroup"><label class="lab">Your name <span class="req-mark">*</span></label><input class="field-in" id="obName" value="${obData.name}" placeholder="First name"></div>
+      <div style="display:flex;gap:14px">
+        <div class="fgroup" style="flex:0 0 96px"><label class="lab">Age <span class="req-mark">*</span></label><input class="field-in" id="obAge" value="${obData.age}" placeholder="30"></div>
+        <div class="fgroup" style="flex:1"><label class="lab">Location <span class="req-mark">*</span></label><input class="field-in" id="obLoc" value="${obData.location}" placeholder="Neighborhood, City"></div>
+      </div></div>`;
+    nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obNext">Next</button>`;
+  } else if(obStep===2){
+    body.innerHTML = `<div class="ob-step"><div class="ob-kicker">Step 2 of 4</div><h2>Your personal</h2>
+      <p class="ob-sub">A headline to catch the eye, then the ad itself. Specifics beat adjectives.</p>
+      <div class="fgroup"><div class="lab-row"><label class="lab">Headline <span class="req-mark">*</span></label><span class="counter" id="obHeadCnt"></span></div><input class="field-in" id="obHead" maxlength="250" value="${obData.headline}" placeholder="e.g. Quiet but not shy"></div>
+      <div class="fgroup"><div class="lab-row"><label class="lab">Description <span class="req-mark">*</span></label><span class="counter" id="obDescCnt"></span></div><textarea class="field-in autogrow" id="obDesc" maxlength="1000" placeholder="I read a lot, take long walks and notice small things…">${obData.desc}</textarea></div></div>`;
+    nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obNext">Next</button>`;
+  } else if(obStep===3){
+    body.innerHTML = `<div class="ob-step"><div class="ob-kicker">Step 3 of 4</div><h2>About you</h2>
+      <p class="ob-sub">A few details for your ad. Only gender, pronouns, and what you're looking for are required — the rest is up to you.</p>
+      ${accField('Gender <span class="req-mark">*</span>', checkGroup('gender',['Man','Woman','Trans man','Trans woman','Non-binary','Write in…'],obData.gender,false,'grid2'), 'gender')}
+      ${accField('Pronouns <span class="req-mark">*</span>', checkGroup('pronouns',['he/him','she/her','they/them','Write in…'],obData.pronouns,false,'grid2'), 'pronouns')}
+      ${accField('Looking for <span class="req-mark">*</span>', checkGroup('rel',['Hookup','Not sure','Something serious'],[obData.rel],true,'stacked'), 'rel')}
+      <div class="ob-optional-head">Optional — add anything you'd like on your ad</div>
+      ${accField('Race / ethnicity', checkGroup('race',['Asian','Black','Hispanic / Latino','Indigenous','Middle Eastern','Pacific Islander','White','Mixed','Prefer not to say','Write in…'],obData.race,false,'grid2',['Prefer not to say']), 'race')}
+      ${accField('Religion', checkGroup('religion',['Agnostic','Atheist','Buddhist','Christian','Hindu','Jewish','Muslim','Sikh','Prefer not to say','Write in…'],[obData.religion],true,'grid2'), 'religion')}
+      ${accField('Sexuality', `<div class="soa-row"><span class="soa-lab">Show on my ad</span><button class="toggle ${obData.showSexuality?'on':''}" data-toggle></button></div>${checkGroup('sexuality',['Straight','Gay','Lesbian','Bisexual','Pansexual','Queer','Asexual','Prefer not to say','Write in…'],obData.sexuality,false,'stacked',['Prefer not to say'])}`, 'sexuality')}
+      ${accField('Political views', checkGroup('politics',['Liberal','Conservative','Centrist','Write in…'],[obData.politics],true,'grid2'), 'politics')}
+      ${accField('Kids', checkGroup('kids',['Wants kids',"Doesn't want kids",'Has kids','Not sure yet'],[obData.kids],true,'grid2'), 'kids')}
+      ${accField('Relationship style', checkGroup('relstyle',['Monogamous','Non-monogamous','Open to non-monogamy'],[obData.relstyle],true,'stacked'), 'relstyle')}
+      ${accField('Appearance', appearanceBody(obData.build), 'appearance', 'Write in…')}</div>`;
+    nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obNext">Next</button>`;
+  } else if(obStep===4){
+    body.innerHTML = `<div class="ob-step"><div class="ob-kicker">Step 4 of 4</div><h2>Add your photo <span class="req-mark">*</span></h2>
+      <p class="ob-sub">No one sees this on your ad. It stays hidden until you and someone both choose to trade faces.</p>
+      <input type="file" accept="image/*" id="photoInput" hidden>
+      <div id="photoSlot">${photoSlotHtml()}</div>
+      <div class="photo-privacy">🔒 Hidden until a mutual face reveal — never shown on your public ad.</div></div>`;
+    nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obNext">Next</button>`;
+  } else if(obStep===5){
+    body.innerHTML = `<div class="ob-step"><div class="ob-kicker">Review</div><h2>Here's your personal</h2>
+      <p class="ob-sub">Your whole ad in one place. Confirm when it looks right — you can refine it anytime in My Ad.</p>
+      ${obAdCard()}
+      ${obPhotoNote()}</div>`;
+    nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obNext">Confirm</button>`;
+  } else {
+    body.innerHTML = `<div class="ob-step"><div class="ob-kicker">Optional</div><h2>Make it yours</h2>
+      <p class="ob-sub">Give your headline and text a font that fits your vibe — or skip it and change it anytime in My Ad.</p>
+      <div id="obCustPreview">${obAdCard()}</div>
+      <div class="cust-drops">
+        <label class="drop"><span class="drop-label">Name font</span>
+          <select class="drop-select" id="obHeadSel" style="font-family:${cssFor(obData.headingFont)}">
+            ${HEADING_FONTS.map(f=>`<option value="${f.name}" style="font-family:${f.css}"${f.name===obData.headingFont?' selected':''}>${f.name} · ${f.vibe}</option>`).join('')}
+          </select></label>
+        <label class="drop"><span class="drop-label">Body font</span>
+          <select class="drop-select" id="obBodySel" style="font-family:${cssFor(obData.bodyFont)}">
+            ${BODY_FONTS.map(f=>`<option value="${f.name}" style="font-family:${f.css}"${f.name===obData.bodyFont?' selected':''}>${f.name}</option>`).join('')}
+          </select></label>
+      </div></div>`;
+    nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><div style="display:flex;gap:10px;flex:1"><button class="btn ghost" id="obLater" style="flex:1">Later</button><button class="btn" id="obPost" style="flex:1">Post my ad</button></div>`;
+  }
+  const next=document.getElementById('obNext'), back=document.getElementById('obBack'), post=document.getElementById('obPost');
+  if(next) next.onclick=()=>{ obSaveStep(); obStep++; renderOnboarding(); };
+  if(back) back.onclick=()=>{ obSaveStep(); obStep--; renderOnboarding(); };
+  if(post) post.onclick=()=>{ obSaveStep(); finishOnboarding(); };
+  const later=document.getElementById('obLater');
+  if(later) later.onclick=()=>{ finishOnboarding(); };
+  const obHeadSel=document.getElementById('obHeadSel'), obBodySel=document.getElementById('obBodySel'), obPv=document.getElementById('obCustPreview');
+  if(obHeadSel) obHeadSel.addEventListener('change', ()=>{ obData.headingFont=obHeadSel.value; obHeadSel.style.fontFamily=cssFor(obData.headingFont); if(obPv) obPv.innerHTML=obAdCard(); });
+  if(obBodySel) obBodySel.addEventListener('change', ()=>{ obData.bodyFont=obBodySel.value; obBodySel.style.fontFamily=cssFor(obData.bodyFont); if(obPv) obPv.innerHTML=obAdCard(); });
+  const bindCnt=(id,cntId,max)=>{ const el=document.getElementById(id),cnt=document.getElementById(cntId); if(!el||!cnt)return; const u=()=>{cnt.textContent=`${el.value.length}/${max}`;cnt.classList.toggle('at-max',el.value.length>=max);}; el.addEventListener('input',u); u(); };
+  bindCnt('obHead','obHeadCnt',250); bindCnt('obDesc','obDescCnt',1000);
+  const desc=document.getElementById('obDesc');
+  if(desc){ const grow=()=>{desc.style.height='auto';desc.style.height=desc.scrollHeight+'px';}; desc.addEventListener('input',grow); grow(); }
+  ['obName','obAge','obLoc','obHead','obDesc'].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('input', obValidate); });
+  const photoInput=document.getElementById('photoInput');
+  if(photoInput){ photoInput.onchange=()=>{ const f=photoInput.files&&photoInput.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=e=>{ obData.photo=e.target.result; const slot=document.getElementById('photoSlot'); if(slot) slot.innerHTML=photoSlotHtml(); rebindPhoto(); obValidate(); }; rd.readAsDataURL(f); }; }
+  rebindPhoto();
+  if(obStep===3){
+    const stepEl = body.querySelector('.ob-step');
+    if(stepEl){
+      wireChecks(stepEl);
+      stepEl.querySelectorAll('[data-toggle]').forEach(t=>t.addEventListener('click',()=>t.classList.toggle('on')));
+      wireAccordions(stepEl);
+      stepEl.addEventListener('click', obValidate);
+      stepEl.addEventListener('input', obValidate);
+    }
+  }
+  obValidate();
+}
+
+// ---------- boot ----------
+let feedResizeTimer;
+window.addEventListener('resize', ()=>{
+  if(state.view!=='feed' || feedView!=='paper') return;
+  clearTimeout(feedResizeTimer);
+  feedResizeTimer = setTimeout(renderFeed, 150);
+});
+issueEl.textContent = TODAY_STR;
+updateMsgBadge();
+setView('feed');
+</script>
+</body>
+</html>
