@@ -280,7 +280,8 @@
   .fgroup{display:block}
   .fgroup label.lab,.lab{display:block;font-size:13px;font-weight:600;margin-bottom:8px}
   .hint{font-size:12px;color:var(--muted);font-weight:400;margin-left:6px}
-  .field-in{width:100%;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--panel);padding:12px 13px;font-size:15px;color:var(--muted)}
+  .field-in{width:100%;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--panel);padding:12px 13px;font-size:15px;color:var(--ink)}
+  .field-in::placeholder{color:var(--muted)}
   textarea.field-in{resize:none;height:96px}
   textarea.field-in.autogrow{height:auto;min-height:84px;overflow:hidden}
   .lab-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
@@ -307,7 +308,7 @@
   .writein-field::placeholder{color:var(--muted)}
   .writein-check:not(.sel) .writein-field{color:var(--muted)}
   .acc{border:1.5px solid var(--line-strong);border-radius:10px;background:var(--panel);overflow:hidden}
-  .acc-head{display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;padding:14px 15px;cursor:pointer;text-align:left;font-family:inherit}
+  .acc-head{display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;padding:14px 15px;cursor:pointer;text-align:left;font-family:inherit;color:var(--ink)}
   .acc-label{font-size:14px;font-weight:600;flex:0 0 auto}
   .acc-value{flex:1;text-align:right;font-size:14px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .acc-value.set{color:var(--ink)}
@@ -319,6 +320,8 @@
   .acc-text-field{width:100%;height:56px;resize:none;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--panel);padding:10px 12px;font-size:14px;color:var(--ink);font-family:inherit;outline:none}
   .acc-text-field::placeholder{color:var(--muted)}
   .soa-row{display:flex;align-items:center;justify-content:space-between;margin:14px 0 2px}
+  .db-row{border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+  .db-row .soa-lab{font-weight:600;color:var(--ink)}
   .form-actions{display:flex;justify-content:flex-end;gap:12px;border-top:1px solid var(--line);padding-top:20px}
 
   /* ---------- My Ad ---------- */
@@ -384,6 +387,13 @@
   .ob-welcome h2{font-family:var(--serif);font-weight:500;font-size:26px;margin:0 0 10px}
   .ob-welcome p{font-size:15px;color:var(--muted);line-height:1.6;margin:0 auto}
   .ob-nav{display:flex;justify-content:space-between;gap:12px}
+  .ob-welcome-nav{display:flex;flex-direction:column;gap:14px;width:100%}
+  .hiw-link{background:none;border:0;color:var(--muted);font-size:14px;font-family:inherit;letter-spacing:.02em;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:6px;align-self:center}
+  .hiw{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:100%;padding:6px 0 4px}
+  .hiw-kicker{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
+  .hiw-illus{width:128px;height:128px;border-radius:14px;background:var(--fill);border:1.5px solid var(--line-strong);margin-bottom:24px}
+  .hiw-h{font-family:var(--serif);font-weight:500;font-size:25px;margin:0 0 12px}
+  .hiw-p{font-size:15px;color:var(--muted);line-height:1.65;max-width:340px;margin:0 auto}
   .ob-nav .btn{flex:1}
   .photo-drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:34px 20px;border:1.5px dashed var(--line-strong);border-radius:12px;background:var(--fill-2);cursor:pointer;text-align:center}
   .photo-drop .pu-ico{font-size:24px;line-height:1;margin-bottom:2px}
@@ -397,6 +407,14 @@
   .photo-privacy,.photo-attached{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--muted);background:var(--fill-2);border:1px solid var(--line);border-radius:8px;padding:11px 13px;line-height:1.4}
   .photo-attached{margin-top:14px}
   .pa-thumb{width:34px;height:42px;border-radius:5px;object-fit:cover;border:1px solid var(--line);flex:none}
+  .myad-private{margin-top:16px;border:1.5px solid var(--line-strong);border-radius:10px;padding:16px;background:var(--panel)}
+  .mp-head{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:13px}
+  .mp-row{display:flex;gap:15px;align-items:center}
+  .mp-thumb{width:84px;height:106px;border-radius:9px;object-fit:cover;border:1px solid var(--line);flex:none;background:var(--fill)}
+  .mp-meta{display:flex;flex-direction:column;gap:11px}
+  .mp-note{font-size:12.5px;color:var(--muted);line-height:1.45}
+  .mp-meta .btn.sm{align-self:flex-start}
+  .ic-lock{width:12px;height:12px;display:inline-block;vertical-align:-1.5px;flex:none}
 </style>
 </head>
 <body>
@@ -564,7 +582,7 @@ const MY_AD = {
   headline:'Curious about almost everything',
   desc:"I ask too many questions. I like tide pools, used bookstores, and people who can explain their job in a way that makes it sound interesting. Looking for someone who's game to wander.",
   gender:['Non-binary'], race:['Asian'], religion:'Agnostic', pronouns:['they/them'], sexuality:['Queer'], showSexuality:true, politics:'Liberal', kids:"Doesn't want kids", relationship:'Not sure', relstyle:'Monogamous', weight:'Slim, glasses, usually a little overdressed',
-  headingFont:'Instrument Serif', bodyFont:'Instrument Sans'
+  headingFont:'Instrument Serif', bodyFont:'Instrument Sans', photo:''
 };
 
 // Ad-heading font options (each carries a "personality")
@@ -639,6 +657,9 @@ let state = {view:'feed', threadAd:null, msgTab:'convos'};
 let blockedCount = 2;
 let hasAd = true;         // false = user hasn't posted their own ad → feed is gated
 let feedView = 'paper';   // 'paper' = zoomed-out classifieds page · 'list' = single-column reading view
+// who you're looking for — shapes Today's Picks. Set in onboarding, editable in Settings → Preferences.
+const PREFS = { interest:['Women'], ageMin:'27', ageMax:'40', zip:'94110', dist:'25 miles', rel:'Something serious', style:'No preference', kids:'No preference', politics:'No preference', audience:'Everyone',
+  dbRel:false, dbStyle:false, dbKids:false, dbPolitics:false };  // db* = this attribute is a hard deal-breaker
 const revealedAdIds = new Set();  // conversations where both people have traded faces
 const revealOffered = new Set();  // the OTHER person has shown their face; you haven't yet → dot on the eye
 const revealDeferred = new Set(); // you chose "let's wait until we meet" → prompt dismissed
@@ -1003,6 +1024,8 @@ function faceRevealStep(a){
 }
 
 // ---------- Partner preferences sheet ----------
+// deal-breaker toggle that lives inside an attribute's accordion body (collapses with it)
+function dbRow(key, on){ return `<div class="soa-row db-row"><span class="soa-lab">Deal-breaker — only show matches</span><button class="toggle ${on?'on':''}" data-db="${key}"></button></div>`; }
 function openPreferences(){
   sheet.innerHTML = `
     <button class="close" id="closeSheet">×</button>
@@ -1012,27 +1035,42 @@ function openPreferences(){
     <div class="form" style="gap:18px">
       <div class="fgroup"><label class="lab">Age range</label>
         <div style="display:flex;align-items:center;gap:10px">
-          <input class="field-in" value="27" style="width:80px">
+          <input class="field-in" id="prefsAgeMin" value="${PREFS.ageMin}" style="width:80px" inputmode="numeric">
           <span style="color:var(--muted)">to</span>
-          <input class="field-in" value="40" style="width:80px">
+          <input class="field-in" id="prefsAgeMax" value="${PREFS.ageMax}" style="width:80px" inputmode="numeric">
         </div>
       </div>
       <div style="display:flex;gap:14px">
-        <div class="fgroup" style="flex:1"><label class="lab">ZIP code</label><input class="field-in" value="94110" inputmode="numeric" maxlength="5"></div>
-        <div class="fgroup" style="flex:1"><label class="lab">Distance</label><input class="field-in" value="25 miles"></div>
+        <div class="fgroup" style="flex:1"><label class="lab">ZIP code</label><input class="field-in" id="prefsZip" value="${PREFS.zip}" inputmode="numeric" maxlength="5"></div>
+        <div class="fgroup" style="flex:1"><label class="lab">Distance</label><input class="field-in" id="prefsDist" value="${PREFS.dist}"></div>
       </div>
-      ${accField('Interested in', checkGroup('pInterest',['Men','Women','Trans men','Trans women','Non-binary','Everyone'],['Women'],false,'grid2',['Everyone']), 'pInterest')}
-      ${accField('Relationship type', checkGroup('pRel',['Hookup','Not sure','Something serious'],['Something serious'],false,'stacked'), 'pRel')}
-      ${accField('Kids', checkGroup('pKids',['Wants kids',"Doesn't want kids",'Has kids','No preference'],['No preference'],true,'grid2',['No preference']), 'pKids')}
-      ${accField('Political views', checkGroup('pPol',['Liberal','Conservative','Centrist','No preference'],['No preference'],false,'grid2',['No preference']), 'pPol')}
+      ${accField('Interested in', checkGroup('pInterest',['Men','Women','Trans men','Trans women','Non-binary','Everyone'],PREFS.interest,false,'grid2',['Everyone']), 'pInterest')}
+      ${accField('Relationship type', checkGroup('pRel',['Hookup','Not sure','Something serious'],[PREFS.rel],false,'stacked') + dbRow('rel', PREFS.dbRel), 'pRel')}
+      ${accField('Relationship style', checkGroup('pStyle',['Monogamous','Non-monogamous','Open to non-monogamy','No preference'],[PREFS.style],true,'stacked',['No preference']) + dbRow('style', PREFS.dbStyle), 'pStyle')}
+      ${accField('Kids', checkGroup('pKids',['Wants kids',"Doesn't want kids",'Has kids','No preference'],[PREFS.kids],true,'grid2',['No preference']) + dbRow('kids', PREFS.dbKids), 'pKids')}
+      ${accField('Political views', checkGroup('pPol',['Liberal','Conservative','Centrist','No preference'],[PREFS.politics],false,'grid2',['No preference']) + dbRow('politics', PREFS.dbPolitics), 'pPol')}
       <div class="form-subhead"><div class="fsh-title">Your visibility</div><div class="fsh-sub">Controls who can see your ad — not who you see.</div></div>
-      ${accField('Who can see my ad', checkGroup('audience',['Everyone','LGBTQ+ only'],['Everyone'],true,'grid2'), 'audience')}
+      ${accField('Who can see my ad', checkGroup('audience',['Everyone','LGBTQ+ only'],[PREFS.audience],true,'grid2'), 'audience')}
     </div>
     <button class="btn block" style="margin-top:22px" id="savePrefs">Save preferences</button>`;
   overlay.classList.add('open');
   document.getElementById('closeSheet').onclick = closeSheet;
-  document.getElementById('savePrefs').onclick = closeSheet;
+  document.getElementById('savePrefs').onclick = ()=>{
+    const gv = id => (document.getElementById(id)?.value || '');
+    const iv = obChecked(sheet,'pInterest'); if(iv.length) PREFS.interest = iv;
+    PREFS.rel = obChecked(sheet,'pRel')[0] || PREFS.rel;
+    PREFS.style = obChecked(sheet,'pStyle')[0] || PREFS.style;
+    PREFS.kids = obChecked(sheet,'pKids')[0] || PREFS.kids;
+    PREFS.politics = obChecked(sheet,'pPol')[0] || PREFS.politics;
+    PREFS.audience = obChecked(sheet,'audience')[0] || PREFS.audience;
+    const db = key => !!sheet.querySelector(`[data-db="${key}"]`)?.classList.contains('on');
+    PREFS.dbRel = db('rel'); PREFS.dbStyle = db('style'); PREFS.dbKids = db('kids'); PREFS.dbPolitics = db('politics');
+    PREFS.ageMin = gv('prefsAgeMin'); PREFS.ageMax = gv('prefsAgeMax');
+    PREFS.zip = gv('prefsZip'); PREFS.dist = gv('prefsDist');
+    closeSheet();
+  };
   wireChecks(sheet);
+  sheet.querySelectorAll('[data-db]').forEach(t=>t.addEventListener('click', e=>{ e.stopPropagation(); t.classList.toggle('on'); }));
   wireAccordions(sheet.querySelector('.form'));
 }
 
@@ -1126,6 +1164,7 @@ function threadMsgs(a){
 const IC_BACK  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="11 6 5 12 11 18"/></svg>`;
 const IC_EYE   = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.6"/></svg>`;
 const IC_MORE  = `<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg>`;
+const IC_LOCK  = `<svg class="ic-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>`;
 // inline face-reveal prompt shown in the conversation body once a reveal is unlocked
 function revealInlineHTML(a, s){
   if(s.revealed){
@@ -1273,6 +1312,17 @@ function adMetaGrid(a){
   add('Appearance', a.weight);
   return rows.length ? `<div class="myad-meta">${rows.join('')}</div>` : '';
 }
+// The private face-reveal photo, shown only on My Ad (never on the public ad)
+function myPhotoSlotHtml(){
+  const thumb = MY_AD.photo
+    ? `<img class="mp-thumb" src="${MY_AD.photo}" alt="Your private photo">`
+    : `<div class="mp-thumb"></div>`;
+  return `${thumb}
+    <div class="mp-meta">
+      <div class="mp-note">${IC_LOCK} Hidden until you and a match both choose to reveal. Never shown on your public ad.</div>
+      <button class="btn ghost sm" id="mpChange">${MY_AD.photo?'Change photo':'Add photo'}</button>
+    </div>`;
+}
 function renderMyAd(){
   const a = MY_AD;
   scroll.innerHTML = `
@@ -1284,6 +1334,11 @@ function renderMyAd(){
         <p class="myad-desc" style="font-family:${cssFor(a.bodyFont)}">${a.desc}</p>
         ${adMetaGrid(a)}
       </div>
+      <div class="myad-private">
+        <div class="mp-head">Private photo</div>
+        <div class="mp-row" id="mpRow">${myPhotoSlotHtml()}</div>
+        <input type="file" accept="image/*" id="myPhotoInput" hidden>
+      </div>
       <div class="myad-foot">
         <div class="myad-actions">
           <button class="btn ghost" id="customizeAd">Customize</button>
@@ -1294,6 +1349,10 @@ function renderMyAd(){
     </div>`;
   document.getElementById('editAd').onclick = openEditAd;
   document.getElementById('customizeAd').onclick = ()=>setView('customize');
+  const myPhotoInput = document.getElementById('myPhotoInput');
+  const bindMp = ()=>{ const b=document.getElementById('mpChange'); if(b) b.onclick=()=>myPhotoInput.click(); };
+  bindMp();
+  myPhotoInput.onchange=()=>{ const f=myPhotoInput.files&&myPhotoInput.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=e=>{ MY_AD.photo=e.target.result; document.getElementById('mpRow').innerHTML=myPhotoSlotHtml(); bindMp(); }; rd.readAsDataURL(f); };
 }
 
 function renderCustomize(){
@@ -1541,9 +1600,11 @@ function renderSettings(){
 let obStep = 0;
 const OB_DEFAULT_HFONT = 'Instrument Serif', OB_DEFAULT_BFONT = 'Instrument Sans';
 const obData = { name:'', age:'', location:'', headline:'', desc:'', photo:'', headingFont:OB_DEFAULT_HFONT, bodyFont:OB_DEFAULT_BFONT,
-  gender:[], pronouns:[], rel:'', race:[], religion:'', sexuality:[], showSexuality:false, politics:'', kids:'', relstyle:'', build:'' };
+  gender:[], pronouns:[], rel:'', race:[], religion:'', sexuality:[], showSexuality:false, politics:'', kids:'', relstyle:'', build:'',
+  prefInterest:[], prefAgeMin:'25', prefAgeMax:'45', prefZip:'', prefDist:'25 miles', prefRel:'' };
 const obVal = id => { const el = document.getElementById(id); return el ? el.value : ''; };
-function obResetData(){ for(const k in obData) obData[k]=''; obData.headingFont=OB_DEFAULT_HFONT; obData.bodyFont=OB_DEFAULT_BFONT; obData.gender=[]; obData.pronouns=[]; obData.race=[]; obData.sexuality=[]; obData.showSexuality=false; }
+function obResetData(){ for(const k in obData) obData[k]=''; obData.headingFont=OB_DEFAULT_HFONT; obData.bodyFont=OB_DEFAULT_BFONT; obData.gender=[]; obData.pronouns=[]; obData.race=[]; obData.sexuality=[]; obData.showSexuality=false;
+  obData.prefInterest=[]; obData.prefAgeMin='25'; obData.prefAgeMax='45'; obData.prefZip=''; obData.prefDist='25 miles'; obData.prefRel=''; }
 function startOnboarding(){ obStep = 0; obResetData(); document.getElementById('onboarding').classList.add('open'); renderOnboarding(); }
 function obChecked(container, group){
   const acc = container.querySelector(`[data-acc][data-acc-group="${group}"]`);
@@ -1558,6 +1619,16 @@ function obSaveStep(){
   if(obStep===1){ obData.name=obVal('obName'); obData.age=obVal('obAge'); obData.location=obVal('obLoc'); }
   if(obStep===2){ obData.headline=obVal('obHead'); obData.desc=obVal('obDesc'); }
   if(obStep===3){ obSaveAbout(); }
+  if(obStep===5){ obSavePrefs(); }
+}
+function obSavePrefs(){
+  const c = document.getElementById('obBody'); if(!c) return;
+  obData.prefInterest = obChecked(c,'prefInterest');
+  obData.prefRel      = obChecked(c,'prefRel')[0] || '';
+  obData.prefAgeMin   = obVal('prefAgeMin');
+  obData.prefAgeMax   = obVal('prefAgeMax');
+  obData.prefZip      = obVal('prefZip');
+  obData.prefDist     = obVal('prefDist');
 }
 function obSaveAbout(){
   const c = document.getElementById('obBody'); if(!c || !c.querySelector('[data-acc]')) return;
@@ -1581,8 +1652,8 @@ function obValidate(){
   if(obStep===1) ok = ['obName','obAge','obLoc'].every(id=>obVal(id).trim());
   else if(obStep===2) ok = ['obHead','obDesc'].every(id=>obVal(id).trim());
   else if(obStep===3){ const c=document.getElementById('obBody'); ok = ['gender','pronouns','rel'].every(g=>obChecked(c,g).length>0); }
-  else if(obStep===4) ok = !!obData.photo;
-  else if(obStep>=5) ok = ['name','age','location','headline','desc'].every(k=>String(obData[k]).trim()) && !!obData.photo && obData.gender.length>0 && obData.pronouns.length>0 && !!obData.rel;
+  else if(obStep===5){ const c=document.getElementById('obBody'); ok = obChecked(c,'prefInterest').length>0; }
+  else if(obStep>=6) ok = ['name','age','location','headline','desc'].every(k=>String(obData[k]).trim()) && obData.gender.length>0 && obData.pronouns.length>0 && !!obData.rel;
   btn.disabled = !ok;
 }
 function photoSlotHtml(){
@@ -1590,7 +1661,7 @@ function photoSlotHtml(){
     return `<div class="photo-prev">
       <img class="thumb" src="${obData.photo}" alt="Your photo">
       <div class="pp-meta">
-        <span class="pp-lock">🔒 Only you can see this now</span>
+        <span class="pp-lock">${IC_LOCK} Only you can see this now</span>
         <button class="pp-replace" id="photoReplace">Replace photo</button>
       </div></div>`;
   }
@@ -1614,7 +1685,7 @@ function obAdCard(){
 }
 function obPhotoNote(){
   if(!obData.photo) return '';
-  return `<div class="photo-attached"><img class="pa-thumb" src="${obData.photo}" alt="Your photo"><span>🔒 Photo attached — hidden until you both choose to reveal.</span></div>`;
+  return `<div class="photo-attached"><img class="pa-thumb" src="${obData.photo}" alt="Your photo"><span>${IC_LOCK} Photo attached — hidden until you both choose to reveal.</span></div>`;
 }
 function finishOnboarding(){
   const d = obData;
@@ -1624,18 +1695,38 @@ function finishOnboarding(){
   MY_AD.gender=d.gender; MY_AD.pronouns=d.pronouns; MY_AD.relationship=d.rel;
   MY_AD.race=d.race; MY_AD.sexuality=d.sexuality; MY_AD.showSexuality=d.showSexuality;
   MY_AD.religion=d.religion; MY_AD.politics=d.politics; MY_AD.kids=d.kids; MY_AD.relstyle=d.relstyle; MY_AD.weight=d.build;
+  if(d.prefInterest.length) PREFS.interest = d.prefInterest;
+  if(d.prefAgeMin) PREFS.ageMin = d.prefAgeMin; if(d.prefAgeMax) PREFS.ageMax = d.prefAgeMax;
+  PREFS.zip = d.prefZip; if(d.prefDist) PREFS.dist = d.prefDist; if(d.prefRel) PREFS.rel = d.prefRel;
   hasAd = true;
   endOnboarding(); setView('myad');
 }
+const HIW_CARDS = [
+  {n:'01', h:"You'll meet through writing", p:"Classy has no photo grid and nothing to swipe. Everyone posts a personal ad — a few honest lines about who they are and who they're hoping to find."},
+  {n:'02', h:"Browse the day's personals", p:"Each day brings a fresh paper, laid out like the classifieds. No algorithm rushing you — just read, and see whose words stay with you."},
+  {n:'03', h:"Reply, and take your time", p:"Write to the ones who catch you. Here you get to know a person before you ever see their face — the conversation is the whole point."},
+  {n:'04', h:"Faces, when you're both ready", p:"Photos stay private until you both choose to share them. A reveal is always mutual, never one-sided — no pressure, no surprises."},
+];
+let hiwIndex = -1;
+function openHowItWorks(){ hiwIndex = 0; renderHowItWorks(); }
+function renderHowItWorks(){
+  const body = document.getElementById('obBody'), nav = document.getElementById('obNav'), dots = document.getElementById('obDots');
+  const c = HIW_CARDS[hiwIndex], last = hiwIndex === HIW_CARDS.length - 1;
+  dots.innerHTML = HIW_CARDS.map((_,k)=>`<span class="ob-dot ${k===hiwIndex?'on':''}"></span>`).join('');
+  body.innerHTML = `<div class="hiw"><div class="hiw-kicker">How it works</div><div class="hiw-illus"></div><h2 class="hiw-h">${c.h}</h2><p class="hiw-p">${c.p}</p></div>`;
+  nav.innerHTML = `<button class="btn ghost" id="hiwBack">Back</button><button class="btn" id="hiwNext">${last?'Write my ad':'Next'}</button>`;
+  document.getElementById('hiwBack').onclick=()=>{ if(hiwIndex===0){ hiwIndex=-1; renderOnboarding(); } else { hiwIndex--; renderHowItWorks(); } };
+  document.getElementById('hiwNext').onclick=()=>{ if(last){ hiwIndex=-1; obStep=1; renderOnboarding(); } else { hiwIndex++; renderHowItWorks(); } };
+}
 function renderOnboarding(){
   const body = document.getElementById('obBody'), nav = document.getElementById('obNav'), dots = document.getElementById('obDots');
-  const TOTAL = 4;
+  const TOTAL = 5;
   dots.innerHTML = (obStep>=1 && obStep<=TOTAL) ? Array.from({length:TOTAL},(_,k)=>`<span class="ob-dot ${k===obStep-1?'on':''}"></span>`).join('') : '';
   if(obStep===0){
     body.innerHTML = `<div class="ob-welcome"><div class="ob-brand">Classy</div><div class="ob-tag">Seek. Find.</div><h2>No photos. Just words.</h2><p>On Classy you meet through what you write. Let's put your personal in tomorrow's paper.</p></div>`;
-    nav.innerHTML = `<button class="btn block" id="obNext">Write my ad</button>`;
+    nav.innerHTML = `<div class="ob-welcome-nav"><button class="btn block" id="obNext">Write my ad</button><button class="hiw-link" id="obHiw">How it works</button></div>`;
   } else if(obStep===1){
-    body.innerHTML = `<div class="ob-step"><div class="ob-kicker">Step 1 of 4</div><h2>The basics</h2>
+    body.innerHTML = `<div class="ob-step"><h2>The basics</h2>
       <div class="fgroup"><label class="lab">Your name <span class="req-mark">*</span></label><input class="field-in" id="obName" value="${obData.name}" placeholder="First name"></div>
       <div style="display:flex;gap:14px">
         <div class="fgroup" style="flex:0 0 96px"><label class="lab">Age <span class="req-mark">*</span></label><input class="field-in" id="obAge" value="${obData.age}" placeholder="30"></div>
@@ -1643,13 +1734,13 @@ function renderOnboarding(){
       </div></div>`;
     nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obNext">Next</button>`;
   } else if(obStep===2){
-    body.innerHTML = `<div class="ob-step"><div class="ob-kicker">Step 2 of 4</div><h2>Your personal</h2>
+    body.innerHTML = `<div class="ob-step"><h2>Your personal</h2>
       <p class="ob-sub">A headline to catch the eye, then the ad itself. Specifics beat adjectives.</p>
       <div class="fgroup"><div class="lab-row"><label class="lab">Headline <span class="req-mark">*</span></label><span class="counter" id="obHeadCnt"></span></div><input class="field-in" id="obHead" maxlength="250" value="${obData.headline}" placeholder="e.g. Quiet but not shy"></div>
       <div class="fgroup"><div class="lab-row"><label class="lab">Description <span class="req-mark">*</span></label><span class="counter" id="obDescCnt"></span></div><textarea class="field-in autogrow" id="obDesc" maxlength="1000" placeholder="I read a lot, take long walks and notice small things…">${obData.desc}</textarea></div></div>`;
     nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obNext">Next</button>`;
   } else if(obStep===3){
-    body.innerHTML = `<div class="ob-step"><div class="ob-kicker">Step 3 of 4</div><h2>About you</h2>
+    body.innerHTML = `<div class="ob-step"><h2>About you</h2>
       <p class="ob-sub">A few details for your ad. Only gender, pronouns, and what you're looking for are required — the rest is up to you.</p>
       ${accField('Gender <span class="req-mark">*</span>', checkGroup('gender',['Man','Woman','Trans man','Trans woman','Non-binary','Write in…'],obData.gender,false,'grid2'), 'gender')}
       ${accField('Pronouns <span class="req-mark">*</span>', checkGroup('pronouns',['he/him','she/her','they/them','Write in…'],obData.pronouns,false,'grid2'), 'pronouns')}
@@ -1664,21 +1755,31 @@ function renderOnboarding(){
       ${accField('Appearance', appearanceBody(obData.build), 'appearance', 'Write in…')}</div>`;
     nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obNext">Next</button>`;
   } else if(obStep===4){
-    body.innerHTML = `<div class="ob-step"><div class="ob-kicker">Step 4 of 4</div><h2>Add your photo <span class="req-mark">*</span></h2>
-      <p class="ob-sub">No one sees this on your ad. It stays hidden until you and someone both choose to trade faces.</p>
+    body.innerHTML = `<div class="ob-step"><h2>Add your photo <span class="hint">optional</span></h2>
+      <p class="ob-sub">No one sees this on your ad. It stays hidden until you and someone both choose to trade faces — and you can add it anytime from My Ad.</p>
       <input type="file" accept="image/*" id="photoInput" hidden>
       <div id="photoSlot">${photoSlotHtml()}</div>
-      <div class="photo-privacy">🔒 Hidden until a mutual face reveal — never shown on your public ad.</div></div>`;
-    nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obNext">Next</button>`;
+      <div class="photo-privacy">${IC_LOCK} Hidden until a mutual face reveal — never shown on your public ad.</div></div>`;
+    nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obNext">${obData.photo?'Next':'Add photo later'}</button>`;
   } else if(obStep===5){
-    body.innerHTML = `<div class="ob-step"><div class="ob-kicker">Review</div><h2>Here's your personal</h2>
-      <p class="ob-sub">Your whole ad in one place. Confirm when it looks right — you can refine it anytime in My Ad.</p>
-      ${obAdCard()}
-      ${obPhotoNote()}</div>`;
-    nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obNext">Confirm</button>`;
+    body.innerHTML = `<div class="ob-step"><h2>Who you're looking for</h2>
+      <p class="ob-sub">This shapes who lands in your Today's Picks. You can get more specific anytime in Settings.</p>
+      ${accField('Interested in <span class="req-mark">*</span>', checkGroup('prefInterest',['Men','Women','Trans men','Trans women','Non-binary','Everyone'],obData.prefInterest,false,'grid2',['Everyone']), 'prefInterest')}
+      <div class="fgroup"><label class="lab">Age range</label>
+        <div style="display:flex;align-items:center;gap:10px">
+          <input class="field-in" id="prefAgeMin" value="${obData.prefAgeMin}" style="width:84px" inputmode="numeric">
+          <span style="color:var(--muted)">to</span>
+          <input class="field-in" id="prefAgeMax" value="${obData.prefAgeMax}" style="width:84px" inputmode="numeric">
+        </div></div>
+      <div style="display:flex;gap:14px">
+        <div class="fgroup" style="flex:1"><label class="lab">ZIP code</label><input class="field-in" id="prefZip" value="${obData.prefZip}" inputmode="numeric" maxlength="5" placeholder="94110"></div>
+        <div class="fgroup" style="flex:1"><label class="lab">Distance</label><input class="field-in" id="prefDist" value="${obData.prefDist}"></div>
+      </div>
+      ${accField('Relationship type', checkGroup('prefRel',['Hookup','Not sure','Something serious'],[obData.prefRel],true,'stacked'), 'prefRel')}</div>`;
+    nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obNext">Next</button>`;
   } else {
     body.innerHTML = `<div class="ob-step"><div class="ob-kicker">Optional</div><h2>Make it yours</h2>
-      <p class="ob-sub">Give your headline and text a font that fits your vibe — or skip it and change it anytime in My Ad.</p>
+      <p class="ob-sub">Here's your whole ad. Give it a font that fits your vibe, or post as-is — you can refine anything anytime in My Ad.</p>
       <div id="obCustPreview">${obAdCard()}</div>
       <div class="cust-drops">
         <label class="drop"><span class="drop-label">Name font</span>
@@ -1689,13 +1790,15 @@ function renderOnboarding(){
           <select class="drop-select" id="obBodySel" style="font-family:${cssFor(obData.bodyFont)}">
             ${BODY_FONTS.map(f=>`<option value="${f.name}" style="font-family:${f.css}"${f.name===obData.bodyFont?' selected':''}>${f.name}</option>`).join('')}
           </select></label>
-      </div></div>`;
-    nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><div style="display:flex;gap:10px;flex:1"><button class="btn ghost" id="obLater" style="flex:1">Later</button><button class="btn" id="obPost" style="flex:1">Post my ad</button></div>`;
+      </div>
+      ${obPhotoNote()}</div>`;
+    nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obPost">Post my ad</button>`;
   }
   const next=document.getElementById('obNext'), back=document.getElementById('obBack'), post=document.getElementById('obPost');
   if(next) next.onclick=()=>{ obSaveStep(); obStep++; renderOnboarding(); };
   if(back) back.onclick=()=>{ obSaveStep(); obStep--; renderOnboarding(); };
   if(post) post.onclick=()=>{ obSaveStep(); finishOnboarding(); };
+  const hiw=document.getElementById('obHiw'); if(hiw) hiw.onclick=openHowItWorks;
   const later=document.getElementById('obLater');
   if(later) later.onclick=()=>{ finishOnboarding(); };
   const obHeadSel=document.getElementById('obHeadSel'), obBodySel=document.getElementById('obBodySel'), obPv=document.getElementById('obCustPreview');
@@ -1707,9 +1810,9 @@ function renderOnboarding(){
   if(desc){ const grow=()=>{desc.style.height='auto';desc.style.height=desc.scrollHeight+'px';}; desc.addEventListener('input',grow); grow(); }
   ['obName','obAge','obLoc','obHead','obDesc'].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('input', obValidate); });
   const photoInput=document.getElementById('photoInput');
-  if(photoInput){ photoInput.onchange=()=>{ const f=photoInput.files&&photoInput.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=e=>{ obData.photo=e.target.result; const slot=document.getElementById('photoSlot'); if(slot) slot.innerHTML=photoSlotHtml(); rebindPhoto(); obValidate(); }; rd.readAsDataURL(f); }; }
+  if(photoInput){ photoInput.onchange=()=>{ const f=photoInput.files&&photoInput.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=e=>{ obData.photo=e.target.result; const slot=document.getElementById('photoSlot'); if(slot) slot.innerHTML=photoSlotHtml(); rebindPhoto(); const nx=document.getElementById('obNext'); if(nx) nx.textContent='Next'; obValidate(); }; rd.readAsDataURL(f); }; }
   rebindPhoto();
-  if(obStep===3){
+  if(obStep===3 || obStep===5){
     const stepEl = body.querySelector('.ob-step');
     if(stepEl){
       wireChecks(stepEl);
