@@ -1,0 +1,219 @@
+<title>Classy × Material 3 — Type Scale</title>
+<style>
+  :root{
+    --board:#E9E2CE; --panel:#FCF7EA; --ink:#26262C; --ink2:#4A4A50;
+    --muted:#7c786c; --line:#CBBF9E; --pencil:#9B3B2E;
+    --brand:'Clarendon URW','Clarendon','Rockwell','Roslindale',Georgia,serif;
+    --plain:'ITC Franklin Gothic LT Pro','ITC Franklin Gothic','Franklin Gothic Medium','Franklin Gothic',
+            'Helvetica Neue',Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{background:var(--board);color:var(--ink);font-family:var(--plain);min-height:100vh;
+    background-image:radial-gradient(rgba(38,38,44,.035) 1px,transparent 1px);background-size:4px 4px;
+    padding:38px clamp(16px,4vw,64px) 90px}
+  .sheet{max-width:1080px;margin:0 auto}
+
+  /* Masthead */
+  .mast{border-bottom:2.5px solid var(--ink);padding-bottom:22px}
+  .kicker{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--pencil);font-weight:600;margin:0 0 12px}
+  .mast h1{font-family:var(--brand);font-weight:400;font-size:clamp(34px,5.5vw,60px);line-height:.96;
+    letter-spacing:-.01em;margin:0;text-wrap:balance}
+  .mast .lead{font-size:15.5px;line-height:1.5;color:var(--ink2);margin:16px 0 0;max-width:68ch}
+  .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+  .chip{display:inline-flex;align-items:center;gap:9px;border:1.5px solid var(--ink);border-radius:8px;
+    padding:8px 13px;background:var(--panel);font-size:13px}
+  .chip .k{font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+  .chip.brand .k{color:var(--pencil)} .chip.plain .k{color:var(--ink2)}
+  .chip .f{font-weight:600}
+  .chip.brand .f{font-family:var(--brand);font-size:16px}
+  .chip.plain .f{font-family:var(--plain)}
+
+  /* Model note */
+  .model{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--ink);border-radius:11px;
+    overflow:hidden;margin:30px 0 8px;background:var(--panel)}
+  .model .col{padding:16px 20px}
+  .model .col+.col{border-left:1.5px solid var(--line)}
+  .model h3{margin:0 0 6px;font-size:11px;letter-spacing:.16em;text-transform:uppercase}
+  .model.brandc .lft h3{color:var(--pencil)} .model .rgt h3{color:var(--ink2)}
+  .model p{margin:0;font-size:13.5px;line-height:1.5;color:var(--ink2)}
+  .model .roles{font-family:var(--brand);font-size:18px;color:var(--ink);margin-top:3px}
+  .model .rgt .roles{font-family:var(--plain);font-weight:600;font-size:15px}
+
+  .deviation{display:flex;gap:12px;align-items:flex-start;border-left:3px solid var(--pencil);
+    background:rgba(155,59,46,.06);border-radius:0 8px 8px 0;padding:13px 16px;margin:22px 0 6px}
+  .deviation .m{color:var(--pencil);font-weight:700;font-size:15px;line-height:1.2}
+  .deviation p{margin:0;font-size:13.5px;line-height:1.5;color:var(--ink2)}
+  .deviation b{color:var(--ink)}
+
+  /* Role groups */
+  .group{margin-top:44px}
+  .group-h{display:flex;align-items:baseline;gap:14px;margin-bottom:6px}
+  .group-h h2{font-family:var(--brand);font-weight:400;font-size:24px;margin:0}
+  .group-h .rule{flex:1;height:0;border-top:1px solid var(--line);transform:translateY(-7px)}
+  .group-h .face{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;white-space:nowrap}
+  .group-h .face.b{color:var(--pencil)} .group-h .face.p{color:var(--ink2)}
+  .group-sub{font-size:13px;color:var(--muted);margin:0 0 14px;line-height:1.45;max-width:70ch}
+
+  .row{display:grid;grid-template-columns:200px 1fr;gap:22px;align-items:center;
+    padding:15px 0;border-top:1px solid var(--line)}
+  .row .meta .name{font-weight:700;font-size:13.5px;letter-spacing:.01em}
+  .row .meta .spec{font-size:11.5px;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+  .row .meta .tag{display:inline-block;margin-top:8px;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+    font-weight:700;padding:3px 7px;border-radius:5px}
+  .tag.b{color:var(--pencil);background:rgba(155,59,46,.1)}
+  .tag.p{color:var(--ink2);background:rgba(38,38,44,.07)}
+  .row .sample{min-width:0;overflow:hidden}
+  .row .use{display:block;font-size:11px;color:var(--muted);margin-top:7px;font-style:italic;font-family:var(--brand)}
+  .brandtype{font-family:var(--brand)}
+  .plaintype{font-family:var(--plain)}
+  .row.flag{background:linear-gradient(90deg,rgba(155,59,46,.05),transparent 70%);
+    border-radius:8px;padding-left:12px;margin-left:-12px;border-top:1px solid rgba(155,59,46,.25)}
+  .row.flag .name::after{content:'⚠ deviates from M3';display:block;color:var(--pencil);font-size:10px;
+    letter-spacing:.04em;font-weight:700;margin-top:5px;text-transform:none}
+
+  .foot{margin-top:56px;border-top:1.5px solid var(--ink);padding-top:18px}
+  .foot .ex{border:1.5px dashed var(--line);border-radius:10px;padding:15px 18px;background:var(--panel)}
+  .foot .ex h4{margin:0 0 6px;font-family:var(--brand);font-weight:400;font-size:17px}
+  .foot .ex p{margin:0;font-size:13.5px;line-height:1.5;color:var(--ink2)}
+  .foot .ex b{color:var(--pencil)}
+  .foot .rendernote{font-size:11.5px;color:var(--muted);margin-top:16px;line-height:1.5}
+
+  @media (max-width:620px){
+    .model{grid-template-columns:1fr} .model .col+.col{border-left:0;border-top:1.5px solid var(--line)}
+    .row{grid-template-columns:1fr;gap:10px}
+  }
+</style>
+
+<div class="wrap">
+  <div class="sheet">
+
+    <header class="mast">
+      <p class="kicker">Typography spec · brand + plain</p>
+      <h1>Classy × Material&nbsp;3 — the Type Scale</h1>
+      <p class="lead">Material 3 collapses type into five roles — Display, Headline, Title, Body, Label — and is built to run on <em>two</em> typefaces: a <b>brand</b> face and a <b>plain</b> face. Classy already works this way.</p>
+      <div class="chips">
+        <span class="chip brand"><span class="k">Brand</span><span class="f">Clarendon URW</span></span>
+        <span class="chip plain"><span class="k">Plain</span><span class="f">ITC Franklin Gothic</span></span>
+        <span class="chip plain" style="border-style:dashed"><span class="k">Ad only</span><span class="f">member's own fonts</span></span>
+      </div>
+    </header>
+
+    <div class="model brandc">
+      <div class="col lft">
+        <h3>Brand typeface → Clarendon URW</h3>
+        <p>M3 assigns the brand face to the two loudest roles.</p>
+        <div class="roles">Display · Headline</div>
+      </div>
+      <div class="col rgt">
+        <h3>Plain typeface → ITC Franklin Gothic</h3>
+        <p>M3 assigns the plain face to the three working roles.</p>
+        <div class="roles">Title · Body · Label</div>
+      </div>
+    </div>
+
+    <div class="deviation">
+      <span class="m">⚠</span>
+      <p><b>Classy's one deviation:</b> the brand face reaches one role deeper — into <b>Title&nbsp;Large</b> — so section headers ("Appearance &amp; accessibility") and card / person names ("Riley") stay Clarendon. Title&nbsp;Medium &amp; Small drop back to Franklin Gothic for genuinely utilitarian UI. Clarendon never appears at Body or Label size — it's too heavy a slab to read small, which is exactly why it stops here.</p>
+    </div>
+
+    <!-- DISPLAY -->
+    <section class="group">
+      <div class="group-h"><h2>Display</h2><span class="rule"></span><span class="face b">Clarendon URW · Brand</span></div>
+      <p class="group-sub">The largest, rarest text. Reserved for the newspaper masthead — short, important, unmissable.</p>
+      <div class="row">
+        <div class="meta"><div class="name">Display / Large</div><div class="spec">57 / 64 · 400 · −0.25</div><span class="tag b">Brand</span></div>
+        <div class="sample"><span class="brandtype" style="font-size:57px;line-height:1;letter-spacing:-.01em">Personals</span><span class="use">the classifieds masthead</span></div>
+      </div>
+      <div class="row">
+        <div class="meta"><div class="name">Display / Medium</div><div class="spec">45 / 52 · 400 · 0</div><span class="tag b">Brand</span></div>
+        <div class="sample"><span class="brandtype" style="font-size:45px;line-height:1.05">Today's Picks</span><span class="use">feed hero</span></div>
+      </div>
+      <div class="row">
+        <div class="meta"><div class="name">Display / Small</div><div class="spec">36 / 44 · 400 · 0</div><span class="tag b">Brand</span></div>
+        <div class="sample"><span class="brandtype" style="font-size:36px;line-height:1.1">Missed Connections</span><span class="use">a secondary section front</span></div>
+      </div>
+    </section>
+
+    <!-- HEADLINE -->
+    <section class="group">
+      <div class="group-h"><h2>Headline</h2><span class="rule"></span><span class="face b">Clarendon URW · Brand</span></div>
+      <p class="group-sub">High-emphasis titles that anchor a screen or a modal. In M3, dialog titles use <em>Headline&nbsp;Small</em> — so your face-reveal modal lives here.</p>
+      <div class="row">
+        <div class="meta"><div class="name">Headline / Large</div><div class="spec">32 / 40 · 400 · 0</div><span class="tag b">Brand</span></div>
+        <div class="sample"><span class="brandtype" style="font-size:32px;line-height:1.15">Trade faces with Jordan?</span><span class="use">face-reveal dialog title</span></div>
+      </div>
+      <div class="row">
+        <div class="meta"><div class="name">Headline / Medium</div><div class="spec">28 / 36 · 400 · 0</div><span class="tag b">Brand</span></div>
+        <div class="sample"><span class="brandtype" style="font-size:28px;line-height:1.15">Messages</span><span class="use">top-bar page title</span></div>
+      </div>
+      <div class="row">
+        <div class="meta"><div class="name">Headline / Small</div><div class="spec">24 / 32 · 400 · 0</div><span class="tag b">Brand</span></div>
+        <div class="sample"><span class="brandtype" style="font-size:24px;line-height:1.2">You're in the paper</span><span class="use">confirmation / dialog headline</span></div>
+      </div>
+    </section>
+
+    <!-- TITLE -->
+    <section class="group">
+      <div class="group-h"><h2>Title</h2><span class="rule"></span><span class="face p">Mostly Franklin Gothic · Plain</span></div>
+      <p class="group-sub">Medium-emphasis titles inside components. This is the split role: Large stays Brand for Classy; Medium &amp; Small are Plain.</p>
+      <div class="row flag">
+        <div class="meta"><div class="name">Title / Large</div><div class="spec">22 / 28 · 400 · 0</div><span class="tag b">Brand</span></div>
+        <div class="sample"><span class="brandtype" style="font-size:22px;line-height:1.2">Riley, 30</span> &nbsp; <span class="brandtype" style="font-size:22px;line-height:1.2">Appearance &amp; accessibility</span><span class="use">card / person names · settings section headers</span></div>
+      </div>
+      <div class="row">
+        <div class="meta"><div class="name">Title / Medium</div><div class="spec">16 / 24 · 500 · +0.15</div><span class="tag p">Plain</span></div>
+        <div class="sample"><span class="plaintype" style="font-size:16px;line-height:1.4;font-weight:600">Conversations</span><span class="use">emphasized tab / list title</span></div>
+      </div>
+      <div class="row">
+        <div class="meta"><div class="name">Title / Small</div><div class="spec">14 / 20 · 500 · +0.1</div><span class="tag p">Plain</span></div>
+        <div class="sample"><span class="plaintype" style="font-size:14px;line-height:1.4;font-weight:600">Requests</span><span class="use">dense component title</span></div>
+      </div>
+    </section>
+
+    <!-- BODY -->
+    <section class="group">
+      <div class="group-h"><h2>Body</h2><span class="rule"></span><span class="face p">Franklin Gothic Book · Plain</span></div>
+      <p class="group-sub">Long-form reading. The workhorse role — ad copy, message text, supporting lines, form-field values.</p>
+      <div class="row">
+        <div class="meta"><div class="name">Body / Large</div><div class="spec">16 / 24 · 400 · +0.5</div><span class="tag p">Plain</span></div>
+        <div class="sample"><span class="plaintype" style="font-size:16px;line-height:1.5">I read a lot, take long walks, and notice small things.</span><span class="use">ad description · message text</span></div>
+      </div>
+      <div class="row">
+        <div class="meta"><div class="name">Body / Medium</div><div class="spec">14 / 20 · 400 · +0.25</div><span class="tag p">Plain</span></div>
+        <div class="sample"><span class="plaintype" style="font-size:14px;line-height:1.45;color:var(--muted)">Will cook dinner for you, badly</span><span class="use">muted ad tagline / preview</span></div>
+      </div>
+      <div class="row">
+        <div class="meta"><div class="name">Body / Small</div><div class="spec">12 / 16 · 400 · +0.4</div><span class="tag p">Plain</span></div>
+        <div class="sample"><span class="plaintype" style="font-size:12px;line-height:1.5;color:var(--muted)">Nothing of your face is shown until you both choose to reveal.</span><span class="use">helper / fine print</span></div>
+      </div>
+    </section>
+
+    <!-- LABEL -->
+    <section class="group">
+      <div class="group-h"><h2>Label</h2><span class="rule"></span><span class="face p">Franklin Gothic Medium · Plain</span></div>
+      <p class="group-sub">Utility text on components — buttons, nav, tabs, chips, overlines, timestamps. Small, tracked, medium weight.</p>
+      <div class="row">
+        <div class="meta"><div class="name">Label / Large</div><div class="spec">14 / 20 · 500 · +0.1</div><span class="tag p">Plain</span></div>
+        <div class="sample"><span class="plaintype" style="font-size:14px;line-height:1.4;font-weight:600;letter-spacing:.01em">Reply to this ad</span><span class="use">button label · bottom-nav label</span></div>
+      </div>
+      <div class="row">
+        <div class="meta"><div class="name">Label / Medium</div><div class="spec">12 / 16 · 500 · +0.5</div><span class="tag p">Plain</span></div>
+        <div class="sample"><span class="plaintype" style="font-size:12px;line-height:1.4;font-weight:600;letter-spacing:.16em;text-transform:uppercase">Seek · Find</span><span class="use">wordmark tagline · overline</span></div>
+      </div>
+      <div class="row">
+        <div class="meta"><div class="name">Label / Small</div><div class="spec">11 / 16 · 500 · +0.5</div><span class="tag p">Plain</span></div>
+        <div class="sample"><span class="plaintype" style="font-size:11px;line-height:1.4;font-weight:600;letter-spacing:.14em;text-transform:uppercase">2h ago · Silver Lake, LA</span><span class="use">timestamp · metadata caps</span></div>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <div class="ex">
+        <h4>The one place the scale is overridden</h4>
+        <p>On a <b>personal ad</b>, the member picks their own fonts — but only in two slots: the <b>ad headline</b> (a Headline slot) and the <b>ad body</b> (a Body slot). Those are the decorative faces in the feed. Every other surface in the app stays locked to this scale — which is also what the "Hide user-selected fonts" accessibility toggle enforces by snapping ads back onto the plain face.</p>
+      </div>
+      <p class="rendernote">This sheet references the real Adobe faces by name, so it renders in Clarendon URW &amp; ITC Franklin Gothic wherever they're activated; elsewhere it falls back to a slab serif and a gothic sans. Sizes shown are M3's baseline (Roboto-reference) scale — keep them, or scale as a set.</p>
+    </footer>
+
+  </div>
+</div>

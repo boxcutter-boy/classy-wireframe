@@ -28,7 +28,7 @@
   }
   body.dark{
     --bg:#242424; --panel:#2e2e2e; --rail:#1c1c1c; --rail-ink:#e8e8e8; --rail-muted:#8a8a8a;
-    --line:#484848; --line-strong:#6a6a6a; --fill:#3a3a3a; --fill-2:#333; --ink:#e8e8e8; --muted:#9a9a9a;
+    --line:#484848; --line-strong:#6a6a6a; --fill:#3a3a3a; --fill-2:#333; --ink:#e8e8e8; --muted:#ababab;
     --news-bg:#262624; --news-ink:#e9e9e4; --news-muted:#a7a79f; --news-rule:#4c4c48;
   }
   *{box-sizing:border-box}
@@ -88,7 +88,7 @@
   .horoscope{text-align:center;max-width:640px;margin:0 auto 28px;padding-bottom:22px;border-bottom:1px solid var(--line)}
   .horo-label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
   .horo-text{font-family:var(--serif);font-style:italic;font-size:15px;line-height:1.55;color:var(--ink);margin:8px 0 0}
-  .masonry{display:flex;gap:20px;align-items:flex-start}
+  .masonry{display:flex;gap:20px;align-items:flex-start;max-width:480px;margin:0 auto}
   .mcol{flex:1;min-width:0;display:flex;flex-direction:column;gap:20px}
   .card{
     background:var(--panel);border:1.5px solid var(--line-strong);border-radius:var(--radius);
@@ -104,10 +104,12 @@
   .ad-place{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
   .ad-headline{font-weight:700;font-size:13px;letter-spacing:.07em;text-transform:uppercase;line-height:1.3;color:var(--ink);margin:0 0 11px}
   .ad-body{font-size:13px;line-height:1.5;color:var(--ink);margin:0}
+  .feed-name{font-size:12px;font-weight:500;color:var(--ink);margin:0 0 4px}
+  .feed-headline{font-weight:500;font-size:calc(22px * var(--fscale,1));line-height:1.12;color:var(--ink);margin:0 0 10px}
   .sheet .ad-name,.myad-card .ad-name{font-size:calc(27px * var(--fscale,1))}
   /* ad you've already replied to — still shown (daily limit), but de-emphasized */
   .card.replied{background:var(--fill-2)}
-  .card.replied .ad-name,.card.replied .ad-headline,.card.replied .ad-body,.card.replied .tags{opacity:.45}
+  .card.replied .feed-name,.card.replied .feed-headline,.card.replied .ad-body,.card.replied .tags{opacity:.45}
   .card.replied:hover{border-color:var(--line-strong);box-shadow:0 2px 8px rgba(0,0,0,.05);transform:none}
   .replied-note{display:flex;align-items:center;gap:7px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:12px;font-weight:600;letter-spacing:.01em;color:var(--muted)}
   .replied-note::before{content:'✓';display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--ink);color:var(--panel);font-size:10px;flex:none}
@@ -138,9 +140,9 @@
     border-bottom:1px solid var(--news-rule);break-inside:avoid;cursor:pointer;color:inherit;font-family:inherit;transition:opacity .12s}
   .clip:hover{opacity:.55}
   .clip-name{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-weight:500;
-    font-size:calc(20px * var(--fscale,1));line-height:1.05;color:var(--news-ink)}
+    font-size:12px;line-height:1.1;color:var(--news-ink)}
   .clip-rep-ic{width:13px;height:13px;flex:0 0 auto;color:var(--news-ink);align-self:center}
-  .clip-head{font-weight:700;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;line-height:1.22;margin:6px 0 5px;color:var(--news-ink)}
+  .clip-head{font-weight:500;font-size:calc(19px * var(--fscale,1));line-height:1.12;margin:3px 0 6px;color:var(--news-ink)}
   .clip-body{font-size:12px;line-height:1.48;color:var(--news-ink);opacity:.9}
   .clip-loc{font-size:10.5px;font-style:italic;color:var(--news-muted);margin-top:6px}
   .clip.replied,.clip.replied:hover{opacity:.5}
@@ -233,6 +235,8 @@
   .reveal-pair{display:flex;gap:16px;margin:18px 0 4px}
   .reveal-single{display:flex;justify-content:center;margin:18px 0 4px}
   .reveal-single .reveal-tile{flex:0 0 260px;width:260px}
+  .reveal-col{display:flex;flex-direction:column;align-items:center;gap:12px}
+  .reveal-name{font-weight:500;font-size:calc(28px * var(--fscale,1));line-height:1;color:var(--ink);text-align:center}
 
   /* ---------- Onboarding ---------- */
   .onboarding{position:fixed;inset:0;background:var(--bg);z-index:100;display:none;align-items:center;justify-content:center;padding:30px}
@@ -243,6 +247,7 @@
   .ob-dots{display:flex;gap:7px;justify-content:center;min-height:8px}
   .ob-dot{width:7px;height:7px;border-radius:50%;background:var(--line-strong);opacity:.45}
   .ob-dot.on{opacity:1;background:var(--ink)}
+  .ob-stepcount{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
   .ob-kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
   .ob-body h2{font-family:var(--serif);font-weight:500;font-size:30px;margin:0 0 8px}
   .ob-sub{font-size:14px;color:var(--muted);margin:0 0 20px;line-height:1.5}
@@ -274,6 +279,29 @@
   .photo-prev .pp-lock{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink)}
   .photo-prev .pp-replace{font-size:13px;color:var(--muted);text-decoration:underline;background:none;border:0;padding:0;cursor:pointer;text-align:left}
   .photo-privacy{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);background:var(--fill-2);border:1px solid var(--line);border-radius:8px;padding:11px 13px;line-height:1.4}
+  .photo-tips-link{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;background:none;border:0;color:var(--muted);font-family:inherit;font-size:13px;cursor:pointer;padding:2px;text-decoration:underline;text-underline-offset:3px;margin-top:2px}
+  .photo-tips-link:hover{color:var(--ink)}
+  .photo-tips-link svg{width:15px;height:15px;flex:none}
+  /* Photo tips overlay */
+  .ptips{z-index:120}
+  .ptips-sheet{max-width:540px}
+  .ptips-kicker{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .ptips-title{font-family:var(--serif);font-weight:500;font-size:27px;margin:6px 0 10px}
+  .ptips-sub{font-size:14px;color:var(--muted);line-height:1.6;margin:0 0 24px}
+  .ptips-section{margin-bottom:22px}
+  .ptips-section:last-child{margin-bottom:0}
+  .ptips-head{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .ptips-head::before{content:'';width:8px;height:8px;border-radius:50%;flex:none}
+  .ptips-head.yes::before{background:var(--ink)}
+  .ptips-head.no::before{background:var(--accent,#b23b3b)}
+  .ptips-head.no{color:var(--accent,#b23b3b)}
+  .ptips-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .ptip{margin:0;display:flex;flex-direction:column;gap:9px}
+  .ptip-sq{aspect-ratio:1/1;border-radius:10px;background:var(--fill);border:1.5px solid var(--line-strong);position:relative}
+  .ptip-sq::after{content:'';position:absolute;top:8px;left:8px;width:20px;height:20px;border-radius:50%;background:var(--panel);border:1.5px solid var(--line-strong)}
+  .ptip-sq.yes::after{content:'✓';color:var(--ink);border-color:var(--ink);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;line-height:1}
+  .ptip-sq.no::after{content:'✕';color:var(--accent,#b23b3b);border-color:var(--accent,#b23b3b);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;line-height:1}
+  .ptip figcaption{font-size:12.5px;color:var(--muted);line-height:1.35}
   .photo-attached{display:flex;align-items:center;gap:11px;font-size:12.5px;color:var(--muted);background:var(--fill-2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:14px;line-height:1.4}
   .pa-thumb{width:34px;height:42px;border-radius:5px;object-fit:cover;border:1px solid var(--line);flex:none}
   .myad-private{margin-top:20px;border:1.5px solid var(--line);border-radius:12px;padding:16px 18px;background:var(--panel)}
@@ -290,7 +318,6 @@
   .portrait::before{content:'';position:absolute;left:50%;top:35%;width:40%;aspect-ratio:1;background:rgba(255,255,255,.9);border-radius:50%;transform:translate(-50%,-50%)}
   .portrait::after{content:'';position:absolute;left:50%;bottom:-32%;width:78%;height:62%;background:rgba(255,255,255,.9);border-radius:50%;transform:translateX(-50%)}
   .frost{position:absolute;inset:0;background:rgba(226,227,231,.96);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
-  .reveal-cap{position:absolute;left:0;right:0;bottom:0;text-align:center;font-size:12px;color:#fff;background:rgba(0,0,0,.35);padding:6px}
   .reveal-hint{font-size:12px;color:var(--muted);text-align:center;margin-top:12px}
   .msgs{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
   .bubble{max-width:76%;padding:10px 14px;border-radius:12px;font-size:14px;line-height:1.45}
@@ -365,6 +392,9 @@
   .myad-meta span{color:var(--muted);display:block;margin-bottom:2px}
   .myad-foot{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:18px}
   .myad-hint{font-size:12px;color:var(--muted)}
+  .myad-decotoggle{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:14px;padding:13px 16px;border:1.5px solid var(--line);border-radius:8px;background:var(--panel)}
+  .myad-decotoggle .dt-label{font-size:13px;font-weight:600}
+  .myad-decotoggle .dt-sub{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.4}
 
   /* ---------- Customize ad ---------- */
   .customize{max-width:620px}
@@ -375,6 +405,17 @@
   .drop-label{font-size:13px;font-weight:600}
   .drop-select{appearance:none;-webkit-appearance:none;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--panel);padding:11px 34px 11px 14px;font-size:14px;color:var(--ink);width:100%;cursor:pointer}
   .drop-select:focus{outline:none;border-color:var(--ink)}
+  /* Make it yours — two-column: static preview + scrollable controls */
+  .ob-card.wide{max-width:900px}
+  .cust-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:start}
+  .cust-preview{position:sticky;top:0;align-self:start}
+  .cust-controls{display:flex;flex-direction:column;gap:22px}
+  .cust-controls .drop{flex:0 0 auto}
+  .cust-borders{display:flex;flex-direction:column;gap:10px}
+  .border-swatches{display:flex;gap:10px;flex-wrap:wrap}
+  .border-swatch{width:54px;height:54px;border-radius:8px;background:var(--fill);border:1.5px solid var(--line-strong);opacity:.5;cursor:not-allowed}
+  .soon{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line-strong);border-radius:100px;padding:1px 7px;margin-left:7px;vertical-align:1.5px}
+  @media(max-width:760px){ .ob-card.wide{max-width:520px} .cust-two{grid-template-columns:1fr;gap:24px} .cust-preview{position:static} }
 
   /* ---------- Settings ---------- */
   .settings{max-width:680px;display:flex;flex-direction:column;gap:34px}
@@ -494,6 +535,32 @@
     </div>
   </div>
 
+  <!-- ===================== PHOTO TIPS ===================== -->
+  <div class="overlay ptips" id="photoTips">
+    <div class="sheet ptips-sheet">
+      <button class="close" id="closePhotoTips">×</button>
+      <div class="ptips-kicker">Photo tips</div>
+      <h3 class="ptips-title">What makes a good photo</h3>
+      <p class="ptips-sub">Your photo stays hidden until you and someone both choose to reveal. When that moment comes, one clear look at you makes all the difference — the ideal photo is a well-lit headshot that plainly shows your face.</p>
+      <div class="ptips-section">
+        <div class="ptips-head yes">Aim for</div>
+        <div class="ptips-grid">
+          <figure class="ptip"><div class="ptip-sq yes"></div><figcaption>Clear, well-lit headshot</figcaption></figure>
+          <figure class="ptip"><div class="ptip-sq yes"></div><figcaption>Just you, facing the camera</figcaption></figure>
+          <figure class="ptip"><div class="ptip-sq yes"></div><figcaption>A recent, natural look</figcaption></figure>
+        </div>
+      </div>
+      <div class="ptips-section">
+        <div class="ptips-head no">Avoid</div>
+        <div class="ptips-grid">
+          <figure class="ptip"><div class="ptip-sq no"></div><figcaption>Face hidden or turned away</figcaption></figure>
+          <figure class="ptip"><div class="ptip-sq no"></div><figcaption>Group photos</figcaption></figure>
+          <figure class="ptip"><div class="ptip-sq no"></div><figcaption>Blurry, filtered, or far off</figcaption></figure>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <script>
 // ---------- Today's date (formatted like "July 11th, 2026") ----------
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -595,9 +662,12 @@ const ADS = [
 ];
 
 const CONVOS = [
-  {adId:1, when:'2h', last:"That sounds perfect — how's Thursday?", mine:true, unread:false},
-  {adId:4, when:'1d', last:"Ha, I promise the dog is friendlier than me.", mine:false, unread:true},
-  {adId:6, when:'3d', last:"Same here — free this weekend?", mine:true, unread:false},
+  {adId:1, when:'2h', last:"That sounds perfect — how's Thursday?", mine:true, unread:false, reveal:null},
+  {adId:2, when:'5h', last:"Okay, you're winning me over.", mine:false, unread:true, reveal:'prompt'},
+  {adId:3, when:'6h', last:"Okay — I'll go first.", mine:false, unread:true, reveal:'offered'},
+  {adId:5, when:'1d', last:"I'll go first — no rush on you.", mine:true, unread:false, reveal:'pending'},
+  {adId:4, when:'1d', last:"That was worth the wait.", mine:false, unread:true, reveal:'revealed'},
+  {adId:6, when:'3d', last:"No rush — let's wait until we meet.", mine:true, unread:false, reveal:'deferred'},
 ];
 
 // Ads you've already replied to today (you're now in a conversation about them).
@@ -636,11 +706,28 @@ const BODY_FONTS = [
   {name:'Instrument Sans', css:"'Instrument Sans', sans-serif"},
   {name:'Instrument Serif',css:"'Instrument Serif', serif"},
 ];
+// ---------- Hyperlegible font (accessibility) ----------
+// When on, every ad renders in one legible face regardless of its own fonts.
+// ---------- Hide user-selected fonts (accessibility) ----------
+// When on, every ad renders in the app's default sans regardless of its own fonts.
+let hyperlegible = false;
+let myAdShowDecorative = false; // My Ad "Show decorative fonts" peek while the override is on
+// Off in Customize (pickers need real fonts) and on My Ad when the user is peeking at their decorative fonts.
+function hyperActive(){
+  if(!hyperlegible) return false;
+  if(state.view === 'customize') return false;
+  if(state.view === 'myad' && myAdShowDecorative) return false;
+  return true;
+}
+// The all-caps headline drops to regular weight under the default font (bold reads heavy there).
+function headlineWeight(){ return hyperActive() ? ';font-weight:400' : ''; }
 function cssFor(name){
+  if(hyperActive()) return "'Instrument Sans', sans-serif";
   const f = [...HEADING_FONTS, ...BODY_FONTS].find(x=>x.name===name);
   return f ? f.css : 'var(--serif)';
 }
 function scaleFor(name){
+  if(hyperActive()) return 1;
   const f = HEADING_FONTS.find(x=>x.name===name);
   return f ? f.scale : 1;
 }
@@ -649,7 +736,10 @@ function hstyle(name){ return `font-family:${cssFor(name)};--fscale:${scaleFor(n
 // Ad typography (global): the decorative font is used ONLY on the name + age;
 // the headline (ALWAYS ALL CAPS via .ad-headline) and body copy share the ad's body font.
 function adNameHTML(a){ return `<div class="ad-name" style="${hstyle(a.headingFont)}">${a.name}, ${a.age}</div>`; }
-function adHeadlineHTML(a){ return `<div class="ad-headline" style="font-family:${cssFor(a.bodyFont)}">${a.headline}</div>`; }
+function adHeadlineHTML(a){ return `<div class="ad-headline" style="font-family:${cssFor(a.bodyFont)}${headlineWeight()}">${a.headline}</div>`; }
+// Feed cards flip the hierarchy: the headline leads in the display font, the name sits above it as a small byline in the body font.
+function feedNameHTML(a){ return `<div class="feed-name" style="font-family:${cssFor(a.bodyFont)}">${a.name}, ${a.age}</div>`; }
+function feedHeadlineHTML(a){ return `<div class="feed-headline" style="${hstyle(a.headingFont)}">${a.headline}</div>`; }
 
 // each ad carries its own customized fonts [heading, body] — spread across all 8 heading options
 const AD_FONTS = {
@@ -724,11 +814,8 @@ document.querySelectorAll('#nav button, .foot-row button[data-view]').forEach(b=
 });
 
 // ---------- Feed ----------
-// masonry columns adapt to the available width: 3 wide → 2 → 1 when ultra-narrow
+// the feed is a single centered column, like mobile
 function feedColCount(){
-  const w = scroll.clientWidth || (window.innerWidth - 260);
-  if(w >= 820) return 3;
-  if(w >= 520) return 2;
   return 1;
 }
 function updateSeg(){
@@ -743,8 +830,8 @@ const CLIP_REPLIED_ICON = `<svg class="clip-rep-ic" viewBox="0 0 24 24" fill="no
 function clipHTML(a){
   const replied = repliedAdIds.has(a.id);
   return `<button class="clip${replied?' replied':''}" data-ad="${a.id}">
-    <div class="clip-name" style="${hstyle(a.headingFont)}"><span>${a.name}, ${a.age}</span>${replied ? CLIP_REPLIED_ICON : ''}</div>
-    <div class="clip-head" style="font-family:${cssFor(a.bodyFont)}">${a.headline}</div>
+    <div class="clip-name" style="font-family:${cssFor(a.bodyFont)}"><span>${a.name}, ${a.age}</span>${replied ? CLIP_REPLIED_ICON : ''}</div>
+    <div class="clip-head" style="${hstyle(a.headingFont)}">${a.headline}</div>
     <div class="clip-body" style="font-family:${cssFor(a.bodyFont)}">${a.desc}</div>
     <div class="clip-loc">${a.gender.join(' / ')} · ${a.location}</div>
   </button>`;
@@ -873,7 +960,7 @@ function renderMasonry(){
     card.dataset.ad = a.id;
     const replied = repliedAdIds.has(a.id);
     if(replied) card.classList.add('replied');
-    card.innerHTML = adNameHTML(a) + adHeadlineHTML(a)
+    card.innerHTML = feedNameHTML(a) + feedHeadlineHTML(a)
       + `<p class="ad-body" style="font-family:${cssFor(a.bodyFont)}">${a.desc}</p>`
       + `<div class="tags"><span class="tag-chip">${a.gender.join(' / ')}</span><span class="tag-chip">${a.location}</span></div>`
       + (replied ? '<div class="replied-note">You replied to this ad</div>' : '');
@@ -916,6 +1003,12 @@ function openAd(id, showReply=true){
 }
 function closeAd(){ overlay.classList.remove('open'); }
 overlay.addEventListener('click', e=>{ if(e.target===overlay) closeAd(); });
+// photo tips overlay (sits above onboarding)
+const photoTips = document.getElementById('photoTips');
+function openPhotoTips(){ photoTips.classList.add('open'); }
+function closePhotoTips(){ photoTips.classList.remove('open'); }
+document.getElementById('closePhotoTips').onclick = closePhotoTips;
+photoTips.addEventListener('click', e=>{ if(e.target===photoTips) closePhotoTips(); });
 
 // shared checkbox/radio wiring for any container
 function wireChecks(container){
@@ -1042,15 +1135,33 @@ function openUnmatchConfirm(adId){
 // ---------- Face reveal (mutual, scratch-to-see) ----------
 function openFaceReveal(adId){
   const a = ADS.find(x=>x.id===adId);
-  sheet.innerHTML = `
-    <button class="close" id="closeSheet">×</button>
-    <h3>Trade faces with ${a.name}?</h3>
-    <p>No one sees a face unless you both choose to. Once you're both ready, you can peek — hold your cursor over a photo and keep it moving to see it. Stop, and it fogs back over.</p>
-    <div class="reveal-status">✓ ${a.name} is ready to show their face</div>
-    <button class="btn block" id="readyBtn">I'm ready to show my face</button>`;
+  const theyReady = revealOffered.has(a.id);  // they've already offered → saying yes reveals both
+  const iOffered  = revealMine.has(a.id);     // you already went first → you're waiting on them
+  let body;
+  if(theyReady){
+    body = `<h3>Trade faces with ${a.name}?</h3>
+      <p>${a.name} is ready. Say yes and you'll both be able to peek — hold your cursor over a photo and keep it moving to see it. Stop, and it fogs back over.</p>
+      <div class="reveal-status">✓ ${a.name} is ready to show their face</div>
+      <button class="btn block" id="readyBtn">I'm ready to show my face</button>`;
+  } else if(iOffered){
+    body = `<h3>You have offered to reveal your face to ${a.name}</h3>
+      <p>Nothing of your face is shown until they choose to reveal too — you'll trade faces the moment they do.</p>
+      <button class="btn block ghost" id="rescindModalBtn">Take back my reveal</button>`;
+  } else {
+    body = `<h3>Show ${a.name} your face?</h3>
+      <p>Nothing is shown until you both choose to. If you go first, ${a.name} sees that you're ready — but your face stays hidden until they reveal theirs too.</p>
+      <button class="btn block" id="readyBtn">I'm ready to show my face</button>`;
+  }
+  sheet.innerHTML = `<button class="close" id="closeSheet">×</button>${body}`;
   overlay.classList.add('open');
   document.getElementById('closeSheet').onclick = closeAd;
-  document.getElementById('readyBtn').onclick = ()=>faceRevealStep(a);
+  const rb = document.getElementById('readyBtn');
+  if(rb) rb.onclick = ()=>{
+    if(theyReady){ faceRevealStep(a); }
+    else { revealMine.add(a.id); revealDeferred.delete(a.id); closeAd(); if(state.view==='thread' && state.threadAd===a.id) renderThread(); }
+  };
+  const rm = document.getElementById('rescindModalBtn');
+  if(rm) rm.onclick = ()=>{ revealMine.delete(a.id); revealDeferred.add(a.id); closeAd(); if(state.view==='thread' && state.threadAd===a.id) renderThread(); };
 }
 function faceRevealStep(a){
   // record the mutual reveal so the thread header/prompt reflect it once the overlay closes
@@ -1058,10 +1169,13 @@ function faceRevealStep(a){
   if(state.view === 'thread' && state.threadAd === a.id) renderThread();
   sheet.innerHTML = `
     <button class="close" id="closeSheet">×</button>
-    <h3>You both said yes</h3>
+    <h3>You both revealed your faces</h3>
     <p>Move your cursor over ${a.name}'s photo to reveal it — keep moving, or it fogs back over.</p>
     <div class="reveal-single">
-      <div class="reveal-tile"><div class="portrait them"></div><div class="frost"></div><div class="reveal-cap">${a.name}</div></div>
+      <div class="reveal-col">
+        <div class="reveal-name" style="${hstyle(a.headingFont)}">${a.name}</div>
+        <div class="reveal-tile"><div class="portrait them"></div><div class="frost"></div></div>
+      </div>
     </div>
     <div class="reveal-hint">This photo isn't saved anywhere — it only exists in this moment.</div>`;
   document.getElementById('closeSheet').onclick = closeAd;
@@ -1204,6 +1318,10 @@ const FACE_UNLOCK = 5; // EACH person must send at least this many before faces 
 const revealedAdIds = new Set();  // both people have traded faces
 const revealOffered = new Set();  // the OTHER person has shown their face; you haven't yet → dot on the eye
 const revealDeferred = new Set(); // you chose "let's wait until we meet" → prompt dismissed
+const revealMine = new Set();     // you offered to reveal first → waiting on them (strict mutual: nothing shown yet)
+const revealMarker = {};          // adId → message index the reveal card is anchored at (so later messages flow below it)
+// seed the demo conversations into their reveal states
+CONVOS.forEach(c=>{ if(c.reveal==='revealed') revealedAdIds.add(c.adId); else if(c.reveal==='deferred') revealDeferred.add(c.adId); else if(c.reveal==='offered') revealOffered.add(c.adId); else if(c.reveal==='pending') revealMine.add(c.adId); });
 const REPLIES = [
   "Ha, okay — that's a good answer.",
   "Tell me more about that.",
@@ -1216,13 +1334,30 @@ const REPLIES = [
 function threadMsgs(a){
   if(!THREADS[a.id]){
     const convo = CONVOS.find(c=>c.adId===a.id);
-    THREADS[a.id] = convo ? [
+    if(!convo){ THREADS[a.id] = []; }
+    // reveal-state demos need a longer exchange so faces are unlocked (5+ each side)
+    else if(convo.reveal){ THREADS[a.id] = demoUnlockedThread(a); }
+    else { THREADS[a.id] = [
       {who:'me', text:`Hi ${a.name} — your ad made me smile. "${a.headline}" is a great line.`},
       {who:'them', text:"Thank you! That's a nicer opener than most. What are you into?"},
       {who: convo.mine ? 'me' : 'them', text: convo.last},
-    ] : [];
+    ]; }
   }
   return THREADS[a.id];
+}
+function demoUnlockedThread(a){
+  return [
+    {who:'me', text:`Hi ${a.name} — your ad made me smile. "${a.headline}" is a great line.`},
+    {who:'them', text:"Thank you! That's a nicer opener than most. What are you into?"},
+    {who:'me', text:"Long walks, used bookstores, and asking people too many questions."},
+    {who:'them', text:"Dangerous combo. What's the last thing that genuinely surprised you?"},
+    {who:'me', text:"A stranger recommended a book that wrecked me — in the best way."},
+    {who:'them', text:"Okay, now I need the title."},
+    {who:'me', text:"I'll trade you: your favorite for mine."},
+    {who:'them', text:"Deal — this is the most fun I've had in a message in a while."},
+    {who:'me', text:"Careful, I'm going to hold you to that."},
+    {who:'them', text:"Please do."},
+  ];
 }
 // conversation-header icons
 const IC_BACK  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="11 6 5 12 11 18"/></svg>`;
@@ -1237,13 +1372,34 @@ function renderThread(){
   const unlocked = mine >= FACE_UNLOCK && theirs >= FACE_UNLOCK;
   const revealed = revealedAdIds.has(a.id);
   const theyOffered = unlocked && !revealed && revealOffered.has(a.id);
+  const youOffered = unlocked && !revealed && !theyOffered && revealMine.has(a.id);
   const deferred = revealDeferred.has(a.id);
   const eyeCls = revealed ? 'th-eye' : unlocked ? ('th-eye' + (theyOffered ? ' offered' : '')) : 'th-eye locked';
   const eyeTip = revealed ? `You and ${a.name} have traded faces — click to see again.`
     : theyOffered ? `${a.name} showed you their face — click to reveal yours.`
+    : youOffered ? `You have offered to reveal your face to ${a.name}.`
+    : deferred ? `Reveal faces whenever you're both ready.`
     : unlocked ? `You've been talking a while — click to reveal faces to each other.`
     : `Keep the conversation going to unlock a mutual face reveal.`;
-  const showPrompt = msgs.length && unlocked && !revealed && !theyOffered && !deferred;
+  const showPrompt = msgs.length && unlocked && !revealed && !theyOffered && !youOffered && !deferred;
+  // Build the message stream. The reveal-event cards (revealed / you-offered) anchor at the point they
+  // happened and let later messages flow below them, like any other message. The live prompt stays a footer.
+  const bubble = m => `<div class="bubble ${m.who}">${m.text}</div>`;
+  const doneCard = `<div class="reveal-inline"><div class="ri-text">You and ${a.name} have traded faces.</div><button class="ri-link" id="reFaceBtn">See again</button></div>`;
+  const waitingCard = `<div class="reveal-inline"><div class="ri-text">You have offered to reveal your face to ${a.name}.</div><button class="ri-link" id="rescindFaceBtn">Actually, let's wait</button></div>`;
+  const promptCard = `<div class="reveal-inline"><div class="ri-text">You've been talking a while — ready to see each other?</div><button class="btn sm" id="revealFaceBtn">Reveal faces…</button><button class="ri-link" id="waitFaceBtn">Let's wait until we meet</button></div>`;
+  let msgsBlock;
+  if(!msgs.length){
+    msgsBlock = `<div class="bubble them" style="background:transparent;color:var(--muted);font-style:italic">Start the conversation.</div>`;
+  } else if(revealed || youOffered){
+    const card = revealed ? doneCard : waitingCard;
+    if(revealMarker[a.id] === undefined) revealMarker[a.id] = msgs.length;
+    const pos = Math.min(revealMarker[a.id], msgs.length);
+    msgsBlock = msgs.slice(0, pos).map(bubble).join('') + card + msgs.slice(pos).map(bubble).join('');
+  } else {
+    delete revealMarker[a.id];
+    msgsBlock = msgs.map(bubble).join('') + (showPrompt ? promptCard : '');
+  }
   scroll.classList.add('thread-mode');
   scroll.innerHTML = `
     <div class="thread">
@@ -1270,12 +1426,7 @@ function renderThread(){
         ${adHeadlineHTML(a)}
         <p style="font-family:${cssFor(a.bodyFont)}">${a.desc}</p>
       </div>
-      <div class="msgs">
-        ${msgs.length ? msgs.map(m=>`<div class="bubble ${m.who}">${m.text}</div>`).join('')
-          : `<div class="bubble them" style="background:transparent;color:var(--muted);font-style:italic">Start the conversation.</div>`}
-        ${revealed ? `<div class="reveal-inline"><div class="ri-text">You and ${a.name} have traded faces.</div><button class="ri-link" id="reFaceBtn">See again</button></div>`
-          : showPrompt ? `<div class="reveal-inline"><div class="ri-text">You've been talking a while — ready to see each other?</div><button class="btn sm" id="revealFaceBtn">Reveal faces</button><button class="ri-link" id="waitFaceBtn">Let's wait until we meet</button></div>` : ''}
-      </div>
+      <div class="msgs">${msgsBlock}</div>
       <div class="composer">
         <input class="field" id="composerInput" placeholder="Write a message…">
         <button class="btn" id="sendBtn" disabled>Send</button>
@@ -1299,9 +1450,12 @@ function renderThread(){
   const rf = document.getElementById('revealFaceBtn'); if(rf) rf.onclick = ()=>openFaceReveal(a.id);
   const ra = document.getElementById('reFaceBtn'); if(ra) ra.onclick = ()=>faceRevealStep(a);
   const wf = document.getElementById('waitFaceBtn'); if(wf) wf.onclick = ()=>{
+    // decline is a quiet "not yet": the card drops away, the eye stays available (no dot), and the other person's choice is never surfaced
     revealDeferred.add(a.id); renderThread();
-    // (prototype) simulate the other person choosing to show their face a moment later → dot on the eye
-    setTimeout(()=>{ if(state.view==='thread' && state.threadAd===a.id && !revealedAdIds.has(a.id)){ revealOffered.add(a.id); renderThread(); } }, 2200);
+  };
+  const rsc = document.getElementById('rescindFaceBtn'); if(rsc) rsc.onclick = ()=>{
+    // take back your reveal → back to the quiet resting state
+    revealMine.delete(a.id); revealDeferred.add(a.id); renderThread();
   };
   const eye = document.getElementById('eyeBtn'), eyeWrap = eye.closest('.th-eye-wrap');
   eye.onclick = ()=>{
@@ -1385,6 +1539,7 @@ function renderMyAd(){
         <p class="myad-desc" style="font-family:${cssFor(a.bodyFont)}">${a.desc}</p>
         ${adMetaGrid(a)}
       </div>
+      ${hyperlegible ? `<div class="myad-decotoggle"><div class="dt-text"><div class="dt-label">Show decorative fonts</div><div class="dt-sub">Preview your ad in the fonts most members see.</div></div><button class="toggle ${myAdShowDecorative?'on':''}" id="decoToggle"></button></div>` : ''}
       <div class="myad-private">
         <div class="mp-head">Private photo</div>
         <div class="mp-row" id="mpRow">${myPhotoSlotHtml()}</div>
@@ -1400,6 +1555,8 @@ function renderMyAd(){
     </div>`;
   document.getElementById('editAd').onclick = openEditAd;
   document.getElementById('customizeAd').onclick = ()=>setView('customize');
+  const deco = document.getElementById('decoToggle');
+  if(deco) deco.onclick = ()=>{ myAdShowDecorative = !myAdShowDecorative; renderMyAd(); };
   const myPhotoInput = document.getElementById('myPhotoInput');
   const bindMp = ()=>{ const b=document.getElementById('mpChange'); if(b) b.onclick=()=>myPhotoInput.click(); };
   bindMp();
@@ -1425,7 +1582,7 @@ function renderCustomize(){
       <div class="cust-hint">Live preview</div>
       <div class="cust-drops">
         <label class="drop">
-          <span class="drop-label">Name font</span>
+          <span class="drop-label">Display font</span>
           <select class="drop-select" id="headSel" style="font-family:${cssFor(heading)}">
             ${HEADING_FONTS.map(f=>`<option value="${f.name}" style="font-family:${f.css}"${f.name===heading?' selected':''}>${f.name} · ${f.vibe}</option>`).join('')}
           </select>
@@ -1582,6 +1739,15 @@ function renderSettings(){
     <div class="settings">
 
       <div class="set-section">
+        <h3 class="sec-head">Appearance &amp; accessibility</h3>
+        <p class="sec-sub">How Classy looks and reads.</p>
+        <div class="set-card">
+          ${setRow('Dark mode','Use a darker color scheme.', `<button class="toggle ${document.body.classList.contains('dark')?'on':''}" id="darkModeRow"></button>`)}
+          ${setRow('Hide user-selected fonts','Display everything in the default font for better legibility.', `<button class="toggle ${hyperlegible?'on':''}" id="hyperToggle"></button>`)}
+        </div>
+      </div>
+
+      <div class="set-section">
         <h3 class="sec-head">Preferences</h3>
         <p class="sec-sub">What you're looking for in a partner.</p>
         <div class="set-card">
@@ -1643,6 +1809,9 @@ function renderSettings(){
       </div>
     </div>`;
 
+  // appearance & accessibility
+  scroll.querySelector('#darkModeRow')?.addEventListener('click', function(){ this.classList.toggle('on', document.body.classList.toggle('dark')); updateDarkIcon(); });
+  scroll.querySelector('#hyperToggle')?.addEventListener('click', ()=>{ hyperlegible = !hyperlegible; if(!hyperlegible) myAdShowDecorative = false; renderSettings(); });
   // partner preferences overlay
   scroll.querySelector('[data-prefs]')?.addEventListener('click', openPreferences);
   scroll.querySelector('#replayOb')?.addEventListener('click', startOnboarding);
@@ -1662,7 +1831,7 @@ const IC_SUN  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stro
 const IC_MOON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.4A7.6 7.6 0 0 1 9.6 4 7.6 7.6 0 1 0 20 14.4z"/></svg>`;
 const darkBtn = document.getElementById('darkToggle');
 function updateDarkIcon(){ darkBtn.innerHTML = document.body.classList.contains('dark') ? IC_SUN : IC_MOON; }
-darkBtn.addEventListener('click',()=>{ document.body.classList.toggle('dark'); updateDarkIcon(); });
+darkBtn.addEventListener('click',()=>{ document.body.classList.toggle('dark'); updateDarkIcon(); const r=document.getElementById('darkModeRow'); if(r) r.classList.toggle('on', document.body.classList.contains('dark')); });
 updateDarkIcon();
 
 // ---------- re-balance masonry on resize (debounced, feed only) ----------
@@ -1766,7 +1935,7 @@ function obAdCard(){
   return `<div class="myad-card">
     <div class="ad-name" style="${hstyle(d.headingFont)}">${d.name||'Your name'}, ${d.age||'—'}</div>
     <div class="ad-place">${d.location||'Your city'}</div>
-    <div class="ad-headline" style="font-family:${cssFor(d.bodyFont)}">${d.headline||'Your headline'}</div>
+    <div class="ad-headline" style="font-family:${cssFor(d.bodyFont)}${headlineWeight()}">${d.headline||'Your headline'}</div>
     <p class="myad-desc" style="font-family:${cssFor(d.bodyFont)}">${d.desc||'Your ad copy will show here.'}</p>
     ${meta}
   </div>`;
@@ -1810,8 +1979,10 @@ function renderHowItWorks(){
 }
 function renderOnboarding(){
   const body = document.getElementById('obBody'), nav = document.getElementById('obNav'), dots = document.getElementById('obDots');
-  const TOTAL = 5; // basics · personal · about you · photo (confirm + customize are terminal, no dots)
-  dots.innerHTML = (obStep>=1 && obStep<=TOTAL) ? Array.from({length:TOTAL},(_,k)=>`<span class="ob-dot ${k===obStep-1?'on':''}"></span>`).join('') : '';
+  const TOTAL = 6; // basics · personal · about you · photo · preferences · make it yours
+  dots.innerHTML = (obStep>=1 && obStep<=TOTAL) ? `<span class="ob-stepcount">Step ${obStep} of ${TOTAL}</span>` : '';
+  const obCard = document.querySelector('#onboarding .ob-card');
+  if(obCard) obCard.classList.toggle('wide', obStep>=6);
   if(obStep===0){
     body.innerHTML = `<div class="ob-welcome"><div class="ob-brand">Classy</div><div class="ob-tag">Seek. Find.</div><h2>No photos. Just words.</h2><p>On Classy you meet through what you write. Let's put your personal in tomorrow's paper.</p></div>`;
     nav.innerHTML = `<div class="ob-welcome-nav"><button class="btn block" id="obNext">Write my ad</button><button class="hiw-link" id="obHiw">How it works</button></div>`;
@@ -1849,7 +2020,8 @@ function renderOnboarding(){
       <p class="ob-sub">No one sees this on your ad. It stays hidden until you and someone both choose to trade faces — and you can add it anytime from My Ad.</p>
       <input type="file" accept="image/*" id="photoInput" hidden>
       <div id="photoSlot">${photoSlotHtml()}</div>
-      <div class="photo-privacy">${IC_LOCK} Hidden until a mutual face reveal — never shown on your public ad.</div></div>`;
+      <div class="photo-privacy">${IC_LOCK} Hidden until a mutual face reveal — never shown on your public ad.</div>
+      <button class="photo-tips-link" id="photoTipsBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 11v5" stroke-linecap="round"/><circle cx="12" cy="7.6" r=".6" fill="currentColor" stroke="none"/></svg>What makes a good photo?</button></div>`;
     nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obNext">${obData.photo?'Next':'Add photo later'}</button>`;
   } else if(obStep===5){
     body.innerHTML = `<div class="ob-step"><h2>Who you're looking for</h2>
@@ -1869,19 +2041,25 @@ function renderOnboarding(){
     nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obNext">Next</button>`;
   } else {
     body.innerHTML = `<div class="ob-step"><div class="ob-kicker">Optional</div><h2>Make it yours</h2>
-      <p class="ob-sub">Here's your whole ad. Give it a font that fits your vibe, or post as-is — you can refine anything anytime in My Ad.</p>
-      <div id="obCustPreview">${obAdCard()}</div>
-      <div class="cust-drops">
-        <label class="drop"><span class="drop-label">Name font</span>
-          <select class="drop-select" id="obHeadSel" style="font-family:${cssFor(obData.headingFont)}">
-            ${HEADING_FONTS.map(f=>`<option value="${f.name}" style="font-family:${f.css}"${f.name===obData.headingFont?' selected':''}>${f.name} · ${f.vibe}</option>`).join('')}
-          </select></label>
-        <label class="drop"><span class="drop-label">Body font</span>
-          <select class="drop-select" id="obBodySel" style="font-family:${cssFor(obData.bodyFont)}">
-            ${BODY_FONTS.map(f=>`<option value="${f.name}" style="font-family:${f.css}"${f.name===obData.bodyFont?' selected':''}>${f.name}</option>`).join('')}
-          </select></label>
-      </div>
-      ${obPhotoNote()}</div>`;
+      <p class="ob-sub">Here's your whole ad. Give it a font that fits your vibe, choose a border, or post as-is — you can refine anything anytime in My Ad.</p>
+      <div class="cust-two">
+        <div class="cust-preview"><div id="obCustPreview">${obAdCard()}</div></div>
+        <div class="cust-controls">
+          <label class="drop"><span class="drop-label">Display font</span>
+            <select class="drop-select" id="obHeadSel" style="font-family:${cssFor(obData.headingFont)}">
+              ${HEADING_FONTS.map(f=>`<option value="${f.name}" style="font-family:${f.css}"${f.name===obData.headingFont?' selected':''}>${f.name} · ${f.vibe}</option>`).join('')}
+            </select></label>
+          <label class="drop"><span class="drop-label">Body font</span>
+            <select class="drop-select" id="obBodySel" style="font-family:${cssFor(obData.bodyFont)}">
+              ${BODY_FONTS.map(f=>`<option value="${f.name}" style="font-family:${f.css}"${f.name===obData.bodyFont?' selected':''}>${f.name}</option>`).join('')}
+            </select></label>
+          <div class="cust-borders">
+            <span class="drop-label">Post border <span class="soon">soon</span></span>
+            <div class="border-swatches">${[0,1,2,3].map(()=>'<div class="border-swatch"></div>').join('')}</div>
+          </div>
+          ${obPhotoNote()}
+        </div>
+      </div></div>`;
     nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obPost">Post my ad</button>`;
   }
   const next=document.getElementById('obNext'), back=document.getElementById('obBack'), post=document.getElementById('obPost');
@@ -1889,6 +2067,7 @@ function renderOnboarding(){
   if(back) back.onclick=()=>{ obSaveStep(); obStep--; renderOnboarding(); };
   if(post) post.onclick=()=>{ obSaveStep(); finishOnboarding(); };
   const hiw=document.getElementById('obHiw'); if(hiw) hiw.onclick=openHowItWorks;
+  const ptips=document.getElementById('photoTipsBtn'); if(ptips) ptips.onclick=openPhotoTips;
   const later=document.getElementById('obLater');
   if(later) later.onclick=()=>{ finishOnboarding(); };
   // optional customization — live font preview

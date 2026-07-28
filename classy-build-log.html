@@ -1,0 +1,398 @@
+<meta charset="utf-8">
+<title>Classy — Build Log</title>
+<style>
+  :root{
+    --board:#E9E2CE; --panel:#FCF7EA; --ink:#26262C; --ink2:#4A4A50;
+    --muted:#7c786c; --line:#CBBF9E; --pencil:#9B3B2E;
+    --serif:'Iowan Old Style','Palatino Linotype','Palatino',Georgia,'Times New Roman',serif;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0}
+  .wrap{background:var(--board);color:var(--ink);font-family:var(--sans);min-height:100vh;
+    background-image:radial-gradient(rgba(38,38,44,.035) 1px,transparent 1px);background-size:4px 4px;
+    padding:40px clamp(16px,4vw,60px) 96px}
+  .sheet{max-width:920px;margin:0 auto}
+
+  .mast{border-bottom:2.5px solid var(--ink);padding-bottom:20px}
+  .kicker{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--pencil);font-weight:600;margin:0 0 11px}
+  .mast h1{font-family:var(--serif);font-weight:600;font-size:clamp(36px,6vw,60px);line-height:.95;letter-spacing:-.01em;margin:0;text-wrap:balance}
+  .mast .lead{font-size:15px;line-height:1.55;color:var(--ink2);margin:14px 0 0;max-width:66ch}
+  .datenote{font-size:12px;color:var(--muted);margin:12px 0 0;line-height:1.5;font-style:italic;font-family:var(--serif)}
+
+  /* Principles strip */
+  .principles{margin:30px 0 6px;border:1.5px solid var(--ink);border-radius:12px;background:var(--panel);
+    padding:18px 22px}
+  .principles h2{font-family:var(--serif);font-weight:600;font-size:18px;margin:0 0 12px}
+  .plist{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 26px}
+  .p{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+  .p .d{color:var(--pencil);font-weight:700;flex:0 0 auto;line-height:1.4}
+  .p b{font-weight:700}
+  .p span{color:var(--ink2)}
+
+  /* Timeline */
+  .phase-h{display:flex;align-items:baseline;gap:14px;margin:46px 0 6px}
+  .phase-h h2{font-family:var(--serif);font-weight:600;font-size:23px;margin:0;white-space:nowrap}
+  .phase-h .rule{flex:1;height:0;border-top:1px solid var(--line);transform:translateY(-7px)}
+  .phase-h .tag{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+
+  .entry{display:grid;grid-template-columns:120px 1fr;gap:26px;padding:22px 0;border-top:1px solid var(--line)}
+  .entry:first-of-type{border-top:0}
+  .when{font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--ink);padding-top:2px}
+  .when small{display:block;font-weight:400;color:var(--muted);font-size:11px;margin-top:3px;letter-spacing:.01em}
+  .what{min-width:0}
+  .what h3{font-family:var(--serif);font-weight:600;font-size:18px;margin:0 0 12px}
+  ul.dl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+  ul.dl li{position:relative;padding-left:18px;font-size:14px;line-height:1.5}
+  ul.dl li::before{content:'';position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--pencil)}
+  ul.dl li b{font-weight:600}
+  ul.dl li .why{color:var(--ink2)}
+  ul.dl li .why::before{content:' — why: ';color:var(--muted);font-style:italic}
+
+  .foot{margin-top:56px;border-top:1.5px solid var(--ink);padding-top:16px;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:11.5px;letter-spacing:.03em;color:var(--muted)}
+  .foot .r{font-family:var(--serif);font-style:italic}
+
+  @media (max-width:620px){
+    .plist{grid-template-columns:1fr}
+    .entry{grid-template-columns:1fr;gap:8px}
+    .when{padding-top:0}
+  }
+</style>
+
+<div class="wrap">
+  <div class="sheet">
+
+    <header class="mast">
+      <p class="kicker">Product decisions &amp; UX rationale</p>
+      <h1>Classy — Build Log</h1>
+      <p class="lead">A running record of what got built and <em>why</em> — a blind dating app where people meet through written personal ads instead of photos, dressed as a newspaper's classifieds.</p>
+      <p class="datenote">Dates through Jul 16 are from the wireframe's git history and file saves. The Figma / Material 3 work is dated approximately (~Jul 18–23) — those changes happened in Figma and don't carry timestamps.</p>
+    </header>
+
+    <section class="principles">
+      <h2>The bets everything rests on</h2>
+      <div class="plist">
+        <div class="p"><span class="d">◆</span><div><b>Blind &amp; text-first</b> <span>— you meet through writing, not a face. The core differentiator.</span></div></div>
+        <div class="p"><span class="d">◆</span><div><b>Classifieds as identity</b> <span>— the paper, Personals, horoscope, issue date. Not chrome, it's the concept.</span></div></div>
+        <div class="p"><span class="d">◆</span><div><b>Consent-gated reveal</b> <span>— faces appear only by mutual opt-in, never one-sided.</span></div></div>
+        <div class="p"><span class="d">◆</span><div><b>Reciprocity</b> <span>— you must post your own ad to read the paper. Everyone's in it.</span></div></div>
+        <div class="p"><span class="d">◆</span><div><b>Personal expression</b> <span>— your ad, your fonts. The one place members style their own type.</span></div></div>
+        <div class="p"><span class="d">◆</span><div><b>Legibility as a right</b> <span>— one toggle flattens every decorative font to a plain, readable one.</span></div></div>
+      </div>
+    </section>
+
+    <!-- WIREFRAME PHASE -->
+    <div class="phase-h"><h2>Phase I · The wireframe</h2><span class="rule"></span><span class="tag">Dated · git + file history</span></div>
+
+    <div class="entry">
+      <div class="when">Jul 8–15</div>
+      <div class="what">
+        <h3>Decorative ad borders</h3>
+        <ul class="dl">
+          <li><b>Built flame / wavy / flower border SVGs</b><span class="why">giving members frames for the "make it yours" ad customization</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="when">Jul 11</div>
+      <div class="what">
+        <h3>First wireframe — the core concept</h3>
+        <ul class="dl">
+          <li><b>Blind dating via text personal ads, no public photos</b><span class="why">differentiate from photo-first apps; people meet through what they write</span></li>
+          <li><b>Newspaper-classifieds identity</b> (Personals masthead, issue date, horoscope)<span class="why">the brand hook — dating framed as a paper you read</span></li>
+          <li><b>Feed gate: post your own ad to read the paper</b><span class="why">reciprocity — no "reading over someone's shoulder," everyone participates</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="when">Jul 13<small>git commit</small></div>
+      <div class="what">
+        <h3>Onboarding, face reveal &amp; dark mode</h3>
+        <ul class="dl">
+          <li><b>Reworked the onboarding flow</b><span class="why">smoother path from sign-up to being in the paper</span></li>
+          <li><b>Face reveal = mutual opt-in</b>, hover-to-peek that fogs back over<span class="why">preserves the blind premise; intimacy is consent-gated, never one-sided</span></li>
+          <li><b>Fixed dark-mode issues; tuned the face-reveal window</b><span class="why">polish and correctness</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="when">~Jul 15–16<small>last wireframe saves</small></div>
+      <div class="what">
+        <h3>Wireframe refinements</h3>
+        <ul class="dl">
+          <li><b>Pagination dots → "Step X of 6"</b><span class="why">six dots felt like too much visual weight</span></li>
+          <li><b>"Make it yours" = two columns</b> (live ad preview + scrollable controls)<span class="why">see styling changes on your ad as you make them</span></li>
+          <li><b>Renamed "Name font" → "Display font"</b> everywhere<span class="why">clearer about what it actually controls</span></li>
+          <li><b>"What makes a good photo?" info overlay</b> on the photo step<span class="why">guidance without cluttering the step</span></li>
+          <li><b>Accessibility: settled on one toggle, "Hide user-selected fonts"</b> (forces all ads to Instrument Sans)<span class="why">iterated from a dyslexia-font idea → a font dropdown → this; simpler than a picker, and helps everyone, not only dyslexia</span></li>
+          <li><b>Filed it under Settings "Appearance &amp; accessibility"</b> with dark mode; added a My Ad "Show decorative fonts" peek<span class="why">one logical home; let members still check their own styling</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- FIGMA PHASE -->
+    <div class="phase-h"><h2>Phase II · Rebuilding on Material 3</h2><span class="rule"></span><span class="tag">~Jul 18–20 · approximate</span></div>
+
+    <div class="entry">
+      <div class="when">~Jul 18–20</div>
+      <div class="what">
+        <h3>Color system</h3>
+        <ul class="dl">
+          <li><b>Reskinned M3 color styles AND variables</b> to the Classy palette<span class="why">components read styles, styles must trace to variables, so both had to move</span></li>
+          <li><b>Two-tier cream</b>: #F2EAD3 base · #FCF7EA cards/newspaper · #F7F1DF replied-card<span class="why">depth and hierarchy within the cream instead of one flat tone</span></li>
+          <li><b>Text fields → white; warmed the dark-mode greys</b><span class="why">input clarity; kill the cold blue undertone so dark mode matches the warm palette</span></li>
+          <li><b>Bound styles → variables</b> so the native dark-mode (variable modes) toggle works<span class="why">one switch actually flips the whole document</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="when">~Jul 18–20</div>
+      <div class="what">
+        <h3>Typography</h3>
+        <ul class="dl">
+          <li><b>Brand = Clarendon URW, Plain = ITC Franklin Gothic</b><span class="why">maps cleanly onto M3's built-in brand/plain two-typeface model</span></li>
+          <li><b>Brand on Display + Headline; Plain on Title / Body / Label</b><span class="why">M3's default split — and it fits Classy exactly</span></li>
+          <li><b>One deviation: Brand pushed into Title Large</b> (section headers, card/person names like "Riley")<span class="why">headings carry the editorial personality; keep smaller titles utilitarian</span></li>
+          <li><b>Set via the Font theme variables (both modes)</b><span class="why">two edits re-skin the whole document's type</span></li>
+          <li><b>Ad fonts stay member-chosen</b><span class="why">the deliberate exception — self-expression on the personal ad</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="when">~Jul 18–20</div>
+      <div class="what">
+        <h3>Shape &amp; buttons</h3>
+        <ul class="dl">
+          <li><b>Buttons: square shape, radius 8, square as default</b><span class="why">geometric, editorial look over M3's default pills</span></li>
+          <li><b>Corner radius 8 globally</b> via a Scripter sweep<span class="why">the Shape variables aren't wired to components (hardcoded radii), so variables alone couldn't do it</span></li>
+          <li><b>Vertical trim → "Cap height to baseline"</b> on labels<span class="why">Clarendon's caps floated high in buttons; trim re-centers them</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="when">~Jul 20</div>
+      <div class="what">
+        <h3>Process decision</h3>
+        <ul class="dl">
+          <li><b>Chose to duplicate the M3 file</b> (build the app inside a copy) instead of publishing it as a library<span class="why">variable publishing needs Org/Enterprise; on Professional, duplicating keeps the whole variable system intact with zero sync friction</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- MOBILE PHASE -->
+    <div class="phase-h"><h2>Phase III · The mobile wireframe</h2><span class="rule"></span><span class="tag">Prototype · approximate</span></div>
+
+    <div class="entry">
+      <div class="when">~Jul 21</div>
+      <div class="what">
+        <h3>The home feed becomes a paper you browse</h3>
+        <ul class="dl">
+          <li><b>Feed opens as a pan-and-zoom classifieds page, started slightly zoomed in</b><span class="why">commit fully to the newspaper metaphor — wander the page like a real paper instead of scrolling a feed; the crop invites you to look around</span></li>
+          <li><b>25 personals an issue, set in five columns, closing on an "End of today's paper" mark</b><span class="why">a finite, curated daily issue — scarcity and a sense of closure over an endless feed</span></li>
+          <li><b>Kept a single-column reading list as a toggle</b><span class="why">the dense paper is for browsing; the list is for actually reading — two intents, two views</span></li>
+          <li><b>Built as its own mobile-first file, not responsive tweaks to the desktop</b><span class="why">mobile changes navigation and interaction enough that a responsive layer would fight the approved desktop prototype</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="when">~Jul 21</div>
+      <div class="what">
+        <h3>Mobile navigation &amp; focus</h3>
+        <ul class="dl">
+          <li><b>Charcoal sidebar → bottom tab bar</b> (Feed · My Ad · Messages · Settings)<span class="why">thumb-reachable, the expected mobile home</span></li>
+          <li><b>Reading an ad and the face reveal open as centered cards; edit forms stay bottom sheets</b><span class="why">the "moments" get the spotlight; routine editing stays lightweight and dismissible</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="when">~Jul 21</div>
+      <div class="what">
+        <h3>The ad card, restyled</h3>
+        <ul class="dl">
+          <li><b>Decorative font now only on the name + age; the headline goes ALL CAPS in the body font</b>, so headline and body share one face<span class="why">personality lives in the name; one readable typeface keeps 25 ads legible and true to a real classifieds page</span></li>
+          <li><b>"Build" dropdown → a free-text "Appearance" write-in</b> ("tall, glasses, goth")<span class="why">describe yourself in words, not categories — consistent with the no-photos premise; a body-type radio felt clinical and off-brand</span></li>
+          <li><b>Forced all dark-mode text to white / light grey</b><span class="why">legibility as a right — removed low-contrast colored text (the required-field red was illegible on dark)</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="when">~Jul 21</div>
+      <div class="what">
+        <h3>The conversation &amp; the reveal</h3>
+        <ul class="dl">
+          <li><b>Face-reveal prompt moved into the conversation body; the thread header now names the person</b><span class="why">the reveal is a moment <em>in</em> the chat, and a name makes it feel like talking to someone, not managing a thread</span></li>
+          <li><b>Once both reveal, a small eye icon marks the conversation</b><span class="why">a quiet, persistent sign you've crossed that line together</span></li>
+          <li><b>Reveal became press-and-hold on touch, fogging back when you let go</b><span class="why">makes seeing a face a deliberate, physical act on mobile (was hover-to-peek on desktop)</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- COMPONENT SYSTEM PHASE -->
+    <div class="phase-h"><h2>Phase IV · Component system &amp; tokens</h2><span class="rule"></span><span class="tag">~Jul 22 · approximate</span></div>
+
+    <div class="entry">
+      <div class="when">~Jul 22</div>
+      <div class="what">
+        <h3>The desktop sidebar, rebuilt on auto layout</h3>
+        <ul class="dl">
+          <li><b>Nav built as one vertical auto-layout column set to space-between</b><span class="why">pins the logo to the top and the account block to the bottom; the middle gap absorbs any height change, so it's vertically responsive for free</span></li>
+          <li><b>App shell = a horizontal flex row</b> (fixed-width sidebar + fill content)<span class="why">mirrors how a dev builds it (display:flex), so Dev Mode reads 1:1 and handoff stays clean</span></li>
+          <li><b>Componentized the atoms</b> — Nav Item with a State variant, Logo/Master nested inside LogoBlock<span class="why">edit once, propagate everywhere; layout frames stay plain frames, not components</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="when">~Jul 22</div>
+      <div class="what">
+        <h3>A sidebar token extension on top of M3</h3>
+        <ul class="dl">
+          <li><b>Added a small sidebar/* group</b> (surface, on-active, on-inactive, divider) sharing the same primitives<span class="why">M3 has no semantic slot for a dark rail that must stay darker than content in both modes</span></li>
+          <li><b>sidebar/surface flips #404043 (light app) → #26262C (dark app)</b><span class="why">the sidebar is always the darker neighbor of the content beside it</span></li>
+          <li><b>Active/inactive is a component State variant, not a variable mode</b><span class="why">one active + several inactive items coexist in the same frame, which a mode (one value per frame) can't express</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="when">~Jul 22</div>
+      <div class="what">
+        <h3>Palette finalized — monochrome</h3>
+        <ul class="dl">
+          <li><b>Dropped the lavender accent</b> as leftover Material<span class="why">the identity is charcoal-on-cream contrast and the serif wordmark, not a color</span></li>
+          <li><b>Brick reserved as semantic-only</b> — danger buttons and notification dots<span class="why">keep semantic color quarantined; Classy carries no decorative accent by design</span></li>
+          <li><b>Locked a warm-neutral ramp, Ink #26262C → Paper #FCF7EA, named by tone</b><span class="why">one primitive foundation feeding both the M3 roles and the sidebar extension</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="when">~Jul 22</div>
+      <div class="what">
+        <h3>The style → variable migration</h3>
+        <ul class="dl">
+          <li><b>Found the components were wired to paint styles</b> (M3/sys/light/*), not variables<span class="why">styles have no modes, so flipping the page mode did nothing until they were migrated</span></li>
+          <li><b>Hand-set the neutrals instead of trusting Material Theme Builder</b><span class="why">a near-hueless charcoal seed leaves HCT no hue to build from, so it defaulted the whole palette to blue</span></li>
+          <li><b>Trimmed the auto-generated modes down to Light + Dark</b><span class="why">the medium / high-contrast modes were noise for this project</span></li>
+          <li><b>Ran a scoped, match-by-name style→variable migration per page</b><span class="why">only the pages actually used need it; the full-kit sweep (79k nodes) was slow and overkill</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="when">~Jul 23</div>
+      <div class="what">
+        <h3>Reskinning the components — buttons first</h3>
+        <ul class="dl">
+          <li><b>Cut the button set to Filled, Outline, Text</b> — dropped Tonal, Elevated, and every Toggle variant<span class="why">an MVP needs the components the product actually uses, not Material's whole catalog; a lean set reads as intentional and slims the file</span></li>
+          <li><b>Disabled states became dedicated tokens with the alpha baked in</b><span class="why">a fill bound to a variable can't carry its own opacity, so the fade has to live inside the token</span></li>
+          <li><b>Left the hover/press "state layers" on their styles during the link pass</b><span class="why">their opacity is baked into the style — swap it for a solid variable and a faint tint becomes a solid block</span></li>
+          <li><b>Drove state backgrounds through the fill, never layer opacity</b><span class="why">the label sits inside the state layer, so zeroing the layer's opacity hid the label with it</span></li>
+          <li><b>Gave the text button its own state tokens</b> — a warm chip on hover, a muted grey when disabled<span class="why">Material's default tint is nearly invisible; a defined background reads as deliberate</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="when">~Jul 23</div>
+      <div class="what">
+        <h3>Text field — rebuilt from scratch</h3>
+        <ul class="dl">
+          <li><b>Abandoned the M3 text field and rebuilt it</b> — label above a fully-closed rounded rectangle, no notched outline<span class="why">M3's notched-outline field fought the editorial look; the wireframe wants a plain closed box, and reskinning the original was messier than starting clean</span></li>
+          <li><b>Made the input text Fill-container width + Hug height, field Hugs height</b><span class="why">text wraps inside the box and the field grows for multi-line inputs (the ad description) instead of overflowing</span></li>
+          <li><b>Optional parts became boolean properties, not variants</b> — leading checkbox, counter, label toggle independently<span class="why">variants are for mutually-exclusive states; toggle-able parts as booleans avoid a combinatorial explosion of variant rows</span></li>
+          <li><b>State (Enabled / Focused / Error / Disabled) reserved for the variant axis</b><span class="why">those never coexist on one field, so they're the correct thing to model as variants — reusing the existing tokens</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- BESPOKE COMPONENTS PHASE -->
+    <div class="phase-h"><h2>Phase V · Building past the kit</h2><span class="rule"></span><span class="tag">~Jul 24–26 · approximate</span></div>
+
+    <div class="entry">
+      <div class="when">~Jul 24–26</div>
+      <div class="what">
+        <h3>A rule for reskin vs. rebuild</h3>
+        <ul class="dl">
+          <li><b>Reskin the Material component only when it's the same anatomy in different paint</b>; build from scratch when the anatomy itself differs<span class="why">reskinning a mismatched component means deleting and fighting more than you keep — the message cards and the menu were faster to build than to un-build M3's</span></li>
+          <li><b>"From scratch" still composes from existing tokens + button / checkbox components</b>, never raw ad-hoc shapes<span class="why">keeps bespoke pieces inside the system, so they inherit dark mode and stay consistent</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="when">~Jul 24–26</div>
+      <div class="what">
+        <h3>Message cards, built from scratch</h3>
+        <ul class="dl">
+          <li><b>Conversation preview and ad-response are one card</b>, with a Bottom Row boolean that reveals the Decline / Accept footer<span class="why">they share a header and body; a single toggle beats maintaining two near-duplicate components</span></li>
+          <li><b>Reused the Filled + Outline buttons for the actions; the unread signal is one dot on a boolean</b><span class="why">reuse over rebuild, and the dot is the only read / unread cue the design needs</span></li>
+          <li><b>Added a dedicated caption text token</b> because On Surface Variant read too dark in dark mode<span class="why">the M3 roles had no slot at the right contrast for the muted ad-tagline line</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="when">~Jul 24–26</div>
+      <div class="what">
+        <h3>The settings list</h3>
+        <ul class="dl">
+          <li><b>One row set swaps trailing type via a variant</b> — switch / button / link / danger / menu — where Danger also reddens the heading<span class="why">Danger is a row-level treatment, so a variant carries it cleanly; a trailing instance-swap alone couldn't recolor the heading</span></li>
+          <li><b>Stacked rows sit in a container that owns the radius and clips its content</b>, so only the group's outer corners round<span class="why">one container rounds any number of rows correctly, and a single-row group comes out fully rounded for free</span></li>
+          <li><b>Hairline dividers are a 1px gap revealing the container fill; the line uses Outline Variant, not Outline</b><span class="why">no per-row divider bookkeeping, and plain Outline washed out in dark mode</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="when">~Jul 26–27</div>
+      <div class="what">
+        <h3>Dialogs — two families, not one</h3>
+        <ul class="dl">
+          <li><b>Split confirmations and the face-reveal into two separate component families</b><span class="why">the face-reveal carries its own Show / Trade / Offer state axis that would clash with a confirm/reveal axis on a shared component</span></li>
+          <li><b>Decline / Block / Unmatch differ only in text (+ Decline's optional "also block" checkbox)</b>, so they're one shell reused, not three components<span class="why">content isn't structure — a variant per message string is the explosion trap</span></li>
+          <li><b>Confirmations reuse the danger + outline buttons; desktop centers them, mobile will float the same payload as a bottom sheet</b><span class="why">a dialog and a bottom sheet are one content block in two containers, so they shouldn't be built twice</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="when">~Jul 26–27</div>
+      <div class="what">
+        <h3>The destructive button</h3>
+        <ul class="dl">
+          <li><b>"Error" is its own axis (emphasis), never a value inside State</b><span class="why">a destructive button still gets hovered, pressed, and disabled — folding error into State throws those states away</span></li>
+          <li><b>Built as a lean dedicated Danger set</b> (only the sizes/states actually used), not a colour axis doubling the whole button catalogue<span class="why">Classy uses the destructive button in one style only; matches the earlier decision to trim the button set to what the product uses</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="when">~Jul 27</div>
+      <div class="what">
+        <h3>Screen headers &amp; a voice call</h3>
+        <ul class="dl">
+          <li><b>The screen header is an editorial masthead</b> — serif title + "ISSUE DATE {date}" — on its own header/* surface tokens<span class="why">the header bar is a distinct surface in both modes, like the sidebar rail; no stock M3 role fit it</span></li>
+          <li><b>Nav labels and page titles deliberately use different registers</b> (sidebar "Feed" → header "Today's Picks")<span class="why">terse destinations vs. editorial titles — two systems doing two jobs</span></li>
+          <li><b>But aligned the possessive voice: sidebar "My Ad" → "Your Ad"</b> to match "Your Messages"<span class="why">wording can differ between nav and title, but flipping person on the same feature — both on screen at once — reads as an oversight; second person is the modern convention and Classy's established voice</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <footer class="foot">
+      <div>CLASSY · BLIND PERSONALS · BUILD LOG</div>
+      <div class="r">compiled from wireframe git history, project notes &amp; working chat</div>
+    </footer>
+
+  </div>
+</div>
