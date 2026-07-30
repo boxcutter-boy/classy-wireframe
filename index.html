@@ -6,7 +6,7 @@
 <title>Classy — Wireframe</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Instrument+Sans:ital@0;1&family=Instrument+Serif:ital@0;1&family=Jacquard+24&family=Monoton&family=Rubik+Dirt&family=Ruthie&family=Sancreek&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Anton&family=Bodoni+Moda:ital,wght@0,400;0,600;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=EB+Garamond:wght@400;600&family=Instrument+Sans:ital@0;1&family=Jost:ital,wght@0,400;0,700;1,700&family=Pacifico&family=Roboto+Slab:wght@400;700&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#f4f4f4;
@@ -686,25 +686,29 @@ const MY_AD = {
   headline:'Curious about almost everything',
   desc:"I ask too many questions. I like tide pools, used bookstores, and people who can explain their job in a way that makes it sound interesting. Looking for someone who's game to wander.",
   gender:['Non-binary'], race:['Asian'], religion:'Agnostic', pronouns:['they/them'], sexuality:['Queer'], showSexuality:true, politics:'Liberal', kids:"Doesn't want kids", relationship:'Not sure', relstyle:'Monogamous', weight:'Slim, glasses, usually a little overdressed',
-  headingFont:'Instrument Serif', bodyFont:'Instrument Sans', photo:''
+  headingFont:'EB Garamond', bodyFont:'Instrument Sans', photo:''
 };
 
 // Ad-heading font options (each carries a "personality")
 // scale = per-font size multiplier so every face lands at a similar visual size
+// Decorative headline fonts. Each keeps its real name first in the css stack (renders for anyone
+// who has it installed/Adobe-activated) with a free Google Fonts stand-in behind it for the wireframe.
+// w = font-weight, it = italic — honor the specific cut the user asked for.
 const HEADING_FONTS = [
-  {name:'Courier Prime',   css:"'Courier Prime', monospace",    vibe:'Shy, quiet',          scale:1.15},
-  {name:'Instrument Serif',css:"'Instrument Serif', serif",     vibe:'Classy, understated', scale:1.06},
-  {name:'Instrument Sans', css:"'Instrument Sans', sans-serif", vibe:'Safe, sane',          scale:1},
-  {name:'Monoton',         css:"'Monoton', cursive",           vibe:'Flashy, fun',         scale:0.87},
-  {name:'Ruthie',          css:"'Ruthie', cursive",            vibe:'Weird, wild',         scale:1.04},
-  {name:'Jacquard 24',     css:"'Jacquard 24', system-ui",     vibe:'Nerdy, goth',         scale:1.21},
-  {name:'Rubik Dirt',      css:"'Rubik Dirt', system-ui",      vibe:'Edgy, severe',        scale:1.02},
-  {name:'Sancreek',        css:"'Sancreek', cursive",          vibe:'Rural, homebody',     scale:0.94},
+  {name:'TT Modernoir',               css:"'TT Modernoir', 'Bodoni Moda', serif",             vibe:'High-fashion, dramatic', scale:1.00, w:600},
+  {name:'Divulga',                    css:"'Divulga', 'Anton', sans-serif",                   vibe:'Bold, loud',             scale:0.92},
+  {name:'EB Garamond',                css:"'EB Garamond', serif",                             vibe:'Classic, literary',      scale:1.08, w:600},
+  {name:'Flower Power',               css:"'Flower Power', 'Pacifico', cursive",              vibe:'Groovy, playful',        scale:1.00},
+  {name:'ITC Avant Garde Gothic Pro', css:"'ITC Avant Garde Gothic Pro', 'Jost', sans-serif", vibe:'Geometric, mod',         scale:1.00, w:700, it:true},
+  {name:'Courier Prime',              css:"'Courier Prime', monospace",                       vibe:'Typewriter, plain',      scale:1.15},
+  {name:'Job Clarendon',              css:"'Job Clarendon', 'Roboto Slab', serif",            vibe:'Slab, sturdy',           scale:1.00},
+  {name:'Gothicus Roman',             css:"'Gothicus Roman', 'UnifrakturCook', cursive",      vibe:'Gothic, blackletter',    scale:1.05, w:700},
+  {name:'Cooper Std',                 css:"'Cooper Std', 'Alfa Slab One', serif",             vibe:'Chunky, retro',          scale:0.95, it:true},
 ];
 const BODY_FONTS = [
   {name:'Courier Prime',   css:"'Courier Prime', monospace"},
   {name:'Instrument Sans', css:"'Instrument Sans', sans-serif"},
-  {name:'Instrument Serif',css:"'Instrument Serif', serif"},
+  {name:'EB Garamond',     css:"'EB Garamond', serif"},
 ];
 // ---------- Hyperlegible font (accessibility) ----------
 // When on, every ad renders in one legible face regardless of its own fonts.
@@ -732,7 +736,13 @@ function scaleFor(name){
   return f ? f.scale : 1;
 }
 // inline style for a heading: font family + its size-normalizing scale (--fscale)
-function hstyle(name){ return `font-family:${cssFor(name)};--fscale:${scaleFor(name)}`; }
+function wsFor(name){
+  if(hyperActive()) return '';
+  const f = HEADING_FONTS.find(x=>x.name===name);
+  return f ? (f.w?`;font-weight:${f.w}`:'') + (f.it?';font-style:italic':'') : '';
+}
+function fontOptStyle(f){ return `font-family:${f.css}${f.w?`;font-weight:${f.w}`:''}${f.it?';font-style:italic':''}`; }
+function hstyle(name){ return `font-family:${cssFor(name)};--fscale:${scaleFor(name)}${wsFor(name)}`; }
 // Ad typography (global): the decorative font is used ONLY on the name + age;
 // the headline (ALWAYS ALL CAPS via .ad-headline) and body copy share the ad's body font.
 function adNameHTML(a){ return `<div class="ad-name" style="${hstyle(a.headingFont)}">${a.name}, ${a.age}</div>`; }
@@ -743,26 +753,26 @@ function feedHeadlineHTML(a){ return `<div class="feed-headline" style="${hstyle
 
 // each ad carries its own customized fonts [heading, body] — spread across all 8 heading options
 const AD_FONTS = {
-  1:['Instrument Sans','Instrument Sans'],
-  2:['Monoton','Instrument Sans'],
-  3:['Rubik Dirt','Instrument Sans'],
-  4:['Instrument Serif','Instrument Serif'],
-  5:['Sancreek','Courier Prime'],
+  1:['TT Modernoir','Instrument Sans'],
+  2:['Divulga','Instrument Sans'],
+  3:['EB Garamond','Instrument Sans'],
+  4:['Flower Power','EB Garamond'],
+  5:['ITC Avant Garde Gothic Pro','Courier Prime'],
   6:['Courier Prime','Courier Prime'],
-  7:['Instrument Serif','Instrument Sans'],
-  8:['Jacquard 24','Instrument Sans'],
-  9:['Ruthie','Instrument Serif'],
-  10:['Instrument Serif','Instrument Serif'], 11:['Courier Prime','Courier Prime'],
-  12:['Rubik Dirt','Instrument Sans'], 13:['Instrument Sans','Instrument Sans'],
-  14:['Instrument Serif','Instrument Sans'], 15:['Sancreek','Courier Prime'],
-  16:['Ruthie','Instrument Serif'], 17:['Monoton','Instrument Sans'],
-  18:['Jacquard 24','Instrument Sans'], 19:['Instrument Serif','Instrument Serif'],
-  20:['Instrument Sans','Instrument Sans'], 21:['Courier Prime','Courier Prime'],
-  22:['Instrument Serif','Instrument Sans'], 23:['Rubik Dirt','Instrument Sans'],
-  24:['Instrument Sans','Instrument Sans'], 25:['Ruthie','Instrument Serif'],
-  26:['Instrument Serif','Instrument Serif'], 27:['Sancreek','Courier Prime'],
-  28:['Monoton','Instrument Sans'], 29:['Jacquard 24','Instrument Sans'],
-  30:['Courier Prime','Courier Prime'],
+  7:['Job Clarendon','Instrument Sans'],
+  8:['Gothicus Roman','Instrument Sans'],
+  9:['Cooper Std','EB Garamond'],
+  10:['TT Modernoir','EB Garamond'], 11:['Divulga','Courier Prime'],
+  12:['EB Garamond','Instrument Sans'], 13:['Flower Power','Instrument Sans'],
+  14:['ITC Avant Garde Gothic Pro','Instrument Sans'], 15:['Courier Prime','Courier Prime'],
+  16:['Job Clarendon','EB Garamond'], 17:['Gothicus Roman','Instrument Sans'],
+  18:['Cooper Std','Instrument Sans'], 19:['TT Modernoir','EB Garamond'],
+  20:['Divulga','Instrument Sans'], 21:['EB Garamond','Courier Prime'],
+  22:['Flower Power','Instrument Sans'], 23:['ITC Avant Garde Gothic Pro','Instrument Sans'],
+  24:['Courier Prime','Instrument Sans'], 25:['Job Clarendon','EB Garamond'],
+  26:['Gothicus Roman','EB Garamond'], 27:['Cooper Std','Courier Prime'],
+  28:['TT Modernoir','Instrument Sans'], 29:['Divulga','Instrument Sans'],
+  30:['EB Garamond','Courier Prime'],
 };
 const AD_RACE = {
   1:['White'], 2:['Black'], 3:['Asian'], 4:['Hispanic / Latino'], 5:['White'],
@@ -780,7 +790,7 @@ const AD_RELIGION = {
   20:'Buddhist', 21:'Agnostic', 22:'Muslim', 23:'Atheist', 24:'Christian',
   25:'Agnostic', 26:'Christian', 27:'Christian', 28:'Agnostic', 29:'Atheist', 30:'Christian',
 };
-ADS.forEach(a=>{ const f = AD_FONTS[a.id] || ['Instrument Serif','Instrument Sans']; a.headingFont = f[0]; a.bodyFont = f[1]; a.race = AD_RACE[a.id] || ['Prefer not to say']; a.religion = AD_RELIGION[a.id] || 'Prefer not to say'; });
+ADS.forEach(a=>{ const f = AD_FONTS[a.id] || ['EB Garamond','Instrument Sans']; a.headingFont = f[0]; a.bodyFont = f[1]; a.race = AD_RACE[a.id] || ['Prefer not to say']; a.religion = AD_RELIGION[a.id] || 'Prefer not to say'; });
 
 const titles = {feed:"Today's Picks", myad:"Your Ad", messages:"Your Messages", settings:"Settings", thread:"Your Messages", customize:"Customize your ad"};
 
@@ -1584,13 +1594,13 @@ function renderCustomize(){
         <label class="drop">
           <span class="drop-label">Display font</span>
           <select class="drop-select" id="headSel" style="font-family:${cssFor(heading)}">
-            ${HEADING_FONTS.map(f=>`<option value="${f.name}" style="font-family:${f.css}"${f.name===heading?' selected':''}>${f.name} · ${f.vibe}</option>`).join('')}
+            ${HEADING_FONTS.map(f=>`<option value="${f.name}" style="${fontOptStyle(f)}"${f.name===heading?' selected':''}>${f.name} · ${f.vibe}</option>`).join('')}
           </select>
         </label>
         <label class="drop">
           <span class="drop-label">Body font</span>
           <select class="drop-select" id="bodySel" style="font-family:${cssFor(body)}">
-            ${BODY_FONTS.map(f=>`<option value="${f.name}" style="font-family:${f.css}"${f.name===body?' selected':''}>${f.name}</option>`).join('')}
+            ${BODY_FONTS.map(f=>`<option value="${f.name}" style="${fontOptStyle(f)}"${f.name===body?' selected':''}>${f.name}</option>`).join('')}
           </select>
         </label>
       </div>
@@ -1606,9 +1616,9 @@ function renderCustomize(){
 }
 
 // collapsible field row: label + current-selection summary, expands to the picker
-function accField(label, bodyHtml, group, emptyText){
+function accField(label, bodyHtml, group, emptyText, open){
   emptyText = emptyText || 'None selected';
-  return `<div class="acc" data-acc data-acc-group="${group}" data-acc-empty="${emptyText}"><button type="button" class="acc-head"><span class="acc-label">${label}</span><span class="acc-value" data-acc-value>${emptyText}</span><span class="acc-chev">▾</span></button><div class="acc-body" hidden>${bodyHtml}</div></div>`;
+  return `<div class="acc${open?' open':''}" data-acc data-acc-group="${group}" data-acc-empty="${emptyText}"><button type="button" class="acc-head"><span class="acc-label">${label}</span><span class="acc-value" data-acc-value>${emptyText}</span><span class="acc-chev">▾</span></button><div class="acc-body"${open?'':' hidden'}>${bodyHtml}</div></div>`;
 }
 // free-text accordion body (e.g. Appearance): "Describe yourself" + a 50-char counter
 function appearanceBody(value){
@@ -1653,11 +1663,7 @@ function wireAccordions(container){
   });
   const refresh = ()=>container.querySelectorAll('[data-acc]').forEach(acc=>updateAccSummary(container, acc.dataset.accGroup));
   refresh();
-  container.addEventListener('click', (e)=>{
-    refresh();
-    const chk = e.target.closest('.check.radio:not(.writein-check)');
-    if(chk){ const acc = chk.closest('[data-acc]'); if(acc){ acc.classList.remove('open'); acc.querySelector('.acc-body').hidden = true; } }
-  });
+  container.addEventListener('click', ()=>{ refresh(); }); // update summary on select; no auto-collapse
   container.addEventListener('input', refresh);
 }
 
@@ -1848,7 +1854,7 @@ window.addEventListener('resize', ()=>{
 
 // ---------- Onboarding (write your first ad) ----------
 let obStep = 0;
-const OB_DEFAULT_HFONT = 'Instrument Serif', OB_DEFAULT_BFONT = 'Instrument Sans';
+const OB_DEFAULT_HFONT = 'EB Garamond', OB_DEFAULT_BFONT = 'Instrument Sans';
 const obData = { name:'', age:'', location:'', headline:'', desc:'', photo:'', headingFont:OB_DEFAULT_HFONT, bodyFont:OB_DEFAULT_BFONT,
   gender:[], pronouns:[], rel:'', race:[], religion:'', sexuality:[], showSexuality:false, politics:'', kids:'', relstyle:'', build:'',
   prefInterest:[], prefAgeMin:'25', prefAgeMax:'45', prefZip:'', prefDist:'Within 25 miles', prefRel:'' };
@@ -2003,9 +2009,9 @@ function renderOnboarding(){
   } else if(obStep===3){
     body.innerHTML = `<div class="ob-step"><h2>About you</h2>
       <p class="ob-sub">A few details for your ad. Only gender, pronouns, and what you're looking for are required — the rest is up to you.</p>
-      ${accField('Gender <span class="req-mark">*</span>', checkGroup('gender',['Man','Woman','Trans man','Trans woman','Non-binary','Write in…'],obData.gender,false,'grid2'), 'gender')}
-      ${accField('Pronouns <span class="req-mark">*</span>', checkGroup('pronouns',['he/him','she/her','they/them','Write in…'],obData.pronouns,false,'grid2'), 'pronouns')}
-      ${accField('Looking for <span class="req-mark">*</span>', checkGroup('rel',['Hookup','Not sure','Something serious'],[obData.rel],true,'stacked'), 'rel')}
+      ${accField('Gender <span class="req-mark">*</span>', checkGroup('gender',['Man','Woman','Trans man','Trans woman','Non-binary','Write in…'],obData.gender,false,'grid2'), 'gender', null, true)}
+      ${accField('Pronouns <span class="req-mark">*</span>', checkGroup('pronouns',['he/him','she/her','they/them','Write in…'],obData.pronouns,false,'grid2'), 'pronouns', null, true)}
+      ${accField('Looking for <span class="req-mark">*</span>', checkGroup('rel',['Hookup','Not sure','Something serious'],[obData.rel],true,'stacked'), 'rel', null, true)}
       <div class="ob-optional-head">Optional — add anything you'd like on your ad</div>
       ${accField('Race / ethnicity', checkGroup('race',['Asian','Black','Hispanic / Latino','Indigenous','Middle Eastern','Pacific Islander','White','Mixed','Prefer not to say','Write in…'],obData.race,false,'grid2',['Prefer not to say']), 'race')}
       ${accField('Religion', checkGroup('religion',['Agnostic','Atheist','Buddhist','Christian','Hindu','Jewish','Muslim','Sikh','Prefer not to say','Write in…'],[obData.religion],true,'grid2'), 'religion')}
@@ -2026,7 +2032,7 @@ function renderOnboarding(){
   } else if(obStep===5){
     body.innerHTML = `<div class="ob-step"><h2>Who you're looking for</h2>
       <p class="ob-sub">This shapes who lands in your Today's Picks. You can get more specific anytime in Settings.</p>
-      ${accField('Interested in <span class="req-mark">*</span>', checkGroup('prefInterest',['Men','Women','Trans men','Trans women','Non-binary','Everyone'],obData.prefInterest,false,'grid2',['Everyone']), 'prefInterest')}
+      ${accField('Interested in <span class="req-mark">*</span>', checkGroup('prefInterest',['Men','Women','Trans men','Trans women','Non-binary','Everyone'],obData.prefInterest,false,'grid2',['Everyone']), 'prefInterest', null, true)}
       <div class="fgroup"><label class="lab">Age range</label>
         <div style="display:flex;align-items:center;gap:10px">
           <input class="field-in" id="prefAgeMin" value="${obData.prefAgeMin}" style="width:74px" inputmode="numeric">
@@ -2047,11 +2053,11 @@ function renderOnboarding(){
         <div class="cust-controls">
           <label class="drop"><span class="drop-label">Display font</span>
             <select class="drop-select" id="obHeadSel" style="font-family:${cssFor(obData.headingFont)}">
-              ${HEADING_FONTS.map(f=>`<option value="${f.name}" style="font-family:${f.css}"${f.name===obData.headingFont?' selected':''}>${f.name} · ${f.vibe}</option>`).join('')}
+              ${HEADING_FONTS.map(f=>`<option value="${f.name}" style="${fontOptStyle(f)}"${f.name===obData.headingFont?' selected':''}>${f.name} · ${f.vibe}</option>`).join('')}
             </select></label>
           <label class="drop"><span class="drop-label">Body font</span>
             <select class="drop-select" id="obBodySel" style="font-family:${cssFor(obData.bodyFont)}">
-              ${BODY_FONTS.map(f=>`<option value="${f.name}" style="font-family:${f.css}"${f.name===obData.bodyFont?' selected':''}>${f.name}</option>`).join('')}
+              ${BODY_FONTS.map(f=>`<option value="${f.name}" style="${fontOptStyle(f)}"${f.name===obData.bodyFont?' selected':''}>${f.name}</option>`).join('')}
             </select></label>
           <div class="cust-borders">
             <span class="drop-label">Post border <span class="soon">soon</span></span>
