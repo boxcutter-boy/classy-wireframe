@@ -1,0 +1,173 @@
+<style>
+  :root {
+    --ground: #232326; --ground-2: #1c1c1f; --card: #2e2e34; --line: #43434b;
+    --cream: #F2EAD3; --muted: #b3ad9c; --faint: #7d7a6e;
+    --brick: #C0554E; --amber: #C9A23F;
+    --serif: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+    --sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --mono: ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  .page {
+    background: var(--ground); color: var(--cream); font-family: var(--sans);
+    line-height: 1.5; min-height: 100vh; padding: clamp(24px,5vw,56px) clamp(20px,5vw,52px) 72px;
+    max-width: 860px; margin: 0 auto;
+  }
+  .eyebrow { font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--brick); font-weight: 600; margin: 0 0 12px; }
+  h1 { font-family: var(--serif); font-weight: 600; font-size: clamp(32px,6vw,50px); line-height: 1.02; letter-spacing: -0.01em; margin: 0 0 10px; text-wrap: balance; }
+  .lede { color: var(--muted); font-size: 15px; max-width: 60ch; margin: 0 0 26px; }
+
+  /* progress */
+  .prog { border: 1px solid var(--line); border-radius: 6px; background: var(--ground-2); padding: 16px 18px; margin-bottom: 14px; }
+  .prog-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 11px; }
+  .prog-top b { font-family: var(--serif); font-size: 16px; font-weight: 600; }
+  .prog-top .count { font-family: var(--mono); font-size: 15px; color: var(--cream); font-variant-numeric: tabular-nums; }
+  .track { height: 8px; background: #3a3a41; border-radius: 99px; overflow: hidden; }
+  #bar { height: 100%; background: var(--cream); border-radius: 99px; width: 0; transition: width 0.35s ease; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-size: 12px; color: var(--muted); margin-bottom: 38px; padding: 0 2px; }
+  .legend .chip { pointer-events: none; }
+
+  section { margin-bottom: 30px; }
+  .sec-head { display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 9px; margin-bottom: 6px; }
+  .sec-head h2 { font-family: var(--serif); font-weight: 600; font-size: 19px; margin: 0; }
+  .sec-head .sc { font-family: var(--mono); font-size: 12px; color: var(--faint); margin-left: auto; font-variant-numeric: tabular-nums; }
+
+  .item { display: flex; align-items: center; gap: 14px; padding: 12px 8px; border-bottom: 1px solid #37373d; cursor: pointer; }
+  .item:last-child { border-bottom: 0; }
+  label.item { user-select: none; }
+  .item input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .box { flex: none; width: 20px; height: 20px; border: 1.5px solid var(--faint); border-radius: 5px; display: grid; place-items: center; transition: all 0.15s; }
+  .box svg { width: 12px; height: 12px; stroke: var(--ground); stroke-width: 3.5; fill: none; opacity: 0; }
+  .item input:checked ~ .box { background: var(--cream); border-color: var(--cream); }
+  .item input:checked ~ .box svg { opacity: 1; }
+  .item input:focus-visible ~ .box { outline: 2px solid var(--amber); outline-offset: 2px; }
+  .name { font-size: 15px; font-weight: 500; }
+  .name small { display: block; font-weight: 400; font-size: 12.5px; color: var(--faint); margin-top: 1px; }
+  .item.done .name { color: var(--muted); }
+  .item.done .name b { text-decoration: line-through; text-decoration-color: var(--faint); }
+  .meta { margin-left: auto; display: flex; align-items: center; gap: 10px; flex: none; }
+  .prio { font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; }
+  .prio.high { color: var(--brick); }
+  .prio.med { color: var(--muted); }
+  .prio.low { color: var(--faint); }
+  .chip { font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; padding: 3px 9px; border-radius: 3px; white-space: nowrap; }
+  .chip.done { background: var(--cream); color: var(--ground); }
+  .chip.reskin { border: 1px solid var(--line); color: var(--muted); }
+  .chip.build { border: 1px solid var(--brick); color: var(--brick); }
+  .chip.confirm { border: 1px solid var(--amber); color: var(--amber); }
+  .chip.later { border: 1px dashed var(--faint); color: var(--faint); }
+
+  .foot { color: var(--faint); font-size: 12.5px; border-top: 1px solid var(--line); padding-top: 18px; margin-top: 30px; }
+
+  @media (max-width: 520px) {
+    .meta { gap: 7px; }
+    .name { font-size: 14px; }
+  }
+</style>
+
+<div class="page">
+  <p class="eyebrow">Classy · Design System</p>
+  <h1>Component Build Status</h1>
+  <p class="lede">Live tracker for reskinning and building out the Classy component set. Tick items as you finish them — your progress saves in this browser.</p>
+
+  <div class="prog">
+    <div class="prog-top"><b>Overall progress</b><span class="count" id="count">0 / 0</span></div>
+    <div class="track"><div id="bar"></div></div>
+  </div>
+  <div class="legend">
+    <span class="chip done">Done</span>
+    <span class="chip confirm">Confirm</span> exists — verify
+    <span class="chip reskin">Reskin</span> M3 kit + linker
+    <span class="chip build">Build</span> custom / signature
+    <span class="chip later">Later</span> end-of-build sweep
+  </div>
+
+  <section>
+    <div class="sec-head"><h2>Foundations</h2><span class="sc" data-sc></span></div>
+    <label class="item"><input type="checkbox" id="color" checked><span class="box"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></span><span class="name"><b>Color system</b> <small>Light + dark, monochrome palette</small></span><span class="meta"><span class="chip done">Done</span></span></label>
+    <label class="item"><input type="checkbox" id="type"><span class="box"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></span><span class="name"><b>Typography</b> <small>Clarendon + Franklin Gothic — confirm it's applied</small></span><span class="meta"><span class="chip confirm">Confirm</span></span></label>
+    <label class="item"><input type="checkbox" id="shape"><span class="box"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></span><span class="name"><b>Shape / corners</b> <small>Deliberate editorial-radius pass</small></span><span class="meta"><span class="prio med">Med</span><span class="chip reskin">Reskin</span></span></label>
+    <label class="item"><input type="checkbox" id="dividers"><span class="box"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></span><span class="name"><b>Dividers</b> <small>Likely flipping already — quick glance</small></span><span class="meta"><span class="chip confirm">Confirm</span></span></label>
+    <label class="item"><input type="checkbox" id="surfaceaudit"><span class="box"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></span><span class="name"><b>Surface-token cleanup</b> <small>Audit references &amp; delete unused M3 surfaces — do at the END, not mid-build</small></span><span class="meta"><span class="prio low">Low</span><span class="chip later">Later</span></span></label>
+    <label class="item"><input type="checkbox" id="typeaudit"><span class="box"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></span><span class="name"><b>Typography audit</b> <small>Sweep whole doc for M3 styles reverting to Roboto — script it before portfolio publish</small></span><span class="meta"><span class="prio med">Med</span><span class="chip later">Later</span></span></label>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Navigation</h2><span class="sc" data-sc></span></div>
+    <label class="item"><input type="checkbox" id="sidebar" checked><span class="box"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></span><span class="name"><b>Desktop sidebar</b> <small>Auto layout + sidebar/* tokens</small></span><span class="meta"><span class="chip done">Done</span></span></label>
+    <label class="item"><input type="checkbox" id="appbars"><span class="box"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></span><span class="name"><b>App bars / top bars</b> <small>Screen header done — thread header pending</small></span><span class="meta"><span class="prio med">Med</span><span class="chip build">Build</span></span></label>
+    <label class="item"><input type="checkbox" id="bottomnav"><span class="box"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></span><span class="name"><b>Mobile bottom tab bar</b> <small>Replaces the sidebar on mobile</small></span><span class="meta"><span class="chip build">Build</span></span></label>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Actions</h2><span class="sc" data-sc></span></div>
+    <label class="item"><input type="checkbox" id="buttons" checked><span class="box"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></span><span class="name"><b>Buttons</b> <small>Filled / Outline / Text + Danger — all states, both modes</small></span><span class="meta"><span class="chip done">Done</span></span></label>
+    <label class="item"><input type="checkbox" id="segmented" checked><span class="box"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></span><span class="name"><b>Segmented / view toggle</b> <small>Newspaper / Feed switch — custom Selected toggle, both modes</small></span><span class="meta"><span class="chip done">Done</span></span></label>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Inputs</h2><span class="sc" data-sc></span></div>
+    <label class="item"><input type="checkbox" id="textfields" checked><span class="box"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></span><span class="name"><b>Text fields / inputs</b> <small>Rebuilt from scratch — 4 states + label / counter / checkbox props</small></span><span class="meta"><span class="chip done">Done</span></span></label>
+    <label class="item"><input type="checkbox" id="switches" checked><span class="box"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></span><span class="name"><b>Switches / toggles</b> <small>All states, both modes</small></span><span class="meta"><span class="chip done">Done</span></span></label>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Containers</h2><span class="sc" data-sc></span></div>
+    <label class="item"><input type="checkbox" id="listitems" checked><span class="box"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></span><span class="name"><b>List items</b> <small>Settings rows — variant trailing + group-clip container</small></span><span class="meta"><span class="chip done">Done</span></span></label>
+    <label class="item"><input type="checkbox" id="messagecards" checked><span class="box"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></span><span class="name"><b>Message cards</b> <small>Conversation preview + ad-response — one card, Unread + Bottom Row</small></span><span class="meta"><span class="chip done">Done</span></span></label>
+    <label class="item"><input type="checkbox" id="menus" checked><span class="box"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></span><span class="name"><b>Menus</b> <small>Built from scratch — scrim + shadow, no leading nesting</small></span><span class="meta"><span class="chip done">Done</span></span></label>
+    <label class="item"><input type="checkbox" id="dialogs" checked><span class="box"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></span><span class="name"><b>Dialogs</b> <small>Destructive set + face-reveal set, both modes</small></span><span class="meta"><span class="chip done">Done</span></span></label>
+    <label class="item"><input type="checkbox" id="sheets"><span class="box"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></span><span class="name"><b>Bottom sheets</b> <small>Mobile edit forms — same payload as dialogs</small></span><span class="meta"><span class="chip build">Build</span></span></label>
+    <label class="item"><input type="checkbox" id="adcard"><span class="box"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></span><span class="name"><b>The ad card</b> <small>Classifieds styling — the heart of the product</small></span><span class="meta"><span class="chip build">Build</span></span></label>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Indicators &amp; bits</h2><span class="sc" data-sc></span></div>
+    <label class="item"><input type="checkbox" id="badges" checked><span class="box"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></span><span class="name"><b>Badges</b> <small>Count + dot, brick — both modes</small></span><span class="meta"><span class="chip done">Done</span></span></label>
+    <label class="item"><input type="checkbox" id="tooltips"><span class="box"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></span><span class="name"><b>Tooltips</b> <small>Already styled early — verify tokens</small></span><span class="meta"><span class="prio low">Low</span><span class="chip reskin">Reskin</span></span></label>
+    <label class="item"><input type="checkbox" id="avatars"><span class="box"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></span><span class="name"><b>Avatar</b> <small>Fogged / placeholder — blind premise</small></span><span class="meta"><span class="chip build">Build</span></span></label>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Signature moments</h2><span class="sc" data-sc></span></div>
+    <label class="item"><input type="checkbox" id="facereveal"><span class="box"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></span><span class="name"><b>Face-reveal card</b> <small>The consent-gated moment</small></span><span class="meta"><span class="chip build">Build</span></span></label>
+    <label class="item"><input type="checkbox" id="feed"><span class="box"><svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3"/></svg></span><span class="name"><b>Pan-and-zoom feed</b> <small>The mobile "paper you browse"</small></span><span class="meta"><span class="chip build">Build</span></span></label>
+  </section>
+
+  <p class="foot">Recommended order — Text fields → List items → Menus → Switches / Badges / Dialogs → App bars → the custom builds (ad card, avatars, mobile bar) → finish with a shape &amp; type sweep. Progress is saved locally in this browser.</p>
+</div>
+
+<script>
+  (function () {
+    var KEY = 'classy-build-status-v1';
+    var saved = {};
+    try { saved = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) {}
+    var boxes = Array.prototype.slice.call(document.querySelectorAll('.item input[type=checkbox]'));
+
+    function paint(b) { b.closest('.item').classList.toggle('done', b.checked); }
+    function update() {
+      var done = boxes.filter(function (b) { return b.checked; }).length;
+      document.getElementById('count').textContent = done + ' / ' + boxes.length;
+      document.getElementById('bar').style.width = (done / boxes.length * 100) + '%';
+      document.querySelectorAll('section').forEach(function (s) {
+        var bs = s.querySelectorAll('.item input');
+        var d = Array.prototype.filter.call(bs, function (b) { return b.checked; }).length;
+        var el = s.querySelector('[data-sc]');
+        if (el) el.textContent = d + ' / ' + bs.length;
+      });
+    }
+
+    boxes.forEach(function (b) {
+      if (b.id in saved) b.checked = saved[b.id];
+      paint(b);
+      b.addEventListener('change', function () {
+        saved[b.id] = b.checked;
+        try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {}
+        paint(b);
+        update();
+      });
+    });
+    update();
+  })();
+</script>
