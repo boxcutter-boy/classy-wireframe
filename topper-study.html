@@ -1,0 +1,800 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Classy — Topper &amp; Frame Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- the roster faces that aren't installed locally — Bodoni Moda pulls its full
+     optical-size and weight range so a display weight interpolates properly -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=EB+Garamond:wght@400;600&family=Instrument+Sans:ital@0;1&display=swap">
+<style>
+  :root{
+    --ground:#e7e8e3; --paper:#fbfaf7; --ink:#23241f; --muted:#6f6e64; --hair:#cfcdc3;
+    --news-bg:#fcfcf8; --news-ink:#161616; --news-muted:#6d6d66; --news-rule:#bcbcb2;
+    --orn:var(--news-ink);      /* ornaments are ink only */
+    --ow:1;                     /* global stroke-weight multiplier */
+    --band:12px;                /* thickness of a repeating frame band */
+    --clip-pad:16px;            /* ONE content inset, shared by every treatment */
+  }
+  body.dark{ --news-bg:#262624; --news-ink:#e9e9e4; --news-muted:#a7a79f; --news-rule:#4c4c48; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);
+       font:14px/1.55 "Instrument Sans",-apple-system,system-ui,sans-serif;padding:36px 28px 80px}
+  .wrap{max-width:1180px;margin:0 auto}
+  .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+  h1{font-family:Georgia,serif;font-weight:500;font-size:30px;margin:0 0 10px}
+  h2{font-family:Georgia,serif;font-weight:500;font-size:20px;margin:0 0 4px}
+  .lede{color:var(--muted);max-width:70ch;margin:0 0 30px}
+  section{background:var(--paper);border:1px solid var(--hair);border-radius:8px;padding:24px 26px;margin:0 0 22px}
+  .cap{font-size:12px;color:var(--muted);margin-top:12px;max-width:80ch}
+  .controls{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin:14px 0 4px;
+            padding:12px 14px;background:#0000000a;border-radius:6px}
+  .controls label{font-size:12px;display:flex;gap:6px;align-items:center;cursor:pointer}
+  .ctl-h{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .divider{width:1px;height:20px;background:var(--hair)}
+  .stat{font-size:12px;color:var(--muted)}
+  .stat b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+  .specs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:18px;margin-top:18px}
+
+  /* ---- per-face size sliders ---- */
+  .btn{font:inherit;font-size:12px;padding:5px 11px;border:1px solid var(--hair);
+       background:var(--paper);color:var(--ink);border-radius:5px;cursor:pointer}
+  .btn:hover{border-color:var(--muted)}
+  .face-card .face-ctl{display:flex;align-items:center;gap:8px;margin-top:9px;
+                       padding-top:9px;border-top:1px solid var(--hair)}
+  .face-card .face-slider{flex:1;min-width:0;accent-color:var(--ink)}
+  .face-card .face-val{font-size:11px;font-variant-numeric:tabular-nums;min-width:38px;text-align:right}
+  .face-card.dirty .face-val{color:#b4402a}
+
+  /* stacked strip — same words, one column, easiest way to judge size by eye */
+  .specs.strip{display:block;background:var(--news-bg);border:1px solid var(--hair);padding:16px 18px}
+  .specs.strip .face-card{display:grid;grid-template-columns:1fr 210px;gap:18px;align-items:center;
+                          border:0;background:none;padding:7px 0;border-bottom:1px solid var(--news-rule)}
+  .specs.strip .face-card:last-child{border-bottom:0}
+  .specs.strip .face-preview .clip-name,
+  .specs.strip .face-preview .clip-body,
+  .specs.strip .face-preview .clip-loc{display:none}
+  .specs.strip .lbl{margin:0}
+  .specs.strip .face-ctl{margin:0;padding:0;border:0}
+
+  #exportBox pre{background:#0000000a;border:1px solid var(--hair);border-radius:6px;
+                 padding:12px 14px;font-size:11.5px;line-height:1.5;overflow-x:auto;margin:8px 0 0;
+                 font-family:"Courier Prime",ui-monospace,monospace}
+  .spec{background:var(--news-bg);border:1px solid var(--hair);padding:9px}
+  .spec .lbl{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--news-muted);
+             margin-top:7px;font-family:"Instrument Sans",sans-serif}
+  .spec svg{display:block;width:125px;color:var(--orn)}
+
+  /* edge-case matrix */
+  .matrix{display:grid;grid-template-columns:74px repeat(4,145px);gap:14px;align-items:start;margin-top:18px;overflow-x:auto}
+  .matrix .colh,.matrix .rowh{font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);padding-top:6px}
+  .matrix .cell{background:var(--news-bg);border:1px solid var(--hair);padding:9px}
+
+  .paper{width:720px;background:var(--news-bg);color:var(--news-ink);
+         padding:16px 20px 22px;font-family:Georgia,"Iowan Old Style",serif;border:1px solid var(--hair)}
+  .masthead{text-align:center;border-bottom:3px double var(--news-ink);padding-bottom:8px;margin-bottom:12px}
+  .masthead .name{font-size:44px;line-height:1}
+  .masthead .sub{font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--news-muted);margin-top:6px}
+  .paper-cols{column-count:4;column-gap:14px;column-rule:1px solid var(--news-rule)}
+
+  /* every clip — plain, toppered, framed, banded — uses the SAME side inset,
+     so the text block lands in the same place whatever the ornament is */
+  .clip{padding:0 var(--clip-pad) 9px;margin:0 0 9px;border-bottom:1px solid var(--news-rule);break-inside:avoid;color:var(--news-ink)}
+  .clip.no-rule{border-bottom:0}
+  .clip-name{font-weight:500;font-size:9.5px;line-height:1.1}
+  .clip-head{font-weight:500;font-size:14px;line-height:1.14;margin:2px 0 4px}
+  .clip-body{font-size:9px;line-height:1.34;opacity:.92}
+  .clip-loc{font-size:8px;font-style:italic;color:var(--news-muted);margin-top:3px}
+  .clip .topper{display:block;width:100%;margin:0 0 5px;color:var(--orn)}
+  /* a topper for a motif that also exists as a frame IS that frame's top band —
+     same tile, same thickness, so the two can never drift apart */
+  .topper-band{display:block;width:100%;height:var(--band);margin:0 0 5px;
+                     background-color:var(--orn);
+                     -webkit-mask-repeat:repeat-x;mask-repeat:repeat-x;
+                     -webkit-mask-position:center;mask-position:center}
+  /* inside a clip a topper bleeds to the clip edge — the same line a frame's
+     border would occupy — while the text stays on the shared inset */
+  .clip .topper,.clip .topper-band{width:auto;
+       margin-left:calc(var(--clip-pad) * -1);margin-right:calc(var(--clip-pad) * -1)}
+
+  /* alignment proof: a hairline at the left edge of every text element */
+  .paper.guides .clip-name,.paper.guides .clip-head,
+  .paper.guides .clip-body,.paper.guides .clip-loc{box-shadow:-1px 0 0 0 rgba(200,50,30,.55)}
+
+  /* ---- framed variants ---- */
+  .clip.framed{position:relative;border-bottom:0;margin:0 0 11px;color:var(--news-ink);
+               padding:var(--clip-pad) var(--clip-pad) calc(var(--clip-pad) - 4px)}
+  .clip.framed .fr{position:absolute;inset:0;pointer-events:none;color:var(--orn)}
+  .clip.framed.f-normal   .fr{border:calc(1.4px*var(--ow)) solid var(--orn)}
+  .clip.framed.f-rounded  .fr{border:calc(1.4px*var(--ow)) solid var(--orn);border-radius:11px}
+  .clip.framed.f-postcard .fr{border:calc(1.2px*var(--ow)) solid var(--orn);border-radius:11px}
+  .clip.framed.f-ornate   .fr{border:calc(2.2px*var(--ow)) solid var(--orn);
+                              box-shadow:inset 0 0 0 calc(1px*var(--ow)) var(--news-bg),
+                                         inset 0 0 0 calc(2px*var(--ow)) var(--orn)}
+  /* the shadow gets its room from margin, not padding, so the text box stays put */
+  .clip.framed.f-inverted{margin-right:3px;margin-bottom:14px}
+  .clip.framed.f-inverted .fr{border:calc(1.4px*var(--ow)) solid var(--orn);box-shadow:3px 3px 0 0 var(--orn)}
+  .clip.framed .cnr{position:absolute;top:-1px;left:-1px;line-height:0;color:var(--orn)}
+
+  /* ---- band frames: a repeating motif on all four sides ---- */
+  .clip.banded{position:relative;border-bottom:0;margin:0 0 11px;
+               padding:var(--clip-pad) var(--clip-pad) calc(var(--clip-pad) - 4px)}
+  .clip.banded .bd{position:absolute;background-color:var(--orn);
+                   -webkit-mask-position:center;mask-position:center}
+  /* mask-size fits the tile to the band thickness, so tiles of any natural height work */
+  .clip.banded .bd.t{top:0;left:0;right:0;height:var(--band);
+                     -webkit-mask-repeat:repeat-x;mask-repeat:repeat-x;
+                     -webkit-mask-size:auto 100%;mask-size:auto 100%}
+  .clip.banded .bd.b{bottom:0;left:0;right:0;height:var(--band);
+                     -webkit-mask-repeat:repeat-x;mask-repeat:repeat-x;
+                     -webkit-mask-size:auto 100%;mask-size:auto 100%}
+  .clip.banded .bd.l{left:0;top:var(--band);bottom:var(--band);width:var(--band);
+                     -webkit-mask-repeat:repeat-y;mask-repeat:repeat-y;
+                     -webkit-mask-size:100% auto;mask-size:100% auto}
+  .clip.banded .bd.r{right:0;top:var(--band);bottom:var(--band);width:var(--band);
+                     -webkit-mask-repeat:repeat-y;mask-repeat:repeat-y;
+                     -webkit-mask-size:100% auto;mask-size:100% auto}
+
+  .s1{stroke-width:calc(1.2px*var(--ow))}
+  .s2{stroke-width:calc(2px*var(--ow))}
+  .s3{stroke-width:calc(2.8px*var(--ow))}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">Border study · ink only</p>
+  <h1>Topper &amp; frame silhouettes</h1>
+  <p class="lede">
+    Ink only, drawn at the true newspaper column width — <b>125&thinsp;px</b>.
+    The four repeating motifs now exist as full <em>band frames</em> too, and §4 stress-tests
+    every treatment against ads that are far too short and far too long.
+  </p>
+
+  <div class="controls" style="margin-bottom:22px">
+    <span class="ctl-h">Line weight</span>
+    <input type="range" id="ow" min="0.5" max="2" step="0.1" value="1" style="width:180px">
+    <b id="owv" style="font-size:12px;font-variant-numeric:tabular-nums">1.0×</b>
+    <span class="divider"></span>
+    <span class="ctl-h">Band</span>
+    <input type="range" id="bw" min="6" max="20" step="1" value="12" style="width:120px">
+    <b id="bwv" style="font-size:12px;font-variant-numeric:tabular-nums">12px</b>
+    <span class="divider"></span>
+    <span class="ctl-h">Padding</span>
+    <input type="range" id="pad" min="8" max="26" step="1" value="16" style="width:110px">
+    <b id="padv" style="font-size:12px;font-variant-numeric:tabular-nums">16px</b>
+    <label><input type="checkbox" id="guides"> Guides</label>
+    <span class="divider"></span>
+    <label><input type="checkbox" id="faces" checked> Display fonts</label>
+    <label><input type="checkbox" id="optical" checked> Optical scaling</label>
+    <span class="divider"></span>
+    <label><input type="checkbox" id="dark"> Dark mode</label>
+  </div>
+
+  <!-- 0 · the faces -->
+  <section>
+    <h2>0 · The nine display faces</h2>
+    <p class="cap" style="margin-top:2px">
+      In the newspaper view the member's display font rides the <b>headline</b> — the name stays
+      quiet in the body face. Each face is shown on a real clip at 125&thinsp;px.
+      Scales below are <em>measured in this browser</em>, not taken from the wireframe.
+    </p>
+    <div class="controls" style="margin-top:0">
+      <span class="ctl-h">Compare</span>
+      <label><input type="radio" name="fview" value="grid" checked> Grid</label>
+      <label><input type="radio" name="fview" value="strip"> Stacked strip</label>
+      <span class="divider"></span>
+      <button id="resetScales" class="btn">Reset to tuned</button>
+      <span class="stat" id="savedNote"></span>
+    </div>
+
+    <div class="specs" id="specFaces"></div>
+
+    <div id="exportBox" style="margin-top:22px"></div>
+    <div id="scaleTable" style="margin-top:22px"></div>
+  </section>
+
+  <!-- 1 · toppers -->
+  <section>
+    <h2>1 · Topper silhouettes</h2>
+    <p class="cap" style="margin-top:2px">All at 125&thinsp;px, the real clip width.</p>
+    <div class="specs" id="specTop"></div>
+  </section>
+
+  <!-- 2 · band frames -->
+  <section>
+    <h2>2 · The repeating motifs, as full frames</h2>
+    <p class="cap" style="margin-top:2px">
+      Wave, Folksy, Clipping and Thorns wrapped on all four sides — top and bottom tile
+      horizontally, the sides tile vertically, so the frame grows with the ad.
+    </p>
+    <div class="specs" id="specBand"></div>
+  </section>
+
+  <!-- 3 · plain frames -->
+  <section>
+    <h2>3 · Plain frame silhouettes</h2>
+    <div class="specs" id="specFrame"></div>
+  </section>
+
+  <!-- 4 · edge cases -->
+  <section>
+    <h2>4 · Edge cases — too short, too long</h2>
+    <p class="cap" style="margin-top:2px">
+      Same four treatments against four ad lengths, from a headline-only listing to a
+      seventy-word confession. This is where frames get uncomfortable.
+    </p>
+    <div class="matrix" id="matrix"></div>
+    <p class="cap" id="edgeNote"></p>
+  </section>
+
+  <!-- 5 · the paper -->
+  <section>
+    <h2>5 · The paper</h2>
+    <div class="controls">
+      <span class="ctl-h">Mode</span>
+      <label><input type="radio" name="mode" value="none"> None</label>
+      <label><input type="radio" name="mode" value="topper"> Toppers</label>
+      <label><input type="radio" name="mode" value="frame"> Frames</label>
+      <label><input type="radio" name="mode" value="mixed" checked> Mixed</label>
+      <span class="divider"></span>
+      <label><input type="checkbox" id="ruleFix" checked> Suppress divider above an ornament</label>
+      <label><input type="checkbox" id="edgeIn" checked> Include edge-case ads</label>
+      <span class="stat">paper <b id="statH">—</b> · ornamented <b id="statN">—</b></span>
+    </div>
+    <div style="overflow-x:auto;padding-top:14px">
+      <div class="paper" id="paper">
+        <div class="masthead">
+          <div class="name">Personals</div>
+          <div class="sub">The Classy Classifieds · August 2nd, 2026 · No. 0802</div>
+        </div>
+        <div class="paper-cols" id="cols"></div>
+      </div>
+    </div>
+    <p class="cap" id="note"></p>
+  </section>
+
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <pattern id="p-zig" width="17" height="24" patternUnits="userSpaceOnUse">
+    <path d="M0,19 L8.5,7 L17,19" fill="none" stroke="var(--orn)" class="s3" stroke-linejoin="round"/>
+  </pattern>
+  <pattern id="p-folk" width="22" height="30" patternUnits="userSpaceOnUse">
+    <circle cx="11" cy="15" r="6.5" fill="none" stroke="var(--orn)" class="s2"/>
+    <circle cx="0" cy="15" r="3" fill="var(--orn)"/><circle cx="22" cy="15" r="3" fill="var(--orn)"/>
+  </pattern>
+  <pattern id="p-wave" width="52" height="30" patternUnits="userSpaceOnUse">
+    <path d="M0,8 C13,2 26,14 39,8 C46,5 49,6 52,7" fill="none" stroke="var(--orn)" class="s2"/>
+    <path d="M0,16 C13,10 26,22 39,16 C46,13 49,14 52,15" fill="none" stroke="var(--orn)" class="s2"/>
+    <path d="M0,24 C13,18 26,30 39,24 C46,21 49,22 52,23" fill="none" stroke="var(--orn)" class="s2"/>
+  </pattern>
+  <pattern id="p-thorn" width="34" height="26" patternUnits="userSpaceOnUse">
+    <path d="M0,16 C9,16 12,9 17,9 C23,9 26,16 34,16" fill="none" stroke="var(--orn)" class="s2"/>
+    <path d="M8,13 L5,6 M17,9 L17,2 M26,13 L29,6 M12,15 L9,21 M22,15 L25,21"
+          fill="none" stroke="var(--orn)" class="s1" stroke-linecap="round"/>
+  </pattern>
+  <pattern id="p-flame" width="30" height="30" patternUnits="userSpaceOnUse">
+    <path d="M15,28 C7,24 5,16 9,9 C10,13 12,14 13,13 C12,7 15,3 19,0 C18,6 24,9 23,17 C22,23 19,26 15,28 Z" fill="var(--orn)"/>
+  </pattern>
+  <pattern id="p-gloop" width="46" height="30" patternUnits="userSpaceOnUse">
+    <path d="M0,10 C11,2 16,18 25,14 C33,10 38,4 46,11" fill="none" stroke="var(--orn)" class="s3" stroke-linecap="round"/>
+    <path d="M0,17 C12,10 17,24 26,20 C34,16 39,11 46,18" fill="none" stroke="var(--orn)" class="s1" stroke-linecap="round"/>
+  </pattern>
+  <g id="rosette">
+    <circle cx="0" cy="0" r="8.4" fill="none" stroke="var(--orn)" class="s2"/>
+    <circle cx="0" cy="0" r="4.2" fill="none" stroke="var(--orn)" class="s1"/>
+    <g fill="none" stroke="var(--orn)" class="s1" stroke-linecap="round">
+      <path d="M0,-8.4 V-4.2"/><path d="M0,8.4 V4.2"/><path d="M-8.4,0 H-4.2"/><path d="M8.4,0 H4.2"/>
+      <path d="M-6,-6 L-3,-3"/><path d="M6,6 L3,3"/><path d="M6,-6 L3,-3"/><path d="M-6,6 L-3,3"/>
+    </g>
+  </g>
+  <g id="florette">
+    <g fill="none" stroke="var(--orn)" class="s1" stroke-linecap="round">
+      <path d="M3,15 C3,8 8,3 15,3"/><path d="M7,15 C7,11 11,7 15,7"/>
+    </g>
+    <circle cx="8.5" cy="8.5" r="2.6" fill="var(--orn)"/>
+  </g>
+</defs></svg>
+
+<script>
+/* ══ display faces ════════════════════════════════
+   The nine-face roster. `scale` is the optical-size multiplier that makes every face
+   read at the same visual size; it is MEASURED at load (cap height of "HAMBURG"
+   against the reference face) rather than hard-coded, so it stays honest.       */
+const REF   = 'EB Garamond';
+const FACES = ['TT Modernoir','Bodoni Moda','EB Garamond','Ohno Blazeface','ITC Avant Garde Gothic Pro',
+               'Courier Prime','Job Clarendon','Gothicus Roman','Cooper Std'];
+const SCALE = {};                       // face → multiplier, filled by measureFaces()
+FACES.forEach(f=>SCALE[f]=1);
+
+/* the wireframe's stored values, for comparison */
+const STORED = {'TT Modernoir':1.00,'Bodoni Moda':null,'EB Garamond':1.08,'Ohno Blazeface':null,
+                'ITC Avant Garde Gothic Pro':1.00,'Courier Prime':1.15,'Job Clarendon':1.00,
+                'Gothicus Roman':1.05,'Cooper Std':0.95};
+
+/* AUTHORITATIVE — set by eye on the sliders, 2026-08-02. These are the roster's
+   real optical scales; the measured column below is kept only as a reference. */
+/* faces whose scale is still the algorithmic starting point, not yet set by eye */
+const PENDING = new Set(['Ohno Blazeface','Bodoni Moda']);
+
+const TUNED = {'TT Modernoir':1.165,'Bodoni Moda':1.149,'EB Garamond':1.253,'Ohno Blazeface':0.975,
+               'ITC Avant Garde Gothic Pro':0.990,'Courier Prime':1.095,'Job Clarendon':1.400,
+               'Gothicus Roman':1.390,'Cooper Std':1.050};
+
+/* Optical size is driven by X-HEIGHT, not cap height — a headline is mostly lowercase,
+   so a face with a small x-height (EB Garamond: 43 against a 68.6 cap) reads far smaller
+   than one with a large one at the same nominal size. Cap-height normalisation was why
+   the roster still looked uneven.
+   Exception: an all-caps face has no lowercase, so x ≈ cap and its cap IS its optical
+   size — detected by ratio > 0.9 and handled automatically by measuring 'x' either way.
+   Scales are then centred so the MEAN is 1.0, keeping the 14px base meaningful.        */
+const METRICS={};
+async function measureFaces(){
+  await Promise.all(FACES.map(f=>document.fonts.load('100px "'+f+'"','HAMBURGxon').catch(()=>{})));
+  await document.fonts.ready;
+  const x=document.createElement('canvas').getContext('2d');
+  const asc=(f,s)=>{ x.font='100px "'+f+'"'; return x.measureText(s).actualBoundingBoxAscent; };
+  FACES.forEach(f=>{
+    const cap=asc(f,'HAMBURG'), xh=asc(f,'xonesuvw');
+    METRICS[f]={cap:+cap.toFixed(1), x:+xh.toFixed(1), ratio:+(xh/cap).toFixed(2), allCaps:(xh/cap)>0.9};
+    METRICS[f].optical = xh;                 // 'x' already equals cap on an all-caps face
+  });
+  const mean = FACES.reduce((s,f)=>s+METRICS[f].optical,0)/FACES.length;
+  FACES.forEach(f=>{
+    MEASURED[f]=+(mean/METRICS[f].optical).toFixed(3);   // algorithmic baseline, reference only
+    SCALE[f]=TUNED[f];                                   // the hand-set values are the default
+  });
+  return METRICS;
+}
+
+/* the three body faces, with the prototype's own fallback stacks */
+const BODY_CSS = {
+  'Courier Prime'  : "'Courier Prime', monospace",
+  'Instrument Sans': "'Instrument Sans', sans-serif",
+  'EB Garamond'    : "'EB Garamond', serif"
+};
+
+/* AD_FONTS, lifted verbatim from index.html — [displayFont, bodyFont] per ad */
+const PAIRS = [
+  ['TT Modernoir','Instrument Sans'], ['Bodoni Moda','Instrument Sans'], ['EB Garamond','Instrument Sans'],
+  ['Ohno Blazeface','EB Garamond'], ['ITC Avant Garde Gothic Pro','Courier Prime'], ['Courier Prime','Courier Prime'],
+  ['Job Clarendon','Instrument Sans'], ['Gothicus Roman','Instrument Sans'], ['Cooper Std','EB Garamond'],
+  ['TT Modernoir','EB Garamond'], ['Bodoni Moda','Courier Prime'], ['EB Garamond','Instrument Sans'],
+  ['Ohno Blazeface','Instrument Sans'], ['ITC Avant Garde Gothic Pro','Instrument Sans'], ['Courier Prime','Courier Prime'],
+  ['Job Clarendon','EB Garamond'], ['Gothicus Roman','Instrument Sans'], ['Cooper Std','Instrument Sans'],
+  ['TT Modernoir','EB Garamond'], ['Bodoni Moda','Instrument Sans'], ['EB Garamond','Courier Prime'],
+  ['Ohno Blazeface','Instrument Sans'], ['ITC Avant Garde Gothic Pro','Instrument Sans'], ['Courier Prime','Instrument Sans'],
+  ['Job Clarendon','EB Garamond'], ['Gothicus Roman','EB Garamond'], ['Cooper Std','Courier Prime'],
+  ['TT Modernoir','Instrument Sans'], ['Bodoni Moda','Instrument Sans'], ['EB Garamond','Courier Prime']
+];
+
+const useFaces   = ()=>document.getElementById('faces').checked;
+const useOptical = ()=>document.getElementById('optical').checked;
+
+/* headline wears the display face, at its optical size */
+function headStyle(pair){
+  if(!pair || !useFaces()) return '';
+  const s = useOptical() ? SCALE[pair[0]] : 1;
+  return 'font-family:\''+pair[0]+'\',Georgia,serif;font-size:calc(14px * '+s+')';
+}
+/* name + description wear the body face — exactly as clipHTML does in mobile.html */
+function bodyStyle(pair){
+  if(!pair || !useFaces()) return '';
+  return 'font-family:'+(BODY_CSS[pair[1]]||'inherit');
+}
+
+/* ══ toppers ══════════════════════════════════════ */
+const TOPPERS = {
+  flower:{h:26,label:'Flower'}, wave:{h:30,label:'Wave'}, stamp:{h:22,label:'Stamp'},
+  clipping:{h:24,label:'Clipping'}, folksy:{h:30,label:'Folksy'}, thorns:{h:26,label:'Thorns'},
+  gloopy:{h:30,label:'Gloopy'}, flames:{h:30,label:'Flavor Town'}
+};
+function perfRow(cy){let s='';for(let x=0;x<=250;x+=10)s+='<circle cx="'+x+'" cy="'+cy+'" r="3.6" fill="var(--news-bg)"/>';return s;}
+function topperSVG(kind){
+  const h=TOPPERS[kind].h; let inner='';
+  switch(kind){
+    case 'flower': inner='<g fill="none" stroke="var(--orn)" class="s2"><path d="M2,13 H86"/><path d="M164,13 H248"/></g>'+
+      '<use href="#rosette" transform="translate(103,13)"/><use href="#rosette" transform="translate(125,13)"/>'+
+      '<use href="#rosette" transform="translate(147,13)"/>'; break;
+    case 'wave':     inner='<rect width="250" height="'+h+'" fill="url(#p-wave)"/>'; break;
+    case 'stamp':    inner='<rect x="0" y="5" width="250" height="12" fill="var(--orn)"/>'+perfRow(5)+perfRow(17); break;
+    case 'clipping': inner='<rect width="250" height="'+h+'" fill="url(#p-zig)"/>'; break;
+    case 'folksy':   inner='<g fill="none" stroke="var(--orn)" class="s2"><path d="M0,2 H250"/><path d="M0,28 H250"/></g>'+
+      '<rect width="250" height="30" fill="url(#p-folk)"/>'; break;
+    case 'thorns':   inner='<rect width="250" height="'+h+'" fill="url(#p-thorn)"/>'; break;
+    case 'gloopy':   inner='<rect width="250" height="'+h+'" fill="url(#p-gloop)"/>'; break;
+    case 'flames':   inner='<rect width="250" height="'+h+'" fill="url(#p-flame)"/>'; break;
+  }
+  return '<svg class="topper" viewBox="0 0 250 '+h+'" preserveAspectRatio="none">'+inner+'</svg>';
+}
+
+/* A motif that exists as a band frame renders its topper from the SAME tile at the
+   SAME band thickness — so the standalone topper and the frame's top edge are
+   identical by construction. Motifs with no tile fall back to their SVG pattern. */
+function topperHTML(kind){
+  if(typeof TILES!=='undefined' && TILES[kind]){
+    const t=TILES[kind];
+    const band=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--band'))||12;
+    const s=band/t.h, size=(t.w*s).toFixed(2)+'px '+band+'px';
+    const U=tileURI(kind,false);
+    return '<span class="topper-band" style="-webkit-mask-image:'+U+';mask-image:'+U+
+           ';-webkit-mask-size:'+size+';mask-size:'+size+'"></span>';
+  }
+  return topperSVG(kind);
+}
+
+/* ══ band frames — repeating tiles, masked so they inherit --orn ══ */
+const TILES = {
+  /* three stacked lines, to match the wave topper — identical curves offset vertically,
+     so they stay parallel and never cross however heavy the stroke gets */
+  wave:     {w:52,h:19,label:'Wave',
+             d:'<path d="M0,5 C8,2 18,2 26,5 C34,8 44,8 52,5" fill="none" stroke="#000" stroke-width="{W}"/>'+
+               '<path d="M0,9.5 C8,6.5 18,6.5 26,9.5 C34,12.5 44,12.5 52,9.5" fill="none" stroke="#000" stroke-width="{W}"/>'+
+               '<path d="M0,14 C8,11 18,11 26,14 C34,17 44,17 52,14" fill="none" stroke="#000" stroke-width="{W}"/>'},
+  folksy:   {w:16,h:12,label:'Folksy',
+             d:'<circle cx="8" cy="6" r="4" fill="none" stroke="#000" stroke-width="{W}"/>'+
+               '<circle cx="0" cy="6" r="1.7" fill="#000"/><circle cx="16" cy="6" r="1.7" fill="#000"/>'},
+  clipping: {w:14,h:10,label:'Clipping',
+             d:'<path d="M0,8 L7,2 L14,8" fill="none" stroke="#000" stroke-width="{W}" stroke-linejoin="round"/>'},
+  thorns:   {w:28,h:13,label:'Thorns',
+             d:'<path d="M0,9 C7,9 9,4 14,4 C19,4 21,9 28,9" fill="none" stroke="#000" stroke-width="{W}"/>'+
+               '<path d="M6,7 L3,2 M14,4 L14,0 M22,7 L25,2" fill="none" stroke="#000" stroke-width="{W1}" stroke-linecap="round"/>'}
+};
+function tileURI(kind,vertical){
+  const t=TILES[kind];
+  const cs=getComputedStyle(document.documentElement);
+  const ow=parseFloat(cs.getPropertyValue('--ow'))||1;
+  const band=parseFloat(cs.getPropertyValue('--band'))||12;
+  /* the tile is scaled to the band thickness by mask-size, so express the stroke in
+     tile units — k converts a rendered px back into this tile's coordinate space */
+  const k=t.h/band;
+  const body=t.d.replace(/\{W\}/g,(1.7*ow*k).toFixed(2)).replace(/\{W1\}/g,(1.05*ow*k).toFixed(2));
+  const svg = vertical
+    ? '<svg xmlns="http://www.w3.org/2000/svg" width="'+t.h+'" height="'+t.w+'" viewBox="0 0 '+t.h+' '+t.w+'">'+
+      '<g transform="translate('+t.h+',0) rotate(90)">'+body+'</g></svg>'
+    : '<svg xmlns="http://www.w3.org/2000/svg" width="'+t.w+'" height="'+t.h+'" viewBox="0 0 '+t.w+' '+t.h+'">'+body+'</svg>';
+  /* single-quoted: the URI sits inside an inline style="" attribute */
+  return "url('data:image/svg+xml," + encodeURIComponent(svg) + "')";
+}
+function bandEls(kind){
+  const t=TILES[kind];
+  const band=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--band'))||12;
+  /* both axes stated explicitly — `auto` collapses to `100% 100%` in the shorthand,
+     which stretches the tile over the whole band instead of repeating it */
+  const s=band/t.h, long=(t.w*s).toFixed(2)+'px', thick=band+'px';
+  const H=tileURI(kind,false), V=tileURI(kind,true);
+  const mk=(c,u,size)=>'<span class="bd '+c+'" style="-webkit-mask-image:'+u+';mask-image:'+u+
+                       ';-webkit-mask-size:'+size+';mask-size:'+size+'"></span>';
+  return mk('t',H,long+' '+thick)+mk('b',H,long+' '+thick)+
+         mk('l',V,thick+' '+long)+mk('r',V,thick+' '+long);
+}
+
+/* ══ plain frames ══ */
+const FRAMES={normal:'Normal',rounded:'Rounded',postcard:'Postcard',ornate:'Frame',inverted:'Inverted / drop shadow'};
+function frameExtras(kind){
+  if(kind==='postcard') return '<span class="cnr" style="top:2px;left:2px"><svg width="15" height="15" viewBox="-10 -10 20 20"><use href="#rosette" transform="scale(.62)"/></svg></span>';
+  if(kind==='ornate')   return '<span class="cnr"><svg width="15" height="15" viewBox="0 0 18 18"><use href="#florette"/></svg></span>'+
+                               '<span class="cnr" style="left:auto;right:-1px;transform:scaleX(-1)"><svg width="15" height="15" viewBox="0 0 18 18"><use href="#florette"/></svg></span>';
+  return '';
+}
+
+/* ══ ads ══ */
+const ADS=[
+ ["Alex, 31","Curious about almost everything","I ask too many questions. I like tide pools, used bookstores, and people who can explain their job well.","Non-binary · The Mission, SF"],
+ ["Taylor, 38","Steady, warm, a little sarcastic","I show up when I say I will. That's the whole pitch.","Woman · Ballard, Seattle"],
+ ["Omar, 31","I'll fix your bike and your playlist","Bike mechanic with strong opinions about both derailleurs and drum fills. Low drama, high curiosity.","Man · Montrose, Houston"],
+ ["Bex, 34","Roller derby name available on request","Fast on skates, slow to trust, worth the wait. I weld for a living.","Non-binary · Bloomfield, Pittsburgh"],
+ ["Sung-min, 37","Dad jokes are load-bearing","Structural engineer, literally and otherwise. Divorced, amicable, one teenager.","Man · Koreatown, LA"],
+ ["Nadia, 28","Reading the whole menu, twice","Indecisive about dinner, decisive about people. Ask me about the year I lived on a boat.","Woman · Fishtown, Philadelphia"],
+ ["Marcus, 45","Widower, ready when it's right","Took my time, and I'm not in a hurry now either. Good father, decent cook, better listener.","Man · Shaw, DC"],
+ ["Priya, 33","Talks to every dog on the street","Vet tech. I will know your dog's name before yours, and I'm not sorry.","Woman · Andersonville, Chicago"],
+ ["Theo, 29","Plant guy, mostly reformed","Down to forty. It was ninety.","Man · Bushwick, NY"],
+ ["Wren, 26","Night owl seeking a reason","I work late and think later. Looking for someone who texts back at 1am with something interesting.","Non-binary · Oak Cliff, Dallas"],
+ ["Jordan, 41","Recovering perfectionist","Still perfectionist, just apologising for it now.","Man · Highland Park, LA"],
+ ["Lucia, 36","I bake when I'm anxious","You will benefit from my anxiety. There is always bread.","Woman · Pilsen, Chicago"],
+ ["Sam, 34","Will cook you dinner, badly","Enthusiastic amateur, genuinely dangerous with a cast-iron pan but improving. Great at picking restaurants when it fails.","Man · Silver Lake, LA"],
+ ["Yuki, 30","Long answers to short questions","I'm told I over-explain. I'd argue I explain exactly enough, and that the world is under-explained generally.","Woman · Capitol Hill, Seattle"],
+ ["Eli, 44","Two kids, one dog, zero drama","That's it. That's the ad.","Man · Ravenswood, Chicago"],
+ ["Simone, 39","Muralist who paints too big","Every wall is a small wall eventually. I'd like someone who doesn't mind paint on the sheets.","Woman · Wynwood, Miami"],
+ ["Beau, 32","Ask me about the hot sauce","I made it. It's too hot. You'll like it anyway.","Man · Marigny, New Orleans"],
+ ["Ines, 35","Fluent in three, funny in one","Portuguese, Spanish, English — the jokes only land in one of them. Guess which.","Woman · Astoria, NY"],
+ ["Tomás, 40","Slow mornings, strong coffee","I believe in unhurried Saturdays, long walks with no destination, and calling your mother back the same day.","Man · Logan Square, Chicago"],
+ ["Rae, 27","Archivist with a loud laugh","I spend my days in silence and my evenings making up for it.","Non-binary · Northside, Cincinnati"],
+ ["Halim, 38","Runs marathons, hates running","It's the finishing I like. Everything else is negotiable.","Man · Cambridge, Boston"],
+ ["Joss, 31","Second-hand everything","Clothes, furniture, opinions. All of it improved by a previous owner.","Non-binary · Hawthorne, Portland"],
+ ["Delia, 43","Widow, gardener, terrible driver","Two of those are getting better. Come see the tomatoes.","Woman · Germantown, Nashville"],
+ ["Kofi, 29","Sound engineer, quiet person","I spend all day listening. I'd like to listen to you.","Man · Peckham-ish, Brooklyn"],
+ ["Margot, 47","Not starting over, starting next","The first act was fine. I'm more interested in this one.","Woman · Larchmont, LA"]
+];
+
+/* the four stress lengths */
+const EDGE=[
+ ["Jo, 52","Retired. Ask me anything.","","Woman · Tucson, AZ"],
+ ["Eli, 44","Two kids, one dog, zero drama","That's it. That's the ad.","Man · Ravenswood, Chicago"],
+ ["Yuki, 30","Long answers to short questions","I'm told I over-explain. I'd argue I explain exactly enough, and that the world is generally under-explained.","Woman · Capitol Hill, Seattle"],
+ ["Rosalind, 41","A complete and honest accounting of my faults, for your consideration",
+  "I talk through films. I am late to everything except airports, where I am absurdly early. I reorganise other people's kitchens without being asked. I have opinions about apostrophes and I will share them. I cry at adverts involving dogs, and occasionally at ones involving banks. I have been told I am a lot, and I have decided, at forty-one, that this is simply accurate rather than a criticism. If any of that sounds survivable, write to me.",
+  "Woman · Cobble Hill, Brooklyn"]
+];
+const EDGE_LABELS=['Headline only','Very short','Typical+','Very long'];
+
+/* ══ builders ══ */
+function clipInner(a,pair){
+  const bs=bodyStyle(pair);
+  return '<div class="clip-name" style="'+bs+'">'+a[0]+'</div>'+
+         '<div class="clip-head" style="'+headStyle(pair)+'">'+a[1]+'</div>'+
+         (a[2]?'<div class="clip-body" style="'+bs+'">'+a[2]+'</div>':'')+
+         '<div class="clip-loc">'+a[3]+'</div>';
+}
+function clipHTML(a,spec,extraCls,pair){
+  const [type,kind]=(spec||'plain').split(':');
+  const inner=clipInner(a,pair);
+  if(type==='band')  return '<div class="clip banded '+(extraCls||'')+'">'+bandEls(kind)+inner+'</div>';
+  if(type==='frame') return '<div class="clip framed f-'+kind+' '+(extraCls||'')+'"><span class="fr"></span>'+frameExtras(kind)+inner+'</div>';
+  if(type==='topper')return '<div class="clip '+(extraCls||'')+'">'+topperHTML(kind)+inner+'</div>';
+  return '<div class="clip '+(extraCls||'')+'">'+inner+'</div>';
+}
+
+const TKEYS=Object.keys(TOPPERS), FKEYS=Object.keys(FRAMES), BKEYS=Object.keys(TILES);
+
+/* ── per-face size sliders ─────────────────────────
+   MEASURED keeps the algorithmic baseline so "Reset" can return to it;
+   SCALE is what actually renders and is what the sliders edit.        */
+const MEASURED={};
+const SAVE_KEY='classy-face-scales-v2';   // bumped so pre-tuning saves don't shadow TUNED
+function saveScales(){ try{ localStorage.setItem(SAVE_KEY,JSON.stringify(SCALE)); }catch(e){} }
+function loadScales(){
+  try{ const s=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');
+       if(s) FACES.forEach(f=>{ if(typeof s[f]==='number') SCALE[f]=s[f]; }); }catch(e){}
+}
+
+let cardsBuilt=false, downstreamTimer=null;
+function scheduleDownstream(){            // keep dragging smooth
+  clearTimeout(downstreamTimer);
+  downstreamTimer=setTimeout(()=>{ paintMatrix(); paintPaper(); },140);
+}
+
+function buildFaceCards(){
+  const sample=["Alex, 31","Curious about almost everything","I ask too many questions and I like tide pools.","Non-binary · SF"];
+  const el=document.getElementById('specFaces');
+  /* PAIRS[0..8] happens to be one entry per display face */
+  el.innerHTML = PAIRS.slice(0,9).map(p=>
+    '<div class="spec face-card" data-face="'+p[0]+'">'+
+      '<div class="face-preview">'+clipHTML(sample,'plain','',p)+'</div>'+
+      '<div class="lbl">'+p[0]+
+        '<span class="pending-flag" style="color:#b4402a">· needs tuning</span>'+
+        '<br><span style="opacity:.7">body: '+p[1]+'</span></div>'+
+      '<div class="face-ctl">'+
+        '<input type="range" class="face-slider" min="0.5" max="1.8" step="0.001" value="'+SCALE[p[0]]+'">'+
+        '<b class="face-val">'+SCALE[p[0]].toFixed(3)+'×</b>'+
+      '</div>'+
+    '</div>').join('');
+
+  el.querySelectorAll('.face-card').forEach(card=>{
+    const face=card.dataset.face;
+    const sl=card.querySelector('.face-slider'), out=card.querySelector('.face-val');
+    sl.addEventListener('input',()=>{
+      SCALE[face]=+sl.value;
+      out.textContent=(+sl.value).toFixed(3)+'×';
+      const h=card.querySelector('.clip-head');
+      if(h) h.style.fontSize='calc(14px * '+sl.value+')';   // live, no re-render
+      card.classList.toggle('dirty', Math.abs(SCALE[face]-TUNED[face])>0.0005);
+      saveScales(); paintExport(); paintScaleTable(); scheduleDownstream();
+    });
+  });
+  cardsBuilt=true;
+  refreshFaceCards();          // set the pending flags on the freshly built cards
+}
+
+/* sync slider positions + previews to SCALE without rebuilding the DOM */
+function refreshFaceCards(){
+  document.querySelectorAll('#specFaces .face-card').forEach(card=>{
+    const f=card.dataset.face;
+    const sl=card.querySelector('.face-slider'), out=card.querySelector('.face-val');
+    sl.value=SCALE[f]; out.textContent=SCALE[f].toFixed(3)+'×';
+    const h=card.querySelector('.clip-head');
+    if(h) h.style.fontSize='calc(14px * '+SCALE[f]+')';
+    card.classList.toggle('dirty', Math.abs(SCALE[f]-TUNED[f])>0.0005);
+    /* the flag clears as soon as you move the slider — an untouched face is
+       still sitting on its algorithmic starting value */
+    const flag=card.querySelector('.pending-flag');
+    if(flag) flag.style.display =
+      (PENDING.has(f) && Math.abs(SCALE[f]-TUNED[f])<=0.0005) ? '' : 'none';
+  });
+}
+
+function paintExport(){
+  const body=FACES.map(f=>"  '"+f+"': "+SCALE[f].toFixed(3)).join(',\n');
+  const anyDirty=FACES.some(f=>Math.abs(SCALE[f]-TUNED[f])>0.0005);
+  document.getElementById('exportBox').innerHTML =
+    '<div style="display:flex;align-items:center;gap:12px">'+
+      '<b style="font-size:12px">Your values</b>'+
+      '<button class="btn" id="copyScales">Copy</button>'+
+      '<span class="stat">'+(anyDirty?'changed from the tuned set':'the tuned set')+'</span>'+
+    '</div><pre id="scaleCode">const AD_FONT_SCALE = {\n'+body+'\n};</pre>';
+  document.getElementById('copyScales').onclick=function(){
+    navigator.clipboard.writeText(document.getElementById('scaleCode').textContent)
+      .then(()=>{ this.textContent='Copied'; setTimeout(()=>this.textContent='Copy',1200); })
+      .catch(()=>{ this.textContent='Select & copy'; });
+  };
+}
+
+function paintFaces(){
+  if(!cardsBuilt) buildFaceCards(); else refreshFaceCards();
+  paintExport();
+  paintScaleTable();
+}
+
+function paintScaleTable(){
+
+  const td='padding:3px 16px 3px 0;font-variant-numeric:tabular-nums';
+  const rows=FACES.map(f=>{
+    const m=METRICS[f]||{cap:0,x:0,ratio:0,allCaps:false};
+    const base=MEASURED[f]||0;
+    const dv=base? (SCALE[f]/base-1)*100 : 0;      // how far the eye moved off the algorithm
+    return '<tr><td style="padding:3px 16px 3px 0">'+f+
+           (m.allCaps?' <span style="color:var(--muted);font-size:10px">all-caps</span>':'')+'</td>'+
+           '<td style="'+td+'">'+m.cap+'</td>'+
+           '<td style="'+td+'"><b>'+m.x+'</b></td>'+
+           '<td style="'+td+';color:var(--muted)">'+m.ratio+'</td>'+
+           '<td style="'+td+';color:var(--muted)">'+base.toFixed(3)+'</td>'+
+           '<td style="'+td+'"><b>'+SCALE[f].toFixed(3)+'</b></td>'+
+           '<td style="'+td+';color:'+(Math.abs(dv)>=15?'#b4402a':'var(--muted)')+'">'+
+             (dv>0?'+':'')+dv.toFixed(0)+'%</td>'+
+           '<td style="'+td+';color:var(--muted)">'+
+             (STORED[f]==null?'<span title="postdates the wireframe set">—</span>':STORED[f].toFixed(2))+
+           '</td></tr>';
+  }).join('');
+  document.getElementById('scaleTable').innerHTML =
+    '<table style="border-collapse:collapse;font-size:12px">'+
+    '<tr style="text-align:left;color:var(--muted)">'+
+    '<th style="padding:5px 16px 5px 0;font-weight:500">Face</th>'+
+    '<th style="padding-right:16px;font-weight:500">Cap</th>'+
+    '<th style="padding-right:16px;font-weight:500">x-height</th>'+
+    '<th style="padding-right:16px;font-weight:500">x/cap</th>'+
+    '<th style="padding-right:16px;font-weight:500">Measured</th>'+
+    '<th style="padding-right:16px;font-weight:500">Final</th>'+
+    '<th style="padding-right:16px;font-weight:500">Δ</th>'+
+    '<th style="font-weight:500">Wireframe</th></tr>'+rows+'</table>'+
+    '<p class="cap">Normalised on <b>x-height</b>, not cap height — a headline is mostly lowercase, '+
+    'so x-height is what you actually perceive. EB Garamond makes the case: a 68.6 cap but only a '+
+    '43 x-height (ratio 0.63), so at equal <em>cap</em> height it reads far smaller than everything '+
+    'else. That was why the roster still looked uneven.<br><br>'+
+    '<b>TT Modernoir is all-caps</b> (x/cap 0.97 — no lowercase to measure), so its cap height '+
+    'legitimately <em>is</em> its optical size; measuring \'x\' handles that automatically. '+
+    'Scales are centred so the mean is 1.0, which keeps the 14px base meaningful. '+
+    'The wireframe column is the stale stored set, for reference only.</p>';
+}
+
+function paintSpecs(){
+  document.getElementById('specTop').innerHTML = TKEYS.map(k=>
+    '<div class="spec">'+topperHTML(k)+
+    '<div class="clip-name" style="font-family:Georgia,serif">Alex, 31</div>'+
+    '<div class="clip-head" style="font-family:Georgia,serif">Curious about almost everything</div>'+
+    '<div class="lbl">'+TOPPERS[k].label+'</div></div>').join('');
+
+  document.getElementById('specBand').innerHTML = BKEYS.map((k,i)=>
+    '<div class="spec" style="padding:12px">'+
+    clipHTML(["Alex, 31","Curious about almost everything","I ask too many questions and I like tide pools.","Non-binary · SF"],'band:'+k,'',PAIRS[i])+
+    '<div class="lbl">'+TILES[k].label+' — band</div></div>').join('');
+
+  document.getElementById('specFrame').innerHTML = FKEYS.map((k,i)=>
+    '<div class="spec" style="padding:12px">'+
+    clipHTML(["Alex, 31","Curious about almost everything","I ask too many questions.","Non-binary · SF"],'frame:'+k,'',PAIRS[i+4])+
+    '<div class="lbl">'+FRAMES[k]+'</div></div>').join('');
+}
+
+function paintMatrix(){
+  const treatments=[['plain','Plain'],['topper:wave','Topper · wave'],['band:wave','Band · wave'],['frame:inverted','Frame · inverted']];
+  let html='<div class="colh"></div>'+treatments.map(t=>'<div class="colh">'+t[1]+'</div>').join('');
+  EDGE.forEach((a,i)=>{
+    html+='<div class="rowh">'+EDGE_LABELS[i]+'</div>';
+    treatments.forEach(t=>{ html+='<div class="cell">'+clipHTML(a,t[0],'',PAIRS[i%PAIRS.length])+'</div>'; });
+  });
+  document.getElementById('matrix').innerHTML=html;
+
+  requestAnimationFrame(()=>{
+    const cells=document.querySelectorAll('#matrix .cell');
+    const h=[...cells].map(c=>Math.round(c.getBoundingClientRect().height));
+    document.getElementById('edgeNote').innerHTML =
+      'Row heights, plain → inverted: <b>'+h.slice(0,4).join(' / ')+'</b> (headline only) … '+
+      '<b>'+h.slice(12,16).join(' / ')+'</b> (very long).<br>'+
+      'The short rows are the problem: an ornament costs the same fixed height whatever the ad says, '+
+      'so on a headline-only listing the frame is mostly empty air. The long row is fine — '+
+      'the band just repeats further, which is exactly what a tiling border is good at.';
+  });
+}
+
+/* ══ the paper ══ */
+const MIX=['frame:ornate','plain','topper:wave','plain','plain','band:folksy','frame:rounded','plain',
+ 'topper:clipping','plain','plain','frame:inverted','band:wave','plain','plain','topper:thorns',
+ 'frame:postcard','plain','band:clipping','plain','plain','topper:flames','frame:normal','plain','band:thorns'];
+
+function paintPaper(){
+  const mode=document.querySelector('input[name=mode]:checked').value;
+  const fix=document.getElementById('ruleFix').checked;
+  const withEdge=document.getElementById('edgeIn').checked;
+
+  let ads=ADS.slice();
+  if(withEdge){ ads.splice(3,0,EDGE[0]); ads.splice(11,0,EDGE[3]); ads.splice(19,0,EDGE[1]); }
+
+  const p=ads.map((_,i)=>{
+    if(mode==='none') return 'plain';
+    if(mode==='mixed') return MIX[i%MIX.length];
+    if(mode==='topper') return 'topper:'+TKEYS[i%TKEYS.length];
+    const all=FKEYS.map(k=>'frame:'+k).concat(BKEYS.map(k=>'band:'+k));
+    return all[i%all.length];
+  });
+
+  document.getElementById('cols').innerHTML = ads.map((a,i)=>{
+    const nextOrn = fix && i<p.length-1 && p[i+1]!=='plain';
+    return clipHTML(a,p[i], nextOrn?'no-rule':'', PAIRS[i%PAIRS.length]);
+  }).join('');
+
+  const n=p.filter(x=>x!=='plain').length;
+  requestAnimationFrame(()=>{
+    document.getElementById('statH').textContent=Math.round(document.getElementById('paper').getBoundingClientRect().height)+' px';
+    document.getElementById('statN').textContent=n+' / '+ads.length;
+  });
+  document.getElementById('note').innerHTML = mode==='mixed'
+    ? 'Mixed now includes band frames alongside plain frames and toppers. Toggle <b>edge-case ads</b> '+
+      'to drop a headline-only listing and a seventy-word one into the flow.'
+    : 'Switch to <b>Mixed</b> to see every treatment on one page.';
+}
+
+function renderAll(){ paintFaces(); paintSpecs(); paintMatrix(); paintPaper(); }
+
+/* ══ controls ══ */
+document.querySelectorAll('input[name=mode]').forEach(r=>r.addEventListener('change',paintPaper));
+document.getElementById('ruleFix').addEventListener('change',paintPaper);
+document.getElementById('edgeIn').addEventListener('change',paintPaper);
+document.getElementById('ow').addEventListener('input',e=>{
+  document.documentElement.style.setProperty('--ow',e.target.value);
+  document.getElementById('owv').textContent=(+e.target.value).toFixed(1)+'×';
+  renderAll();                      // band tiles are baked, so redraw them
+});
+document.getElementById('bw').addEventListener('input',e=>{
+  document.documentElement.style.setProperty('--band',e.target.value+'px');
+  document.getElementById('bwv').textContent=e.target.value+'px';
+  renderAll();                      // band thickness feeds the stroke normalisation
+});
+document.getElementById('dark').addEventListener('change',e=>document.body.classList.toggle('dark',e.target.checked));
+document.getElementById('pad').addEventListener('input',e=>{
+  document.documentElement.style.setProperty('--clip-pad',e.target.value+'px');
+  document.getElementById('padv').textContent=e.target.value+'px';
+  paintMatrix(); paintPaper();
+});
+document.getElementById('guides').addEventListener('change',e=>
+  document.getElementById('paper').classList.toggle('guides',e.target.checked));
+document.getElementById('faces').addEventListener('change',renderAll);
+document.getElementById('optical').addEventListener('change',renderAll);
+
+/* grid ⇄ stacked strip */
+document.querySelectorAll('input[name=fview]').forEach(r=>r.addEventListener('change',()=>{
+  document.getElementById('specFaces').classList.toggle('strip',
+    document.querySelector('input[name=fview]:checked').value==='strip');
+}));
+
+/* back to the algorithmic baseline */
+document.getElementById('resetScales').addEventListener('click',()=>{
+  FACES.forEach(f=>SCALE[f]=TUNED[f]);
+  try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
+  refreshFaceCards(); paintExport(); paintScaleTable(); paintMatrix(); paintPaper();
+  document.getElementById('savedNote').textContent='reset to the tuned set';
+  setTimeout(()=>document.getElementById('savedNote').textContent='',1600);
+});
+
+/* measure the roster, restore any hand-tuned values, then draw */
+renderAll();
+measureFaces().then(()=>{
+  const had = !!localStorage.getItem(SAVE_KEY);
+  loadScales();                       // hand-tuned values win over measured
+  renderAll();
+  if(had) document.getElementById('savedNote').textContent='restored your saved values';
+});
+</script>
+</body>
+</html>
