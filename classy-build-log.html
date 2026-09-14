@@ -67,7 +67,7 @@
       <p class="kicker">Product decisions &amp; UX rationale</p>
       <h1>Classy — Build Log</h1>
       <p class="lead">A running record of what got built and <em>why</em> — a blind dating app where people meet through written personal ads instead of photos, dressed as a newspaper's classifieds.</p>
-      <p class="datenote">Dates through Jul 16 are from the wireframe's git history and file saves. The Figma / Material 3 work is dated approximately (~Jul 18–23) — those changes happened in Figma and don't carry timestamps.</p>
+      <p class="datenote">Dates through Jul 16 are from the wireframe's git history and file saves. The Figma / Material 3 work is dated approximately (~Jul 18–23) — those changes happened in Figma and don't carry timestamps. Phase VI (Aug 2) is from a working session and its measurements were taken in-browser at true size.</p>
     </header>
 
     <section class="principles">
@@ -385,6 +385,81 @@
           <li><b>The screen header is an editorial masthead</b> — serif title + "ISSUE DATE {date}" — on its own header/* surface tokens<span class="why">the header bar is a distinct surface in both modes, like the sidebar rail; no stock M3 role fit it</span></li>
           <li><b>Nav labels and page titles deliberately use different registers</b> (sidebar "Feed" → header "Today's Picks")<span class="why">terse destinations vs. editorial titles — two systems doing two jobs</span></li>
           <li><b>But aligned the possessive voice: sidebar "My Ad" → "Your Ad"</b> to match "Your Messages"<span class="why">wording can differ between nav and title, but flipping person on the same feature — both on screen at once — reads as an oversight; second person is the modern convention and Classy's established voice</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="phase-h"><h2>Phase VI · The newspaper ornament system</h2><span class="rule"></span><span class="tag">Aug 2 · working session</span></div>
+
+    <div class="entry">
+      <div class="when">Aug 2</div>
+      <div class="what">
+        <h3>Ornament becomes the third thing a member chooses</h3>
+        <ul class="dl">
+          <li><b>Alongside their two fonts, a member picks a decorative ornament</b> that renders in two places — a border around the ad card, and a header "topper" on their newspaper clipping<span class="why">the paper is the product's face; letting personal style reach it — not just the card — is what makes the classifieds conceit feel inhabited rather than decorative</span></li>
+          <li><b>Reference is the printer's stock ad cut</b> — the numbered illustration blocks newspapers sold to classifieds advertisers<span class="why">period-accurate, and it frames ornament as something you <em>buy into</em> rather than a default everyone gets</span></li>
+          <li><b>No data field for this exists yet</b> — ads carry only headingFont / bodyFont<span class="why">noted so the model gets an ornament token when it's wired, parallel to the font tokens</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="when">Aug 2</div>
+      <div class="what">
+        <h3>Design for 125&thinsp;px, not for the reference</h3>
+        <ul class="dl">
+          <li><b>A newspaper column is ~125&thinsp;px logical wide</b> — that is the entire canvas a topper gets<span class="why">the vintage cuts were printed three to four inches wide; at a fifth of that their density turns to mud, so toppers have to be drawn <em>at</em> the size rather than reduced to it</span></li>
+          <li><b>Aspect ratio is the lever: flat wins</b> — a 3:1 ornament costs 42&thinsp;px of height, an 8:1 one costs ~15&thinsp;px<span class="why">at 3:1 the ornament is taller than the headline it introduces, which inverts the hierarchy</span></li>
+          <li><b>Symmetry halves the drawing work</b>; a motif family is one corner, one half-leg and one centre device<span class="why">the border and the topper then compose from the same parts, so they cannot disagree</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="when">Aug 2</div>
+      <div class="what">
+        <h3>Sparse ornament, and what it costs</h3>
+        <ul class="dl">
+          <li><b>Roughly one ad in three carries an ornament; the rest stay plain text</b><span class="why">measured: ornament on every ad only adds ~15% page height, but the real cost is visual — it homogenises into wallpaper and stops reading as personal expression. Sparse restores it as a signal</span></li>
+          <li><b>Which is also how a classifieds page actually worked</b> — plain listings were free, display ads were paid<span class="why">gives the ornament an economic logic that ties straight into the existing subscription feature, rather than being pure decoration</span></li>
+          <li><b>Frames belong on short ads, toppers on long ones</b><span class="why">measured: a topper costs a flat +20&thinsp;px at any length, but a frame narrows the measure ~20%, and on a long ad that compounds into far more line breaks — +19&thinsp;px on a headline-only listing versus +123&thinsp;px on a seventy-word one</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="when">Aug 2</div>
+      <div class="what">
+        <h3>Ink only</h3>
+        <ul class="dl">
+          <li><b>Ornaments are black-only — no colour anywhere</b><span class="why">colour read as botanical illustration rather than newsprint, and pulled against a palette the system had already settled as monochrome</span></li>
+          <li><b>One ink token drives every ornament</b><span class="why">so the whole set inverts in dark mode for free, including the drop-shadow frame that reads dark-on-light and light-on-dark</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="when">Aug 2</div>
+      <div class="what">
+        <h3>One tile per motif; one content box for all of them</h3>
+        <ul class="dl">
+          <li><b>A topper <em>is</em> the frame's top band — same tile, same thickness</b><span class="why">they had been two separate assets and had already drifted to different wavelengths and amplitudes; sharing one tile makes divergence impossible rather than merely unlikely</span></li>
+          <li><b>Every treatment — plain, topper, frame, band — uses the same content inset</b>, so text lands in the same place whatever the ornament<span class="why">this is what keeps the ad card a <em>simple</em> component: one text frame, with the ornament as a swappable decoration around it, instead of each border style carrying its own layout</span></li>
+          <li><b>A clip whose neighbour below carries an ornament drops its own divider rule</b><span class="why">the ornament already separates the two; a rule immediately above it reads as a doubled line</span></li>
+          <li><b>The feed went to four columns</b><span class="why">five left framed ads with a 92&thinsp;px measure — cramped enough that a frame cost meaningfully more text than a plain listing. Four brings every treatment to ~125&thinsp;px</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="when">Aug 2</div>
+      <div class="what">
+        <h3>Optical sizing, settled by eye</h3>
+        <ul class="dl">
+          <li><b>Normalise display faces on x-height, not cap height</b><span class="why">a headline is mostly lowercase, so x-height is what the eye reads. EB Garamond has a 68.6 cap but a 43 x-height — at matching cap height it looked far smaller than everything beside it</span></li>
+          <li><b>Nominal sizes deliberately differ by ~65% so the faces <em>look</em> the same</b><span class="why">setting every face to one size is what reads as inconsistent; uniformity on paper is not uniformity on screen</span></li>
+          <li><b>Measurement gets you a starting point; the eye finishes it</b> — the algorithm landed six of nine faces within ±6%, then missed three by 44–53%<span class="why">the misses were the condensed faces and the blackletter, whose x-height overstates how much presence they actually have. No single metric predicted all three, so the roster's scales are hand-set</span></li>
+          <li><b>Roster swaps: Ohno Blazeface in for Flower Power, Bodoni Moda in for Divulga</b><span class="why">keeps nine display faces while widening the range — a fat face and a Didone in place of two that were doing similar work</span></li>
         </ul>
       </div>
     </div>

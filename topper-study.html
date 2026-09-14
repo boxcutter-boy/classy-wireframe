@@ -15,9 +15,17 @@
     --orn:var(--news-ink);      /* ornaments are ink only */
     --ow:1;                     /* global stroke-weight multiplier */
     --band:12px;                /* thickness of a repeating frame band */
-    --clip-pad:16px;            /* ONE content inset, shared by every treatment */
+    --clip-pad:16px;            /* the old shared inset — kept for "uniform" mode */
+    /* per-type insets: an ad's padding depends on what ornament it carries.
+       Plain and toppered ads run edge to edge — only a frame buys an inset. */
+    --pad-plain:0px;
+    --pad-topper:0px;
+    --pad-frame:16px;
+    --pad-foot:14px;            /* every ad gets extra room at its foot */
   }
-  body.dark{ --news-bg:#262624; --news-ink:#e9e9e4; --news-muted:#a7a79f; --news-rule:#4c4c48; }
+  :root{ --news-ink2:#3d3d3a; --news-tan:#cdc8b4; }   /* interstitial surfaces */
+  body.dark{ --news-bg:#262624; --news-ink:#e9e9e4; --news-muted:#a7a79f; --news-rule:#4c4c48;
+             --news-ink2:#d6d6d0; --news-tan:#4a4740; }
   *{box-sizing:border-box}
   body{margin:0;background:var(--ground);color:var(--ink);
        font:14px/1.55 "Instrument Sans",-apple-system,system-ui,sans-serif;padding:36px 28px 80px}
@@ -32,6 +40,7 @@
             padding:12px 14px;background:#0000000a;border-radius:6px}
   .controls label{font-size:12px;display:flex;gap:6px;align-items:center;cursor:pointer}
   .ctl-h{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .padv{font-size:11px;font-variant-numeric:tabular-nums;min-width:16px;display:inline-block}
   .divider{width:1px;height:20px;background:var(--hair)}
   .stat{font-size:12px;color:var(--muted)}
   .stat b{color:var(--ink);font-variant-numeric:tabular-nums}
@@ -79,9 +88,11 @@
   .masthead .sub{font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--news-muted);margin-top:6px}
   .paper-cols{column-count:4;column-gap:14px;column-rule:1px solid var(--news-rule)}
 
-  /* every clip — plain, toppered, framed, banded — uses the SAME side inset,
-     so the text block lands in the same place whatever the ornament is */
-  .clip{padding:0 var(--clip-pad) 9px;margin:0 0 9px;border-bottom:1px solid var(--news-rule);break-inside:avoid;color:var(--news-ink)}
+  /* padding now varies BY ORNAMENT TYPE — plain sits tightest, framed loosest,
+     and every ad carries extra room at its foot */
+  .clip{padding:0 var(--pad-plain) calc(9px + var(--pad-foot));margin:0 0 9px;
+        border-bottom:1px solid var(--news-rule);break-inside:avoid;color:var(--news-ink)}
+  .clip.has-topper{padding-left:var(--pad-topper);padding-right:var(--pad-topper)}
   .clip.no-rule{border-bottom:0}
   .clip-name{font-weight:500;font-size:9.5px;line-height:1.1}
   .clip-head{font-weight:500;font-size:14px;line-height:1.14;margin:2px 0 4px}
@@ -97,7 +108,32 @@
   /* inside a clip a topper bleeds to the clip edge — the same line a frame's
      border would occupy — while the text stays on the shared inset */
   .clip .topper,.clip .topper-band{width:auto;
-       margin-left:calc(var(--clip-pad) * -1);margin-right:calc(var(--clip-pad) * -1)}
+       margin-left:calc(var(--pad-topper) * -1);margin-right:calc(var(--pad-topper) * -1)}
+
+  /* ---- interstitials: cartoon, horoscope, house ad ----
+     Column-width blocks that break up the run of classifieds, the way a paper
+     used a cartoon or a masthead ad. They carry their own surface, so they sit
+     outside the plain/topper/frame padding system entirely. */
+  .inter{break-inside:avoid;margin:0 0 15px;padding:15px 14px;text-align:center;
+         border-radius:9px;border-bottom:0}
+  .inter .k{font-size:10.5px;line-height:1.25;margin:0 0 7px;font-weight:500;letter-spacing:.01em}
+  .inter p{font-size:8.5px;line-height:1.45;margin:0;opacity:.9;
+           font-family:"Instrument Sans",sans-serif}
+  .inter.cartoon{background:var(--news-ink);color:var(--news-bg)}
+  .inter.horoscope{background:var(--news-ink2);color:var(--news-bg)}
+  .inter.upgrade{background:var(--news-tan);color:var(--news-ink)}
+  /* the cartoon's art area — a blank rectangle until the drawing exists */
+  .inter.cartoon .art{border:1px dashed currentColor;opacity:.45;border-radius:4px;
+                      aspect-ratio:4/3;margin:0 0 9px}
+  .inter.cartoon .cap{font-size:8.5px;font-style:italic;line-height:1.4;margin:0;opacity:.85}
+  .inter .cta{display:inline-block;margin-top:9px;padding:5px 13px;border-radius:5px;
+              background:var(--news-ink);color:var(--news-bg);font-size:8.5px;
+              font-family:"Instrument Sans",sans-serif;letter-spacing:.02em}
+
+  /* no rules between clips — the extra margin does the separating work */
+  .paper.no-hrules .clip{border-bottom:0;margin-bottom:15px}
+  /* no rules between columns — widen the gutter so adjacent columns don't merge */
+  .paper.no-vrules .paper-cols{column-rule:0;column-gap:24px}
 
   /* alignment proof: a hairline at the left edge of every text element */
   .paper.guides .clip-name,.paper.guides .clip-head,
@@ -105,7 +141,7 @@
 
   /* ---- framed variants ---- */
   .clip.framed{position:relative;border-bottom:0;margin:0 0 11px;color:var(--news-ink);
-               padding:var(--clip-pad) var(--clip-pad) calc(var(--clip-pad) - 4px)}
+               padding:var(--pad-frame) var(--pad-frame) calc(var(--pad-frame) + var(--pad-foot))}
   .clip.framed .fr{position:absolute;inset:0;pointer-events:none;color:var(--orn)}
   .clip.framed.f-normal   .fr{border:calc(1.4px*var(--ow)) solid var(--orn)}
   .clip.framed.f-rounded  .fr{border:calc(1.4px*var(--ow)) solid var(--orn);border-radius:11px}
@@ -120,7 +156,16 @@
 
   /* ---- band frames: a repeating motif on all four sides ---- */
   .clip.banded{position:relative;border-bottom:0;margin:0 0 11px;
-               padding:var(--clip-pad) var(--clip-pad) calc(var(--clip-pad) - 4px)}
+               padding:var(--pad-frame) var(--pad-frame) calc(var(--pad-frame) + var(--pad-foot))}
+
+  /* the old behaviour, kept so the two can be compared directly */
+  .paper.uniform-pad .clip,
+  .paper.uniform-pad .clip.has-topper{padding-left:var(--clip-pad);padding-right:var(--clip-pad)}
+  .paper.uniform-pad .clip.framed,
+  .paper.uniform-pad .clip.banded{padding:var(--clip-pad) var(--clip-pad) calc(var(--clip-pad) - 4px)}
+  .paper.uniform-pad .clip .topper,
+  .paper.uniform-pad .clip .topper-band{margin-left:calc(var(--clip-pad) * -1);
+                                        margin-right:calc(var(--clip-pad) * -1)}
   .clip.banded .bd{position:absolute;background-color:var(--orn);
                    -webkit-mask-position:center;mask-position:center}
   /* mask-size fits the tile to the band thickness, so tiles of any natural height work */
@@ -162,9 +207,19 @@
     <input type="range" id="bw" min="6" max="20" step="1" value="12" style="width:120px">
     <b id="bwv" style="font-size:12px;font-variant-numeric:tabular-nums">12px</b>
     <span class="divider"></span>
-    <span class="ctl-h">Padding</span>
-    <input type="range" id="pad" min="8" max="26" step="1" value="16" style="width:110px">
-    <b id="padv" style="font-size:12px;font-variant-numeric:tabular-nums">16px</b>
+    <span class="ctl-h">Pad · plain</span>
+    <input type="range" class="padr" data-var="--pad-plain" min="0" max="24" step="1" value="0" style="width:74px">
+    <b class="padv" data-for="--pad-plain">0</b>
+    <span class="ctl-h">topper</span>
+    <input type="range" class="padr" data-var="--pad-topper" min="0" max="24" step="1" value="0" style="width:74px">
+    <b class="padv" data-for="--pad-topper">0</b>
+    <span class="ctl-h">frame</span>
+    <input type="range" class="padr" data-var="--pad-frame" min="0" max="28" step="1" value="16" style="width:74px">
+    <b class="padv" data-for="--pad-frame">16</b>
+    <span class="ctl-h">foot</span>
+    <input type="range" class="padr" data-var="--pad-foot" min="0" max="30" step="1" value="14" style="width:74px">
+    <b class="padv" data-for="--pad-foot">14</b>
+    <span class="divider"></span>
     <label><input type="checkbox" id="guides"> Guides</label>
     <span class="divider"></span>
     <label><input type="checkbox" id="faces" checked> Display fonts</label>
@@ -240,8 +295,12 @@
       <label><input type="radio" name="mode" value="frame"> Frames</label>
       <label><input type="radio" name="mode" value="mixed" checked> Mixed</label>
       <span class="divider"></span>
+      <label><input type="checkbox" id="hrules" checked> Clip dividers</label>
+      <label><input type="checkbox" id="vrules"> Column rules</label>
       <label><input type="checkbox" id="ruleFix" checked> Suppress divider above an ornament</label>
+      <label><input type="checkbox" id="uniformPad"> Uniform padding (old)</label>
       <label><input type="checkbox" id="edgeIn" checked> Include edge-case ads</label>
+      <label><input type="checkbox" id="interIn" checked> Interstitials</label>
       <span class="stat">paper <b id="statH">—</b> · ornamented <b id="statN">—</b></span>
     </div>
     <div style="overflow-x:auto;padding-top:14px">
@@ -534,7 +593,7 @@ function clipHTML(a,spec,extraCls,pair){
   const inner=clipInner(a,pair);
   if(type==='band')  return '<div class="clip banded '+(extraCls||'')+'">'+bandEls(kind)+inner+'</div>';
   if(type==='frame') return '<div class="clip framed f-'+kind+' '+(extraCls||'')+'"><span class="fr"></span>'+frameExtras(kind)+inner+'</div>';
-  if(type==='topper')return '<div class="clip '+(extraCls||'')+'">'+topperHTML(kind)+inner+'</div>';
+  if(type==='topper')return '<div class="clip has-topper '+(extraCls||'')+'">'+topperHTML(kind)+inner+'</div>';
   return '<div class="clip '+(extraCls||'')+'">'+inner+'</div>';
 }
 
@@ -708,6 +767,27 @@ function paintMatrix(){
   });
 }
 
+/* ══ interstitials ══ */
+function interHTML(kind){
+  if(kind==='cartoon')
+    return '<div class="inter cartoon">'+
+             '<div class="k">✻ Daily Cartoon ✻</div>'+
+             '<div class="art"></div>'+          /* blank until the drawing exists */
+             '<p class="cap">“I said I wanted something serious. He sent a spreadsheet.”</p>'+
+           '</div>';
+  if(kind==='horoscope')
+    return '<div class="inter horoscope">'+
+             '<div class="k">✻ Today’s Horoscope ✻</div>'+
+             '<p>The stars are feeling direct today. If an ad makes you laugh out loud, '+
+             'that’s your sign — reply before you overthink it.</p>'+
+           '</div>';
+  return '<div class="inter upgrade">'+
+           '<div class="k">Want to see more classifieds?</div>'+
+           '<p>You’ve read today’s twenty-five. Premium members get the evening edition.</p>'+
+           '<span class="cta">Upgrade</span>'+
+         '</div>';
+}
+
 /* ══ the paper ══ */
 const MIX=['frame:ornate','plain','topper:wave','plain','plain','band:folksy','frame:rounded','plain',
  'topper:clipping','plain','plain','frame:inverted','band:wave','plain','plain','topper:thorns',
@@ -729,10 +809,18 @@ function paintPaper(){
     return all[i%all.length];
   });
 
-  document.getElementById('cols').innerHTML = ads.map((a,i)=>{
+  const html = ads.map((a,i)=>{
     const nextOrn = fix && i<p.length-1 && p[i+1]!=='plain';
     return clipHTML(a,p[i], nextOrn?'no-rule':'', PAIRS[i%PAIRS.length]);
-  }).join('');
+  });
+
+  /* splice high index first so the earlier positions stay valid */
+  if(document.getElementById('interIn').checked){
+    html.splice(21,0,interHTML('upgrade'));
+    html.splice(13,0,interHTML('cartoon'));
+    html.splice(5, 0,interHTML('horoscope'));
+  }
+  document.getElementById('cols').innerHTML = html.join('');
 
   const n=p.filter(x=>x!=='plain').length;
   requestAnimationFrame(()=>{
@@ -750,7 +838,18 @@ function renderAll(){ paintFaces(); paintSpecs(); paintMatrix(); paintPaper(); }
 /* ══ controls ══ */
 document.querySelectorAll('input[name=mode]').forEach(r=>r.addEventListener('change',paintPaper));
 document.getElementById('ruleFix').addEventListener('change',paintPaper);
+document.getElementById('hrules').addEventListener('change',function(e){
+  document.getElementById('paper').classList.toggle('no-hrules',!e.target.checked);
+  /* with no clip rules there is nothing for the suppression rule to do */
+  document.getElementById('ruleFix').disabled=!e.target.checked;
+  paintPaper();
+});
+document.getElementById('vrules').addEventListener('change',function(e){
+  document.getElementById('paper').classList.toggle('no-vrules',!e.target.checked);
+  paintPaper();
+});
 document.getElementById('edgeIn').addEventListener('change',paintPaper);
+document.getElementById('interIn').addEventListener('change',paintPaper);
 document.getElementById('ow').addEventListener('input',e=>{
   document.documentElement.style.setProperty('--ow',e.target.value);
   document.getElementById('owv').textContent=(+e.target.value).toFixed(1)+'×';
@@ -762,10 +861,19 @@ document.getElementById('bw').addEventListener('input',e=>{
   renderAll();                      // band thickness feeds the stroke normalisation
 });
 document.getElementById('dark').addEventListener('change',e=>document.body.classList.toggle('dark',e.target.checked));
-document.getElementById('pad').addEventListener('input',e=>{
-  document.documentElement.style.setProperty('--clip-pad',e.target.value+'px');
-  document.getElementById('padv').textContent=e.target.value+'px';
-  paintMatrix(); paintPaper();
+/* one handler for all four padding sliders */
+document.querySelectorAll('.padr').forEach(function(r){
+  r.addEventListener('input',function(){
+    document.documentElement.style.setProperty(r.dataset.var, r.value+'px');
+    var out=document.querySelector('.padv[data-for="'+r.dataset.var+'"]');
+    if(out) out.textContent=r.value;
+    paintMatrix(); paintPaper();
+  });
+});
+document.getElementById('uniformPad').addEventListener('change',function(e){
+  document.getElementById('paper').classList.toggle('uniform-pad',e.target.checked);
+  document.querySelectorAll('.padr').forEach(s=>s.disabled=e.target.checked);
+  paintPaper();
 });
 document.getElementById('guides').addEventListener('change',e=>
   document.getElementById('paper').classList.toggle('guides',e.target.checked));
@@ -786,6 +894,10 @@ document.getElementById('resetScales').addEventListener('click',()=>{
   document.getElementById('savedNote').textContent='reset to the tuned set';
   setTimeout(()=>document.getElementById('savedNote').textContent='',1600);
 });
+
+/* apply both divider toggles' initial state before the first paint */
+document.getElementById('hrules').dispatchEvent(new Event('change'));
+document.getElementById('vrules').dispatchEvent(new Event('change'));
 
 /* measure the roster, restore any hand-tuned values, then draw */
 renderAll();
