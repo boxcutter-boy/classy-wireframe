@@ -6,7 +6,7 @@
 <title>Classy — Mobile Wireframe v2 · M3 colour</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Anton&family=Bodoni+Moda:ital,wght@0,400;0,600;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=EB+Garamond:wght@400;600&family=Instrument+Sans:ital@0;1&family=Jost:ital,wght@0,400;0,700;1,700&family=Pacifico&family=Roboto+Slab:wght@400;700&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Anton&family=Bodoni+Moda:ital,wght@0,400;0,600;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:ital,wght@0,400;0,700;1,700&family=Pacifico&family=Roboto+Slab:wght@400;700&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
 <style>
   /* ═══════════════════════════════════════════════════════════════════════
      COLOUR — sourced from the Figma M3 collection, matching index_v2.html.
@@ -38,7 +38,8 @@
 
     /* ── newsprint · deliberately outside M3 ── */
     --news-bg:#fbf7eb; --news-ink:#161616; --news-rule:#bcbcb2; --news-muted:#6d6d66;
-    --news-promo:#cdc8b6;   /* "see more classifieds" filler box */
+    --news-promo:#e9dbb9;   /* "see more classifieds" box — the background's hue and warmth, lightness 82% */
+    --news-promo-line:#c6b795;   /* its outline: same hue, a few steps darker, so it stays warm */
 
     /* ── replied ad · outside M3 · sits below --panel ── */
     --replied-surface:#f6efdd;
@@ -66,7 +67,7 @@
        and news/ink matches --ink exactly so set type reads the same warm cream
        in the paper as it does on a card */
     --news-bg:#232329; --news-ink:#f2ead3; --news-rule:#4c4c48; --news-muted:#a39e93;
-    --news-promo:#4a4a4e;
+    --news-promo:#4a4a4e; --news-promo-line:#5a5a5d;
 
     /* darker than --panel (#313139), just above the page (#232329) */
     --replied-surface:#2a2a30;
@@ -93,6 +94,7 @@
   html,body{margin:0;height:100%}
   body{font-family:var(--font);color:var(--ink);background:var(--page);display:flex;justify-content:center;overflow:hidden}
   button{font-family:inherit;cursor:pointer;color:inherit}
+  input,select,textarea{font-family:inherit}   /* otherwise Arial / monospace system defaults */
 
   /* ---------- Phone shell ---------- */
   .app{
@@ -100,7 +102,26 @@
     display:flex;flex-direction:column;overflow:hidden;
     box-shadow:0 0 0 1px var(--line), 0 18px 60px rgba(0,0,0,.22);
   }
-  @media (min-width:470px){ .app{height:min(100dvh,900px);margin:auto;border-radius:26px} }
+  /* no visible scrollbars anywhere in the phone (feed, sheets, onboarding…) — iOS hides
+     them at rest; scrolling still works by touch, trackpad and wheel */
+  .app, .app *{scrollbar-width:none}
+  .app::-webkit-scrollbar, .app *::-webkit-scrollbar{display:none}
+  /* everything below the status bar; overlays/onboarding are inset:0 to THIS, so they open
+     under the status bar the way iOS sheets do */
+  .screen{position:relative;flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+  .statusbar{display:none}
+  /* desktop mock-up: a fixed iPhone 16 (393×852pt, 55pt corners) with its status bar. The
+     frame never reflows; a short window scales the whole phone down (--fit, set in JS) */
+  @media (min-width:470px){
+    body{align-items:center}
+    .app{flex:none;width:393px;max-width:none;height:852px;border-radius:55px;transform:scale(var(--fit,1));transform-origin:center}
+    .statusbar{display:flex;flex:0 0 54px;position:relative;align-items:center;justify-content:space-between;padding:0 30px 0 50px;background:var(--bg);color:var(--ink);
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;font-size:17px;font-weight:600;letter-spacing:-.02em}
+    .sb-time{width:54px;text-align:center;padding-top:2px}
+    .sb-island{position:absolute;left:50%;top:11px;width:126px;height:37px;margin-left:-63px;border-radius:20px;background:#000}
+    .sb-icons{display:flex;align-items:center;gap:6px;padding-top:2px}
+    .sb-icons svg{display:block;fill:currentColor}
+  }
 
   /* ---------- Top app bar ---------- */
   .appbar{
@@ -118,7 +139,7 @@
      it with headroom — 1.4 was sized for Iowan and left ~5px of dead leading
      above the cap, which pushed the title down and opened the gap to the date. */
   .appbar h2{font-family:"Clarendon URW",var(--serif);font-weight:400;font-size:24px;margin:0;line-height:1.12;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .issue{font-family:var(--serif);font-size:12.5px;line-height:1.2;color:var(--muted);margin-top:2px}
+  .issue{font-family:"Clarendon URW",var(--serif);font-size:12.5px;line-height:1.2;color:var(--muted);margin-top:2px}
   /* same 6px optical offset as .appbar-titles, so the buttons stay on the
      title's axis rather than the bar's geometric centre */
   .appbar-actions{display:flex;align-items:center;gap:7px;flex:0 0 auto;position:relative;top:4px}
@@ -126,9 +147,10 @@
   .iconbtn svg{width:20px;height:20px}
   .iconbtn.on{background:var(--ink);color:var(--panel);border-color:var(--ink)}
   /* feed view toggle: newspaper ⇄ feed (icon-only segmented control) */
-  .viewseg{display:inline-flex;align-items:center;height:38px;border:1px solid var(--line-strong);border-radius:10px;overflow:hidden;flex:0 0 auto}
-  .viewseg button{display:flex;align-items:center;justify-content:center;background:var(--panel);border:0;color:var(--muted);padding:0 11px;height:100%}
-  .viewseg button + button{border-left:1px solid var(--line-strong)}
+  /* outline, divider and the unselected icon all use --ink, the selected fill colour */
+  .viewseg{display:inline-flex;align-items:center;height:38px;border:1px solid var(--ink);border-radius:10px;overflow:hidden;flex:0 0 auto}
+  .viewseg button{display:flex;align-items:center;justify-content:center;background:var(--panel);border:0;color:var(--ink);padding:0 11px;height:100%}
+  .viewseg button + button{border-left:1px solid var(--ink)}
   .viewseg button.active{background:var(--ink);color:var(--panel)}
   .viewseg button svg{width:19px;height:19px;display:block}
 
@@ -149,14 +171,15 @@
   .tab.active .tlab{font-weight:600}
   /* uneven side pads (4.5 left / 3.5 right) nudge the digit 0.5px right — the
      "3" carries more empty space on its right side, so it read off-centre */
-  .tab-badge{position:absolute;top:1px;left:calc(50% + 6px);min-width:16px;height:16px;padding:2.8px 3.5px 0 4.5px;border-radius:999px;background:var(--ink);color:var(--panel);font-size:10px;font-weight:400;display:none;align-items:center;justify-content:center}
+  .tab-badge{position:absolute;top:1px;left:calc(50% + 4px);min-width:16px;height:16px;padding:2.8px 3.5px 0 4.5px;border-radius:999px;background:var(--ink);color:var(--panel);font-size:10px;font-weight:400;display:none;align-items:center;justify-content:center}
   body.dark .tab-badge{color:var(--bg)}
   .tab-badge.show{display:inline-flex}
 
   /* ---------- Feed: horoscope ---------- */
   .horoscope{text-align:center;margin:0 0 22px;padding-bottom:20px;border-bottom:1px solid var(--line)}
   .horo-label{font-family:"Clarendon URW",var(--serif);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
-  .horo-text{font-family:var(--serif);font-style:italic;font-size:15px;line-height:1.55;color:var(--ink);margin:8px 0 0}
+  /* EB Garamond runs small for its size, so 16px reads like the old 15px serif */
+  .horo-text{font-family:'EB Garamond',var(--serif);font-size:16px;line-height:1.55;color:var(--ink);margin:8px 0 0}
 
   /* ---------- Feed: read (single column) ---------- */
   .feed-col{display:flex;flex-direction:column;gap:16px}
@@ -170,12 +193,14 @@
   .ad-name{font-weight:500;font-size:calc(26px * var(--fscale,1));line-height:1.05;color:var(--ink);margin:0 0 6px}
   .ad-place{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
   .ad-headline{font-weight:700;font-size:13px;letter-spacing:.07em;text-transform:uppercase;line-height:1.3;color:var(--ink);margin:0 0 11px}
-  .ad-body{font-size:13.5px;line-height:1.5;color:var(--ink);margin:0}
+  .ad-body{font-size:15px;line-height:1.5;color:var(--ink);margin:0}
   .feed-name{font-size:12.5px;font-weight:500;color:var(--ink);margin:0 0 4px}
   .feed-headline{font-weight:500;font-size:calc(24px * var(--fscale,1));line-height:1.12;color:var(--ink);margin:0 0 10px}
   .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
   /* 5.3/2.7 pad: Franklin rides high — centres the cap height, same 23px chip */
-  .tag-chip{font-size:11px;padding:5.3px 9px 2.7px;background:var(--fill);border:1px solid var(--line);border-radius:4px;color:var(--muted)}
+  /* text is Outline Variant, not Caption Text: --muted on --fill was ~2.2:1 and read
+     as disabled. Outline Variant clears AA for small text in both modes (5.5 / 4.6:1) */
+  .tag-chip{font-size:11px;padding:5.3px 9px 2.7px;background:var(--fill);border:1px solid var(--line);border-radius:4px;color:var(--line-strong)}
   /* border drops to --line too, so the whole card recedes as one piece rather
      than leaving a bright frame around faded content */
   .card.replied{background:var(--replied);border-color:var(--line)}
@@ -190,7 +215,10 @@
   .scroll.paper-mode{padding:0;overflow:hidden;position:relative}
   .paper-viewport{position:absolute;inset:0;overflow:hidden;background:var(--news-bg);touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
   .paper-viewport:active{cursor:grabbing}
-  .paper{transform-origin:0 0;background:var(--news-bg);color:var(--news-ink);padding:16px 20px 22px;font-family:var(--serif);will-change:transform}
+  .paper{transform-origin:0 0;background:var(--news-bg);color:var(--news-ink);padding:16px 20px 22px;font-family:var(--font)}
+  /* no will-change:transform here — it freezes the paper as a bitmap at its first scale,
+     so zoomed-in text was a stretched image (soft, pixelated). Without it the browser
+     re-renders the type crisply at each zoom level; 25 clips is cheap to redraw. */
   /* masthead removed on mobile — the top bar already carries the title and the
      issue date, so it was ~110px of duplicated information above the fold */
   /* explicit columns, not CSS multi-column: packPaper() breaks the ads into
@@ -204,34 +232,45 @@
   .filler-title{font-family:"Clarendon URW",var(--serif);font-size:12px;line-height:1.2}
   .filler-text{font-size:9.5px;line-height:1.4;margin:0}
   .filler-horo{background:var(--ink);color:var(--bg)}
-  .filler-promo{background:var(--news-promo);color:var(--ink)}
-  .filler-btn{font-family:var(--font);font-size:9.5px;background:var(--ink);color:var(--bg);border:0;border-radius:4px;padding:5px 12px;margin-top:2px}
+  /* horoscope copy in EB Garamond (regular); Garamond runs small, so 10.5px */
+  .filler-horo .filler-text{font-family:'EB Garamond',var(--serif);font-size:10.5px;line-height:1.35}
+  /* padding 13px (not the filler's 14px) so the 1px outline keeps the box's height — the
+     column balance is tuned to it, and 2px more reshuffles the whole paper */
+  .filler-promo{background:var(--news-promo);color:var(--ink);border:1px solid var(--news-promo-line);padding-top:13px;padding-bottom:13px}
+  .filler-btn{font-family:var(--font);font-size:9.5px;background:var(--ink);color:var(--panel);border:0;border-radius:4px;padding:5.8px 12px 4.2px;margin-top:2px}   /* uneven pad centres Franklin's caps */
   .clip{display:block;width:100%;text-align:left;background:none;border:0;padding:0 0 14px;margin:0 0 14px;border-bottom:1px solid var(--news-rule);break-inside:avoid;cursor:pointer;color:inherit;font-family:inherit}
+  /* no divider on the ad right above a horoscope / upgrade box — the box ends the column.
+     Transparent (not removed) so the 1px stays and the column packing doesn't shift */
+  .clip:has(+ .filler){border-bottom-color:transparent}
   .clip-name{display:flex;align-items:center;justify-content:space-between;gap:6px;font-weight:500;font-size:9.5px;line-height:1.1;color:var(--news-ink)}
   .clip-rep-ic{width:12px;height:12px;flex:0 0 auto;color:var(--news-ink)}
   .clip-head{font-weight:500;font-size:calc(14px * var(--fscale,1));line-height:1.14;margin:2px 0 4px;color:var(--news-ink)}
-  .clip-body{font-size:9px;line-height:1.34;color:var(--news-ink);opacity:.92}
+  /* 11.85px × the paper's starting zoom (≈1.27) = 15px on screen, matching the list feed's body */
+  .clip-body{font-size:11.85px;line-height:1.34;color:var(--news-ink);opacity:.92}
   .clip-loc{font-size:8px;font-style:italic;color:var(--news-muted);margin-top:3px}
   .clip.replied{opacity:.66}
-  .paper-foot{text-align:center;font-size:12px;letter-spacing:.06em;color:var(--news-muted);margin-top:16px;font-family:var(--font)}
-  .paper-zoom{position:absolute;right:18px;bottom:14px;z-index:5;display:flex;flex-direction:column;gap:7px}
-  .paper-zoom button{width:40px;height:40px;border:1px solid var(--line-strong);border-radius:11px;background:var(--panel);color:var(--ink);padding:0;line-height:0;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 9px rgba(0,0,0,.14)}
-  .zoom-ic{width:20px;height:20px;display:block;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+  .paper-foot{text-align:center;font-size:13px;letter-spacing:.04em;color:var(--news-muted);margin-top:16px;font-family:'EB Garamond',var(--serif)}   /* Garamond runs small: 13px ≈ the old 12px Franklin */
+  /* auto-hiding like video controls: in while the paper is being moved, out ~1.5s after */
+  .paper-zoom{position:absolute;right:18px;bottom:14px;z-index:5;display:flex;flex-direction:column;gap:7px;opacity:0;pointer-events:none;transition:opacity .6s ease}
+  .paper-zoom.show,.paper-zoom:has(:focus-visible){opacity:1;pointer-events:auto}   /* keyboard focus keeps them up */
   /* uneven 7.3/4.7 pad: same Franklin rides-high offset as the badges, centres
      the cap height in the pill without changing its 27px height */
-  .paper-hint{position:absolute;left:18px;bottom:20px;z-index:5;font-size:11px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:7.3px 12px 4.7px;box-shadow:0 2px 9px rgba(0,0,0,.12)}
+  .paper-hint{position:absolute;left:18px;bottom:20px;z-index:5;font-size:11px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:7.3px 12px 4.7px;box-shadow:0 2px 9px rgba(0,0,0,.12);opacity:0;transform:translateY(4px);transition:opacity .6s ease,transform .6s ease;pointer-events:none}
+  .paper-hint.show{opacity:1;transform:none}
+  .paper-zoom button{width:40px;height:40px;border:1px solid var(--line-strong);border-radius:11px;background:var(--panel);color:var(--ink);padding:0;line-height:0;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 9px rgba(0,0,0,.14)}
+  .zoom-ic{width:20px;height:20px;display:block;stroke:currentColor;stroke-width:2;stroke-linecap:round}
 
   /* ---------- Feed: end of the paper ---------- */
   .endpaper{text-align:center;padding:38px 12px 8px;color:var(--muted)}
   .endpaper .rule{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:14px}
   .endpaper .rule::before,.endpaper .rule::after{content:'';height:1px;background:var(--line-strong);width:52px;opacity:.7}
   .endpaper .mark{font-size:18px;color:var(--muted)}
-  .endpaper h4{font-family:var(--serif);font-weight:500;font-size:20px;margin:0 0 6px;color:var(--ink)}
-  .endpaper p{font-size:13px;line-height:1.55;margin:0 auto;max-width:270px}
+  .endpaper h4{font-family:"Clarendon URW",var(--serif);font-weight:400;font-size:20px;margin:0 0 6px;color:var(--ink)}
+  .endpaper p{font-size:15px;line-height:1.55;margin:0 auto;max-width:270px}
   /* same tan box and Clarendon head as the paper's upgrade filler, at feed scale */
-  .feed-upgrade{margin:16px 0 0;padding:26px 22px;border-radius:var(--radius);background:var(--news-promo);text-align:center}
+  .feed-upgrade{margin:16px 0 0;padding:26px 22px;border-radius:var(--radius);background:var(--news-promo);border:1px solid var(--news-promo-line);text-align:center}
   .feed-upgrade h4{font-family:"Clarendon URW",var(--serif);font-weight:400;font-size:20px;line-height:1.2;margin:0 auto 10px;max-width:240px;color:var(--ink)}
-  .feed-upgrade p{font-size:14px;line-height:1.5;margin:0 auto 18px;max-width:250px;color:var(--ink)}
+  .feed-upgrade p{font-size:15px;line-height:1.5;margin:0 auto 18px;max-width:250px;color:var(--ink)}
 
   /* ---------- Feed gate (no ad posted) ---------- */
   .feed-locked{position:relative;overflow:hidden;max-height:560px}
@@ -239,8 +278,8 @@
   .feed-blur{position:absolute;left:-12px;right:-12px;bottom:0;height:70%;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);background:linear-gradient(to bottom, rgba(0,0,0,0), var(--bg) 82%)}
   .feed-gate{position:absolute;left:0;right:0;bottom:20px;display:flex;justify-content:center;z-index:2;padding:0 6px}
   .feed-gate-card{background:var(--panel);border:1.5px solid var(--ink);border-radius:14px;padding:24px 22px;text-align:center;box-shadow:0 12px 34px rgba(0,0,0,.16)}
-  .feed-gate-card h3{font-family:var(--serif);font-weight:500;font-size:21px;margin:0 0 10px}
-  .feed-gate-card p{font-size:14px;color:var(--muted);line-height:1.55;margin:0 0 18px}
+  .feed-gate-card h3{font-family:"Clarendon URW",var(--serif);font-weight:400;font-size:21px;margin:0 0 10px}
+  .feed-gate-card p{font-size:15px;color:var(--muted);line-height:1.55;margin:0 0 18px}
 
   /* ---------- Bottom sheet overlay ---------- */
   .overlay{position:absolute;inset:0;background:rgba(0,0,0,.42);display:none;align-items:flex-end;z-index:50}
@@ -251,11 +290,15 @@
     box-shadow:0 -10px 34px rgba(0,0,0,.24);animation:sheetUp .22s ease;
   }
   @keyframes sheetUp{from{transform:translateY(24px);opacity:.4}to{transform:none;opacity:1}}
-  .sheet::before{content:'';display:block;width:38px;height:4px;border-radius:2px;background:var(--line-strong);opacity:.55;margin:0 auto 12px}
-  .sheet .close{float:right;border:1px solid var(--line-strong);background:var(--panel);color:var(--ink);border-radius:8px;width:34px;height:34px;font-size:18px}
+  .sheet::before{content:'';display:block;width:38px;height:4px;cursor:grab;border-radius:2px;background:var(--line-strong);opacity:.55;margin:0 auto 12px}
+  /* the × is drawn, not typed (same reason as the zoom icons): the glyph sat ~2px
+     high in the box. Two equal bars crossed on the box centre can't drift. */
+  .sheet .close{float:right;border:1px solid var(--line-strong);background:var(--panel);color:var(--ink);border-radius:8px;width:34px;height:34px;font-size:0;position:relative;padding:0}
+  .sheet .close::before,.sheet .close::after{content:'';position:absolute;left:50%;top:50%;width:14px;height:1.6px;margin:-0.8px 0 0 -7px;background:currentColor;border-radius:1px;transform:rotate(45deg)}
+  .sheet .close::after{transform:rotate(-45deg)}
   .sheet .kicker{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-  .sheet h3{font-family:var(--serif);font-weight:500;font-size:calc(25px * var(--fscale,1));margin:8px 0 16px;line-height:1.15}
-  .sheet p{font-size:14px;line-height:1.6;margin:0 0 18px}
+  .sheet h3{font-family:"Clarendon URW",var(--serif);font-weight:400;font-size:calc(25px * var(--fscale,1));margin:8px 0 16px;line-height:1.15}
+  .sheet p{font-size:15px;line-height:1.6;margin:0 0 18px}
   .sheet .meta{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px;border-top:1px solid var(--line);padding-top:16px;margin-bottom:20px}
   .sheet .meta div{font-size:13px}
   .sheet .meta span{color:var(--muted)}
@@ -277,22 +320,30 @@
      padding instead: on a fixed-height border-box element, padding-top P shifts
      the centred content down by P/2, so 3.6px buys the 1.8px we need. Measured
      for Franklin Gothic at 14px; re-measure if the UI font or size changes. */
+  /* every primary (filled) button: --ink fill, --panel label; dark mode swaps the label to --bg.
+     The paper's .filler-btn follows the same pair (it used --bg in light, a shade darker) */
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:3.6px 18px 0;border-radius:8px;font-size:14px;border:1.5px solid var(--ink);background:var(--ink);color:var(--panel)}
-  body.dark .btn{color:var(--bg);background:var(--ink);border-color:var(--ink)}
+  /* dark only swaps the filled button's label to the darker --bg; fill and border already
+     follow --ink. Scoped with :not() so it no longer outranks .ghost and :disabled — it
+     used to, which filled every outline button cream in dark mode */
+  body.dark .btn:not(.ghost):not(:disabled),body.dark .filler-btn{color:var(--bg)}
   .btn.ghost{background:var(--panel);color:var(--ink)}
   .btn.block{width:100%}
-  .btn.sm{height:36px;padding:3.4px 15px 0;font-size:13px}
+  .btn.sm{height:36px;padding:4.6px 15px 0;font-size:13px}
   .btn:disabled{background:var(--fill);color:var(--muted);border-color:var(--line-strong);cursor:default}
 
   /* ---------- Messages list ---------- */
   .mlist{display:flex;flex-direction:column;gap:12px}
   .mrow{background:var(--panel);border:1.5px solid var(--line-strong);border-radius:var(--radius);padding:16px;text-align:left;display:flex;gap:14px;align-items:flex-start;width:100%}
   .mrow .kicker{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-  .mrow p{font-size:13px;line-height:1.5;color:var(--muted);margin:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  /* the message preview uses Outline Variant, not Caption Text: --muted on --panel is 2.5:1 /
+     3.5:1 (below AA); Outline Variant is 6.3:1 / 7.6:1. Unread rows still step up to --ink.
+     The ad tagline and timestamp stay in --muted on purpose — secondary, not the message */
+  .mrow p{font-size:15px;line-height:1.5;color:var(--line-strong);margin:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
   .mrow-right{display:flex;flex-direction:row;align-items:center;gap:7px;flex:0 0 auto}
   /* lifted onto the cap-height centre of the timestamp — flex centring uses the
      line box, and Franklin's figures sit above its middle */
-  .unread-dot{width:9px;height:9px;border-radius:50%;background:var(--ink);position:relative;top:-1.85px}
+  .unread-dot{width:9px;height:9px;border-radius:50%;background:var(--ink);position:relative;top:-2.6px}   /* measured on a retina screenshot */
   .mrow.unread .who-name{font-weight:700}
   .mrow.unread p{color:var(--ink)}
   .when{font-size:12px;color:var(--muted);white-space:nowrap}
@@ -306,23 +357,26 @@
      badge next to 14px text never centres reliably by baseline alignment */
   /* 11px top/bottom became 12.8/9.2 — same total height, content 1.8px lower,
      which also closes the float between the label and its active underline */
-  .mtab{display:inline-flex;align-items:center;gap:7px;background:none;border:0;padding:12.8px 2px 9.2px;margin-right:24px;font-size:14px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+  .mtab{display:inline-flex;align-items:baseline;gap:4px;background:none;border:0;padding:12.8px 2px 9.2px;margin-right:24px;font-size:14px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
   .mtab.active{color:var(--ink);font-weight:600;border-bottom-color:var(--ink)}
-  /* Franklin's digits ride high in their line box — the 4px top pad drops
-     the "3" to the pill's centre (checked on rendered pixels at 2x, not font
-     metrics, which disagree with the real render by up to 1px); top:-1.8px lifts the pill
-     onto the cap-height centre of "Requests" rather than its line box */
-  .mtab .count{position:relative;top:-1.8px;display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:4px 5px 0;border-radius:999px;background:var(--ink);color:var(--panel);font-size:11px;font-weight:400;flex:0 0 auto}
-  body.dark .mtab .count{color:var(--bg)}
+  /* request count reads as plain text, "Requests (2)", in the tab's own colour and weight */
+  .mtab .count{font:inherit;color:inherit}
   .req{background:var(--panel);border:1.5px solid var(--line-strong);border-radius:var(--radius);padding:16px}
   .req .kicker{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-  .req .their-msg{font-size:14px;line-height:1.55;margin:14px 0}
+  .req .their-msg{font-size:15px;line-height:1.55;margin:14px 0}
   .req .their-msg .wrote{font-weight:600;color:var(--ink)}
   .req .their-msg .msg-text{font-style:italic}
   .req-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  /* pending request shown on their ad (feed / paper / View ad) in place of "Reply to this ad" */
+  .ad-request{margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+  .ad-req-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:13px}
+  .ad-req-head .wrote{font-weight:600;color:var(--ink)}
+  .ad-req-msg{font-size:15px;line-height:1.55;font-style:italic;color:var(--ink);margin:8px 0 16px}
+  .ad-req-actions{display:flex;gap:10px}
+  .ad-req-actions .btn{flex:1}
   .req-actions .link-btn{margin-right:auto}
   .spread{display:flex;align-items:center;justify-content:space-between;gap:16px}
-  .empty-msg{color:var(--muted);font-size:14px;line-height:1.6;padding:20px 0}
+  .empty-msg{color:var(--muted);font-size:15px;line-height:1.6;padding:20px 0}
   .link-btn{background:none;border:0;color:var(--ink);font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:2px;padding:4px}
 
   /* ---------- Confirm sheets / block ---------- */
@@ -365,14 +419,14 @@
   .th-menu button:active{background:var(--fill)}
   .th-menu button.danger{color:#b23b3b}
   .msgs{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
-  .bubble{max-width:80%;padding:10px 14px;border-radius:14px;font-size:14px;line-height:1.45}
+  .bubble{max-width:80%;padding:10px 14px;border-radius:14px;font-size:15px;line-height:1.45}
   .bubble.them{background:var(--fill);align-self:flex-start;border-bottom-left-radius:3px}
   .bubble.me{background:var(--ink);color:var(--panel);align-self:flex-end;border-bottom-right-radius:3px}
   body.dark .bubble.me{color:var(--bg)}
   .composer{position:sticky;bottom:0;z-index:10;background:var(--bg);display:flex;gap:10px;border-top:1px solid var(--line);margin:auto -18px 0;padding:14px 18px calc(16px + env(safe-area-inset-bottom))}
   /* --line, not --line-strong: in dark, line-strong is #cec7b3 and the field
      read as a bright box competing with the bubbles above it */
-  .composer .field{flex:1;height:46px;border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:0 14px;color:var(--ink);font-size:14px;font-family:inherit;outline:none}
+  .composer .field{flex:1;height:46px;border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:0 14px;color:var(--ink);font-size:15px;font-family:inherit;outline:none}
   .composer .field::placeholder{color:var(--muted)}
   .composer .sendbtn{width:46px;height:46px;flex:0 0 auto;padding:0;border-radius:10px}
   .send-ic{width:20px;height:20px;display:block;fill:currentColor}
@@ -402,22 +456,24 @@
   .frost{position:absolute;inset:0;background:rgba(226,227,231,.96);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
   .reveal-hint{font-size:12px;color:var(--muted);text-align:center;margin-top:12px}
 
+  /* body copy (ad text, messages, sheet + onboarding paragraphs) is 15px app-wide; labels,
+     captions and meta stay 12–13px as the secondary layer */
   /* ---------- Forms (My Ad / Settings / Onboarding) ---------- */
-  .form{display:flex;flex-direction:column;gap:22px}
+  .form{display:flex;flex-direction:column;gap:28px}
   .fgroup{display:block}
-  .fgroup label.lab,.lab{display:block;font-size:13px;font-weight:600;margin-bottom:8px}
+  .fgroup label.lab,.lab{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
   .hint{font-size:12px;color:var(--muted);font-weight:400;margin-left:6px}
   .field-in{width:100%;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--panel);padding:12px 13px;font-size:15px;color:var(--ink)}
   .field-in::placeholder{color:var(--muted)}
   textarea.field-in{resize:none;height:96px}
   textarea.field-in.autogrow{height:auto;min-height:84px;overflow:hidden}
-  .lab-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+  .lab-row{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:6px}   /* counter sits on the label's baseline */
   .lab-row .lab{margin-bottom:0}
   .counter{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
   .counter.at-max{color:#b23b3b}
   .soa-lab{font-size:12px;color:var(--muted)}
   .form-subhead{border-top:1px solid var(--line);padding-top:18px}
-  .fsh-title{font-family:var(--serif);font-size:17px;margin-bottom:3px}
+  .fsh-title{font-family:"Clarendon URW",var(--serif);font-size:17px;margin-bottom:3px}
   .fsh-sub{font-size:12px;color:var(--muted)}
   .checks{display:flex;flex-wrap:wrap;gap:9px}
   .check{display:flex;align-items:center;gap:8px;border:1.5px solid var(--line-strong);border-radius:8px;padding:11px 13px;font-size:13px;background:var(--panel);color:var(--ink);text-align:left}
@@ -436,6 +492,9 @@
   .writein-check:not(.sel) .writein-field{color:var(--muted)}
   .acc{border:1.5px solid var(--line-strong);border-radius:10px;background:var(--panel);overflow:hidden}
   .acc-head{display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;padding:14px 15px;cursor:pointer;text-align:left;font-family:inherit;color:var(--ink)}
+  /* label + value drop 2.5px onto the row's centre (and the ▾'s); flex centres
+     the line box, and Franklin sets its caps above the middle of it */
+  .acc-label,.acc-value{position:relative;top:2.5px}
   .acc-label{font-size:14px;font-weight:600;flex:0 0 auto}
   .acc-value{flex:1;text-align:right;font-size:14px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .acc-value.set{color:var(--ink)}
@@ -453,8 +512,8 @@
 
   /* ---------- My Ad ---------- */
   .myad-card{background:var(--panel);border:1.5px solid var(--line-strong);border-radius:10px;padding:22px}
-  .myad-headline{font-family:var(--serif);font-weight:500;font-size:calc(25px * var(--fscale,1));margin:8px 0 16px;line-height:1.15}
-  .myad-desc{font-size:14px;line-height:1.6;margin:0 0 20px}
+  .myad-headline{font-family:"Clarendon URW",var(--serif);font-weight:400;font-size:calc(25px * var(--fscale,1));margin:8px 0 16px;line-height:1.15}
+  .myad-desc{font-size:15px;line-height:1.6;margin:0 0 20px}
   .kicker{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
   .myad-meta{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;border-top:1px solid var(--line);padding-top:18px}
   .myad-meta div{font-size:13px}
@@ -483,14 +542,21 @@
 
   /* ---------- Settings ---------- */
   .settings{display:flex;flex-direction:column;gap:30px}
-  .set-section .sec-head{font-family:var(--serif);font-size:18px;margin:0 0 2px}
-  .set-section .sec-sub{font-size:12px;color:var(--muted);margin:0 0 14px}
+  /* Settings type, a step up from the original 18/14/12: section 21, row title 16, description 14 */
+  .set-section .sec-head{font-family:"Clarendon URW",var(--serif);font-weight:400;font-size:21px;margin:0 0 3px}
+  .set-section .sec-sub{font-size:14px;color:var(--line-strong);margin:0 0 14px}
   .set-card{background:var(--panel);border:1.5px solid var(--line);border-radius:var(--radius);overflow:hidden}
-  .set-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 16px}
+  .set-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 16px}
   .set-row + .set-row{border-top:1px solid var(--line)}
-  .set-row .rl{font-size:14px;font-weight:600}
-  .set-row .rs{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.45}
-  .set-row .rl-wrap{min-width:0}
+  .set-row .rl{font-size:16px;font-weight:600}
+  .set-row .link-btn{font-size:15px}
+  .set-row .btn.sm{font-size:14px}
+  /* row descriptions explain what a setting does, so they need to be readable: Outline
+     Variant (6.3:1 light / 7.6:1 dark), not Caption Text (2.5:1) */
+  .set-row .rs{font-size:14px;color:var(--line-strong);margin-top:3px;line-height:1.45}
+  /* text block drops 2.5px onto the row's centre, level with the toggle/button —
+     Franklin's caps sit above the middle of the line box flex centres on */
+  .set-row .rl-wrap{min-width:0;position:relative;top:2.5px}
   .toggle{width:44px;height:26px;border-radius:999px;border:1.5px solid var(--line-strong);background:var(--fill);position:relative;flex:0 0 auto;padding:0}
   /* the knob was pinned with top:2px, which is measured from the padding box —
      inside the 1.5px border — so it sat 3.5px from the outer edge against 4.5px
@@ -517,22 +583,30 @@
   .ob-dot.on{opacity:1;background:var(--ink)}
   .ob-stepcount{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
   .ob-kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
-  .ob-body h2{font-family:var(--serif);font-weight:500;font-size:28px;margin:0 0 8px}
+  .ob-body h2{font-family:"Clarendon URW",var(--serif);font-weight:400;font-size:28px;margin:0 0 8px}
   .ob-body h2 .req-mark{font-size:.5em;vertical-align:super;font-weight:700}
-  .ob-sub{font-size:14px;color:var(--muted);margin:0 0 20px;line-height:1.5}
-  .ob-step{display:flex;flex-direction:column;gap:16px}
-  .ob-welcome{text-align:center;padding:24px 0}
-  .ob-brand{font-family:var(--serif);font-size:52px;line-height:1}
+  .ob-sub{font-size:15px;color:var(--muted);margin:0 0 8px;line-height:1.5}
+  .ob-step{display:flex;flex-direction:column;gap:24px}
+  /* title and its intro read as one unit: 10px apart instead of the 24px group gap */
+  .ob-step > h2{margin-bottom:0}
+  .ob-step > h2 + .ob-sub{margin-top:-14px}
+  /* fills the space above the buttons and centres the logo + intro vertically in it */
+  .ob-welcome{text-align:center;padding:24px 0;min-height:100%;display:flex;flex-direction:column;justify-content:center}
+  .ob-brand{line-height:0;color:var(--ink)}
+  .ob-wordmark{width:128px;height:92px;display:inline-block}   /* SVG native 93×67, +15% then +20% */
   .ob-tag{font-size:11px;letter-spacing:.24em;color:var(--muted);text-transform:uppercase;margin:10px 0 30px}
-  .ob-welcome h2{font-family:var(--serif);font-weight:500;font-size:26px;margin:0 0 10px}
+  .ob-welcome h2{font-family:"Clarendon URW",var(--serif);font-weight:400;font-size:26px;margin:0 0 10px}
   .ob-welcome p{font-size:15px;color:var(--muted);line-height:1.6;margin:0 auto}
   .ob-nav{display:flex;justify-content:space-between;gap:12px}
   .ob-welcome-nav{display:flex;flex-direction:column;gap:14px;width:100%}
+  /* .ob-nav .btn{flex:1} is for the side-by-side Back/Next pair; in this column it
+     collapsed the button's 44px height down to its text */
+  .ob-nav .ob-welcome-nav .btn{flex:none}
   .hiw-link{background:none;border:0;color:var(--muted);font-size:14px;font-family:inherit;letter-spacing:.02em;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:6px;align-self:center}
   .hiw{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:100%;padding:6px 0 4px}
   .hiw-kicker{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
   .hiw-illus{width:128px;height:128px;border-radius:14px;background:var(--fill);border:1.5px solid var(--line-strong);margin-bottom:24px}
-  .hiw-h{font-family:var(--serif);font-weight:500;font-size:25px;margin:0 0 12px}
+  .hiw-h{font-family:"Clarendon URW",var(--serif);font-weight:400;font-size:25px;margin:0 0 12px}
   .hiw-p{font-size:15px;color:var(--muted);line-height:1.65;max-width:340px;margin:0 auto}
   .ob-nav .btn{flex:1}
   .photo-drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:34px 20px;border:1.5px dashed var(--line-strong);border-radius:12px;background:var(--fill-2);cursor:pointer;text-align:center}
@@ -550,9 +624,8 @@
   .photo-tips-link svg{width:15px;height:15px;flex:none}
   /* Photo tips overlay */
   .ptips{z-index:120;align-items:flex-end}
-  .ptips-kicker{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
-  .ptips-title{font-family:var(--serif);font-weight:500;font-size:24px;margin:6px 0 10px;line-height:1.15}
-  .ptips-sub{font-size:14px;color:var(--muted);line-height:1.6;margin:0 0 22px}
+  .ptips-title{font-family:"Clarendon URW",var(--serif);font-weight:400;font-size:24px;margin:6px 0 10px;line-height:1.15}
+  .ptips-sub{font-size:15px;color:var(--muted);line-height:1.6;margin:0 0 22px}
   .ptips-section{margin-bottom:22px}
   .ptips-section:last-child{margin-bottom:0}
   .ptips-head{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
@@ -563,9 +636,13 @@
   .ptips-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
   .ptip{margin:0;display:flex;flex-direction:column;gap:8px}
   .ptip-sq{aspect-ratio:1/1;border-radius:10px;background:var(--fill);border:1.5px solid var(--line-strong);position:relative}
-  .ptip-sq::after{content:'';position:absolute;top:6px;left:6px;width:18px;height:18px;border-radius:50%;background:var(--panel);border:1.5px solid var(--line-strong);display:flex;align-items:center;justify-content:center;line-height:1}
-  .ptip-sq.yes::after{content:'✓';color:var(--ink);border-color:var(--ink);font-size:11px;font-weight:700}
-  .ptip-sq.no::after{content:'✕';color:var(--accent,#b23b3b);border-color:var(--accent,#b23b3b);font-size:10px;font-weight:700}
+  /* marker = circle (::before) + drawn tick/cross (::after, an SVG mask filled with the
+     marker colour). Typed ✓/✕ glyphs sat off-centre in the circle; a mask can't drift. */
+  .ptip-sq::before,.ptip-sq::after{content:'';position:absolute;top:7px;left:7px;width:18px;height:18px;border-radius:50%;box-sizing:border-box}   /* * {border-box} doesn't reach pseudos */
+  .ptip-sq::before{background:var(--panel);border:1.5px solid currentColor}
+  .ptip-sq::after{background:currentColor;-webkit-mask:var(--mark) center/10px 10px no-repeat;mask:var(--mark) center/10px 10px no-repeat}
+  .ptip-sq.yes{color:var(--ink);--mark:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M1.5 5.2l2.3 2.3 4.7-5' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+  .ptip-sq.no{color:var(--accent,#b23b3b);--mark:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M2 2l6 6M8 2l-6 6' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E")}
   .ptip figcaption{font-size:11.5px;color:var(--muted);line-height:1.35}
   .pa-thumb{width:34px;height:42px;border-radius:5px;object-fit:cover;border:1px solid var(--line);flex:none}
   .myad-private{margin-top:16px;border:1.5px solid var(--line-strong);border-radius:10px;padding:16px;background:var(--panel)}
@@ -582,6 +659,17 @@
 
   <!-- ===================== APP (phone column) ===================== -->
   <div class="app">
+    <!-- iOS status bar (desktop mock-up only; hidden below 470px) -->
+    <div class="statusbar" aria-hidden="true">
+      <span class="sb-time">9:41</span>
+      <span class="sb-island"></span>
+      <span class="sb-icons">
+        <svg width="19" height="12" viewBox="0 0 19 12"><rect x="0" y="8" width="3.2" height="4" rx="1"/><rect x="5.2" y="5.5" width="3.2" height="6.5" rx="1"/><rect x="10.4" y="3" width="3.2" height="9" rx="1"/><rect x="15.6" y="0" width="3.2" height="12" rx="1"/></svg>
+        <svg width="17" height="12" viewBox="0 0 17 12"><path d="M8.5 2.4c2.3 0 4.4.9 6 2.4l1.3-1.3A10.3 10.3 0 0 0 8.5.6C5.7.6 3.1 1.7 1.2 3.5l1.3 1.3a8.5 8.5 0 0 1 6-2.4Zm0 3.6c1.3 0 2.5.5 3.4 1.3l1.3-1.3a6.6 6.6 0 0 0-9.4 0l1.3 1.3c.9-.8 2.1-1.3 3.4-1.3Zm0 3.6c.4 0 .7.1 1 .4L8.5 11 7.5 10c.3-.3.6-.4 1-.4Z"/></svg>
+        <svg width="27" height="13" viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="20" height="9" rx="2"/><path d="M25 4.3v4.4a2.2 2.2 0 0 0 0-4.4Z" opacity=".45"/></svg>
+      </span>
+    </div>
+    <div class="screen">
     <header class="appbar">
       <div class="appbar-titles">
         <h2 id="title">Today's Picks</h2>
@@ -615,7 +703,9 @@
         <span class="tab-badge" id="tabMsgCount"></span>
       </button>
       <button class="tab" data-view="settings">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <!-- gear fills its whole 24 box, so the viewBox is padded to 26 (draws ~8% smaller);
+             stroke 1.85 in 26 units renders the same weight as the other icons' 1.7 in 24 -->
+        <svg viewBox="-1 -1 26 26" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         <span class="tlab">Settings</span>
       </button>
     </nav>
@@ -637,8 +727,6 @@
     <!-- ===================== PHOTO TIPS ===================== -->
     <div class="overlay ptips" id="photoTips">
       <div class="sheet ptips-sheet">
-        <button class="close" id="closePhotoTips">×</button>
-        <div class="ptips-kicker">Photo tips</div>
         <h3 class="ptips-title">What makes a good photo</h3>
         <p class="ptips-sub">Your photo stays hidden until you and someone both choose to reveal. When that moment comes, one clear look at you makes all the difference — the ideal photo is a well-lit headshot that plainly shows your face.</p>
         <div class="ptips-section">
@@ -659,6 +747,7 @@
         </div>
       </div>
     </div>
+    </div><!-- /.screen -->
   </div>
 
 <script>
@@ -747,12 +836,12 @@ const ADS = [
 ];
 
 const CONVOS = [
-  {adId:1, when:'2h', last:"That sounds perfect — how's Thursday?", mine:true, unread:false, reveal:null},
+  {adId:1, when:'2h', last:"That sounds perfect, how's Thursday?", mine:true, unread:false, reveal:null},
   {adId:2, when:'5h', last:"Okay, you're winning me over.", mine:false, unread:true, reveal:'prompt'},
-  {adId:3, when:'6h', last:"Okay — I'll go first.", mine:false, unread:true, reveal:'offered'},
-  {adId:5, when:'1d', last:"I'll go first — no rush on you.", mine:true, unread:false, reveal:'pending'},
+  {adId:3, when:'6h', last:"Okay, I'll go first.", mine:false, unread:true, reveal:'offered'},
+  {adId:5, when:'1d', last:"I'll go first, no rush on you.", mine:true, unread:false, reveal:'pending'},
   {adId:4, when:'1d', last:"That was worth the wait.", mine:false, unread:true, reveal:'revealed'},
-  {adId:6, when:'3d', last:"No rush — let's wait until we meet.", mine:true, unread:false, reveal:'deferred'},
+  {adId:6, when:'3d', last:"No rush, let's wait until we meet.", mine:true, unread:false, reveal:'deferred'},
 ];
 
 // Ads you've already replied to today (you're now in a conversation about them).
@@ -780,9 +869,9 @@ function orderedAds(){
 
 // People who replied to YOUR ad, awaiting accept/decline
 const REQUESTS = [
-  {adId:2, when:'20m', msg:"Your ad made me smile — the slow-conversation thing is exactly what I'm after too. I also cook badly but enthusiastically. Coffee this week?"},
-  {adId:3, when:'5h', msg:"'Curious about almost everything' — same, dangerously so. What's the last thing you fell down a rabbit hole about?"},
-  {adId:8, when:'1d', msg:"Loved your ad. I'm not a big texter either but I'll always remember the thing you mentioned once. Say hi back?"},
+  // requesters must be people you're NOT already talking to (CONVOS uses ads 1–6)
+  {adId:10, when:'20m', msg:"Your ad made me smile. Used bookstores are my whole personality, so I'll trade you a recommendation for one of yours. Coffee this week?"},
+  {adId:12, when:'5h', msg:"'Curious about almost everything,' same, dangerously so. What's the last thing you fell down a rabbit hole about?"},
 ];
 
 // The logged-in user's own ad
@@ -791,7 +880,7 @@ const MY_AD = {
   headline:'Curious about almost everything',
   desc:"I ask too many questions. I like tide pools, used bookstores, and people who can explain their job in a way that makes it sound interesting. Looking for someone who's game to wander.",
   gender:['Non-binary'], race:['Asian'], religion:'Agnostic', pronouns:['they/them'], sexuality:['Queer'], showSexuality:true, politics:'Liberal', kids:"Doesn't want kids", relationship:'Not sure', relstyle:'Monogamous', weight:'Slim, glasses, usually a little overdressed',
-  headingFont:'EB Garamond', bodyFont:'Instrument Sans', photo:''
+  headingFont:'EB Garamond', bodyFont:'Franklin Gothic', photo:''
 };
 
 // Ad-heading font options (each carries a "personality")
@@ -811,7 +900,7 @@ const HEADING_FONTS = [
 ];
 const BODY_FONTS = [
   {name:'Courier Prime',   css:"'Courier Prime', monospace"},
-  {name:'Instrument Sans', css:"'Instrument Sans', sans-serif"},
+  {name:'Franklin Gothic', css:"var(--font)"},   // the interface face, offered as a body option
   {name:'EB Garamond',     css:"'EB Garamond', serif"},
 ];
 // ---------- Hyperlegible font (accessibility) ----------
@@ -830,9 +919,9 @@ function hyperActive(){
 // The all-caps headline drops to regular weight under the default font (bold reads heavy there).
 function headlineWeight(){ return hyperActive() ? ';font-weight:400' : ''; }
 function cssFor(name){
-  if(hyperActive()) return "'Instrument Sans', sans-serif";
+  if(hyperActive()) return "var(--font)";
   const f = [...HEADING_FONTS, ...BODY_FONTS].find(x=>x.name===name);
-  return f ? f.css : 'var(--serif)';
+  return f ? f.css : 'var(--font)';
 }
 function scaleFor(name){
   if(hyperActive()) return 1;
@@ -848,23 +937,23 @@ function fontOptStyle(f){ return `font-family:${f.css}${f.w?`;font-weight:${f.w}
 function hstyle(name){ return `font-family:${cssFor(name)};--fscale:${scaleFor(name)}${wsFor(name)}`; }
 
 const AD_FONTS = {
-  1:['TT Modernoir','Instrument Sans'],
-  2:['Divulga','Instrument Sans'],
-  3:['EB Garamond','Instrument Sans'],
+  1:['TT Modernoir','Franklin Gothic'],
+  2:['Divulga','Franklin Gothic'],
+  3:['EB Garamond','Franklin Gothic'],
   4:['Flower Power','EB Garamond'],
   5:['ITC Avant Garde Gothic Pro','Courier Prime'],
   6:['Courier Prime','Courier Prime'],
-  7:['Job Clarendon','Instrument Sans'],
-  8:['Gothicus Roman','Instrument Sans'],
+  7:['Job Clarendon','Franklin Gothic'],
+  8:['Gothicus Roman','Franklin Gothic'],
   9:['Cooper Std','EB Garamond'],
-  10:['TT Modernoir','EB Garamond'], 11:['Divulga','Instrument Sans'],
+  10:['TT Modernoir','EB Garamond'], 11:['Divulga','Franklin Gothic'],
   12:['EB Garamond','EB Garamond'], 13:['Flower Power','Courier Prime'],
-  14:['ITC Avant Garde Gothic Pro','Instrument Sans'], 15:['Courier Prime','Courier Prime'],
-  16:['Job Clarendon','Instrument Sans'], 17:['Gothicus Roman','EB Garamond'],
-  18:['Cooper Std','Instrument Sans'], 19:['TT Modernoir','Instrument Sans'],
-  20:['Divulga','EB Garamond'], 21:['EB Garamond','Instrument Sans'],
-  22:['Flower Power','Courier Prime'], 23:['ITC Avant Garde Gothic Pro','Instrument Sans'],
-  24:['Courier Prime','Instrument Sans'], 25:['Job Clarendon','EB Garamond'],
+  14:['ITC Avant Garde Gothic Pro','Franklin Gothic'], 15:['Courier Prime','Courier Prime'],
+  16:['Job Clarendon','Franklin Gothic'], 17:['Gothicus Roman','EB Garamond'],
+  18:['Cooper Std','Franklin Gothic'], 19:['TT Modernoir','Franklin Gothic'],
+  20:['Divulga','EB Garamond'], 21:['EB Garamond','Franklin Gothic'],
+  22:['Flower Power','Courier Prime'], 23:['ITC Avant Garde Gothic Pro','Franklin Gothic'],
+  24:['Courier Prime','Franklin Gothic'], 25:['Job Clarendon','EB Garamond'],
 };
 const AD_RACE = {
   1:['White'], 2:['Black'], 3:['Asian'], 4:['Hispanic / Latino'], 5:['White'],
@@ -880,7 +969,7 @@ const AD_RELIGION = {
   16:'Atheist', 17:'Christian', 18:'Agnostic', 19:'Buddhist', 20:'Christian', 21:'Muslim',
   22:'Christian', 23:'Agnostic', 24:'Atheist', 25:'Jewish',
 };
-ADS.forEach(a=>{ const f = AD_FONTS[a.id] || ['EB Garamond','Instrument Sans']; a.headingFont = f[0]; a.bodyFont = f[1]; a.race = AD_RACE[a.id] || ['Prefer not to say']; a.religion = AD_RELIGION[a.id] || 'Prefer not to say'; });
+ADS.forEach(a=>{ const f = AD_FONTS[a.id] || ['EB Garamond','Franklin Gothic']; a.headingFont = f[0]; a.bodyFont = f[1]; a.race = AD_RACE[a.id] || ['Prefer not to say']; a.religion = AD_RELIGION[a.id] || 'Prefer not to say'; });
 
 const titles = {feed:"Today's Picks", myad:"Your Ad", messages:"Your Messages", settings:"Settings", thread:"Your Messages", customize:"Customize"};
 
@@ -915,6 +1004,10 @@ function setView(view){
 }
 document.querySelectorAll('#tabbar .tab').forEach(b=>b.addEventListener('click', ()=>setView(b.dataset.view)));
 viewSeg.querySelectorAll('button').forEach(b=>b.addEventListener('click', ()=>{ feedView = b.dataset.fv; renderFeed(); }));
+
+// desktop mock-up: scale the fixed 393×852 phone down if the window can't fit it
+function fitPhone(){ const f = Math.min(1, (innerHeight-32)/852, (innerWidth-32)/393); document.documentElement.style.setProperty('--fit', f); }
+addEventListener('resize', fitPhone); fitPhone();
 
 // ---------- Feed ----------
 const HORO_TEXT = `The stars are feeling direct today. If an ad makes you laugh out loud, that's your sign — reply before you overthink it.`;
@@ -1002,7 +1095,7 @@ function renderPaper(){
         <div class="paper-foot">– ${TODAY_STR} –</div>
       </div>
     </div>
-    <div class="paper-hint">Pinch or ± to zoom · tap an ad to read</div>
+    <div class="paper-hint">Pinch to zoom</div>
     <div class="paper-zoom">
       <button id="paperZoomIn" aria-label="Zoom in">${ZOOM_ICON(true)}</button>
       <button id="paperZoomOut" aria-label="Zoom out">${ZOOM_ICON(false)}</button>
@@ -1052,8 +1145,20 @@ function packPaper(){
   if(fills[0].parentElement) grid.prepend(fills[0].parentElement);
   if(fills[1] && fills[1].parentElement) grid.append(fills[1].parentElement);
 }
+// zoom controls + hint appear only while the reader is moving the paper and fade out
+// 1.5s after they go still; the hint stops appearing for good once they've zoomed
+let paperZoomLearned = false;
 function initPaperZoom(){
   const vp = document.getElementById('paperVp'), paper = document.getElementById('paper');
+  const hint = document.querySelector('.paper-hint'), zoomEl = document.querySelector('.paper-zoom');
+  let hideT;
+  const wake = ()=>{
+    zoomEl.classList.add('show'); if(!paperZoomLearned) hint.classList.add('show');
+    clearTimeout(hideT);
+    hideT = setTimeout(()=>{ zoomEl.classList.remove('show'); hint.classList.remove('show'); }, 1500);
+  };
+  const noteZoom = ()=>{ paperZoomLearned = true; hint.classList.remove('show'); wake(); };
+  zoomEl.addEventListener('pointerdown', wake);
   // 5 columns of 124.8px (unchanged ad width) + 4 × 28px gutters + 40px side padding
   const PAPER_W = 776;
   paper.style.width = PAPER_W + 'px';
@@ -1066,7 +1171,7 @@ function initPaperZoom(){
   const apply = ()=>{ clampPan(); paper.style.transform = `translate(${-panX}px,${-panY}px) scale(${scale})`; };
   const clamp = s => Math.max(minScale, Math.min(maxScale, s));
   // fit-to-width = fully zoomed out; keeps re-fitting until the user zooms/pans
-  const START_ZOOM = 2.2;   // start slightly zoomed IN (min = fit-to-width) to invite panning
+  const START_ZOOM = 2.5;   // start zoomed IN (min = fit-to-width) to invite panning; clip body text reads ≈15px
   const fit = ()=>{
     const vpW = vp.clientWidth; if(!vpW) return;
     minScale = vpW / PAPER_W; maxScale = Math.max(2.4, minScale * 4);
@@ -1078,6 +1183,7 @@ function initPaperZoom(){
     }
   };
   const zoomAt = (ns, cx, cy)=>{
+    noteZoom();
     const r = vp.getBoundingClientRect(), oldS = scale;
     ns = clamp(ns); if(ns === oldS) return;
     userZoomed = true;
@@ -1088,7 +1194,7 @@ function initPaperZoom(){
   if(window.ResizeObserver){ const ro = new ResizeObserver(fit); ro.observe(vp); }
   const pointers = new Map(); let panMoved = false, startDist = 0, startScale = 1;
   vp.addEventListener('pointerdown', e=>{
-    pointers.set(e.pointerId, {x:e.clientX, y:e.clientY}); panMoved = false;
+    pointers.set(e.pointerId, {x:e.clientX, y:e.clientY}); panMoved = false; wake();
     try{ vp.setPointerCapture(e.pointerId); }catch(_){}  // can throw NotFoundError; must not abort pointer bookkeeping
     if(pointers.size === 2){ const p = [...pointers.values()]; startDist = Math.hypot(p[0].x-p[1].x, p[0].y-p[1].y) || 1; startScale = scale; }
   });
@@ -1101,6 +1207,7 @@ function initPaperZoom(){
     } else {
       const dx = e.clientX-prev.x, dy = e.clientY-prev.y;
       if(Math.abs(dx)+Math.abs(dy) > 2){ panMoved = true; userZoomed = true; }
+      wake();
       panX -= dx; panY -= dy; apply();
     }
   });
@@ -1119,7 +1226,7 @@ function initPaperZoom(){
   vp.addEventListener('wheel', e=>{
     e.preventDefault();
     if(e.ctrlKey) zoomAt(scale * (e.deltaY < 0 ? 1.12 : 0.89), e.clientX, e.clientY);
-    else { userZoomed = true; panX += e.deltaX; panY += e.deltaY; apply(); }
+    else { wake(); userZoomed = true; panX += e.deltaX; panY += e.deltaY; apply(); }
   }, {passive:false});
   const zoomCenter = f => { const r = vp.getBoundingClientRect(); zoomAt(scale*f, r.left+vp.clientWidth/2, r.top+vp.clientHeight/2); };
   document.getElementById('paperZoomIn').onclick  = ()=>zoomCenter(1.4);
@@ -1133,6 +1240,15 @@ const sheet = document.getElementById('sheet');
 function openAd(id, showReply=true){
   const a = ADS.find(x=>x.id===id);
   const replied = repliedAdIds.has(id);
+  const req = REQUESTS.find(r=>r.adId===id);   // they wrote to you and you haven't answered yet
+  const action = !showReply ? '' : req ? `
+    <div class="ad-request">
+      <div class="ad-req-head"><span class="wrote">${a.name} wrote to you</span><span class="when">${req.when}</span></div>
+      <p class="ad-req-msg">${req.msg}</p>
+      <div class="ad-req-actions"><button class="btn ghost" id="adDecline">Decline</button><button class="btn" id="adAccept">Accept</button></div>
+    </div>` : replied
+      ? '<button class="btn ghost block" id="goConvoBtn" style="margin-top:20px">You replied — open conversation</button>'
+      : '<button class="btn block" id="replyBtn" style="margin-top:20px">Reply to this ad</button>';
   sheet.innerHTML = `
     <button class="close" id="closeSheet">×</button>
     ${adNameHTML(a)}
@@ -1140,24 +1256,52 @@ function openAd(id, showReply=true){
     ${adHeadlineHTML(a)}
     <p class="myad-desc" style="font-family:${cssFor(a.bodyFont)}">${a.desc}</p>
     ${adMetaGrid(a)}
-    ${showReply ? (replied
-      ? '<button class="btn ghost block" id="goConvoBtn" style="margin-top:20px">You replied — open conversation</button>'
-      : '<button class="btn block" id="replyBtn" style="margin-top:20px">Reply to this ad</button>') : ''}`;
+    ${action}`;
   overlay.classList.add('open', 'card-modal');
   document.getElementById('closeSheet').onclick = closeSheet;
   const rb = document.getElementById('replyBtn');
   if(rb) rb.onclick = ()=>{ closeSheet(); openThread(id); };
   const gc = document.getElementById('goConvoBtn');
   if(gc) gc.onclick = ()=>{ closeSheet(); openThread(id); };
+  const ac = document.getElementById('adAccept');
+  if(ac) ac.onclick = ()=>{ closeSheet(); acceptRequest(id); };
+  const dc = document.getElementById('adDecline');
+  if(dc) dc.onclick = ()=> openDeclineConfirm(id);
 }
 function closeSheet(){ overlay.classList.remove('open', 'card-modal'); }
 overlay.addEventListener('click', e=>{ if(e.target===overlay) closeSheet(); });
+// swipe-to-dismiss for bottom sheets: drag from the handle strip (top 44px) while the
+// sheet is scrolled to the top; past 90px it closes, otherwise it springs back
+function swipeToDismiss(el, close, skip){
+  let startY = null, dy = 0;
+  el.addEventListener('pointerdown', e=>{
+    if((skip && skip()) || el.scrollTop > 0) return;
+    if(e.clientY - el.getBoundingClientRect().top > 44) return;
+    startY = e.clientY; dy = 0; el.style.transition = 'none';
+    try{ el.setPointerCapture(e.pointerId); }catch(_){}
+  });
+  el.addEventListener('pointermove', e=>{
+    if(startY === null) return;
+    dy = Math.max(0, e.clientY - startY); el.style.transform = `translateY(${dy}px)`;
+  });
+  const end = ()=>{
+    if(startY === null) return;
+    startY = null; el.style.transition = 'transform .18s ease';
+    if(dy > 90){ close(); el.style.transform = ''; el.style.transition = ''; }
+    else el.style.transform = '';
+  };
+  el.addEventListener('pointerup', end);
+  el.addEventListener('pointercancel', end);
+  // on touch, stop the browser claiming the drag as a scroll (which would cancel it)
+  el.addEventListener('touchmove', e=>{ if(startY !== null) e.preventDefault(); }, {passive:false});
+}
+swipeToDismiss(sheet, closeSheet, ()=> overlay.classList.contains('card-modal'));
 // photo tips overlay (sits above onboarding)
 const photoTips = document.getElementById('photoTips');
 function openPhotoTips(){ photoTips.classList.add('open'); }
 function closePhotoTips(){ photoTips.classList.remove('open'); }
-document.getElementById('closePhotoTips').onclick = closePhotoTips;
 photoTips.addEventListener('click', e=>{ if(e.target===photoTips) closePhotoTips(); });
+swipeToDismiss(photoTips.querySelector('.sheet'), closePhotoTips);
 
 // shared checkbox/radio wiring for any container
 function wireChecks(container){
@@ -1209,7 +1353,6 @@ function wireChecks(container){
 function openDeclineConfirm(adId){
   const a = ADS.find(x=>x.id===adId);
   sheet.innerHTML = `
-    <button class="close" id="closeSheet">×</button>
     <div class="kicker">Decline request</div>
     <h3>Decline ${a.name}'s request?</h3>
     <p>Their request is removed from your inbox. They won't be notified.</p>
@@ -1218,17 +1361,16 @@ function openDeclineConfirm(adId){
       <button class="btn ghost" id="cancelDecline">Cancel</button>
       <button class="btn danger-btn" id="confirmDecline">Decline</button>
     </div>`;
-  overlay.classList.add('open');
+  overlay.classList.remove('card-modal'); overlay.classList.add('open');
   let block = false;
   const chk = document.getElementById('blockChk');
   chk.onclick = ()=>{ block = !block; chk.classList.toggle('sel', block); };
-  document.getElementById('closeSheet').onclick = closeSheet;
   document.getElementById('cancelDecline').onclick = closeSheet;
   document.getElementById('confirmDecline').onclick = ()=>{
     const i = REQUESTS.findIndex(r=>r.adId===adId);
     if(i>-1) REQUESTS.splice(i,1);
     if(block) blockedCount++;
-    closeSheet(); updateMsgBadge(); renderMessages();
+    closeSheet(); updateMsgBadge(); if(state.view==='messages') renderMessages();
   };
 }
 
@@ -1236,7 +1378,6 @@ function openDeclineConfirm(adId){
 function openBlockConfirm(adId){
   const a = ADS.find(x=>x.id===adId);
   sheet.innerHTML = `
-    <button class="close" id="closeSheet">×</button>
     <h3>Block ${a.name}?</h3>
     <p>${a.name} won't be able to see your ad or message you again, and this conversation will be removed. They won't be notified.</p>
     <div class="confirm-actions">
@@ -1244,7 +1385,6 @@ function openBlockConfirm(adId){
       <button class="btn danger-btn" id="confirmBlock">Block ${a.name}</button>
     </div>`;
   overlay.classList.add('open');
-  document.getElementById('closeSheet').onclick = closeSheet;
   document.getElementById('cancelBlock').onclick = closeSheet;
   document.getElementById('confirmBlock').onclick = ()=>{
     const i = CONVOS.findIndex(c=>c.adId===adId);
@@ -1258,7 +1398,6 @@ function openBlockConfirm(adId){
 function openUnmatchConfirm(adId){
   const a = ADS.find(x=>x.id===adId);
   sheet.innerHTML = `
-    <button class="close" id="closeSheet">×</button>
     <h3>Unmatch with ${a.name}?</h3>
     <p>This removes the conversation for both of you. ${a.name} won't be notified, and you can reply to their ad again if it's still running.</p>
     <div class="confirm-actions">
@@ -1266,7 +1405,6 @@ function openUnmatchConfirm(adId){
       <button class="btn danger-btn" id="confirmUnmatch">Unmatch</button>
     </div>`;
   overlay.classList.add('open');
-  document.getElementById('closeSheet').onclick = closeSheet;
   document.getElementById('cancelUnmatch').onclick = closeSheet;
   document.getElementById('confirmUnmatch').onclick = ()=>{
     const i = CONVOS.findIndex(c=>c.adId===adId);
@@ -1352,8 +1490,8 @@ function faceRevealStep(a){
 // deal-breaker toggle that lives inside an attribute's accordion body (collapses with it)
 function dbRow(key, on){ return `<div class="soa-row db-row"><span class="soa-lab">Deal-breaker — only show matches</span><button class="toggle ${on?'on':''}" data-db="${key}"></button></div>`; }
 function openPreferences(){
+  // no close button — swipe the handle down or tap outside to dismiss
   sheet.innerHTML = `
-    <button class="close" id="closeSheet">×</button>
     <div class="kicker">Preferences</div>
     <h3>Who you're looking for</h3>
     <p style="margin-bottom:20px">These shape which ads appear in your Today's Picks.</p>
@@ -1379,7 +1517,6 @@ function openPreferences(){
     </div>
     <button class="btn block" style="margin-top:22px" id="savePrefs">Save preferences</button>`;
   overlay.classList.add('open');
-  document.getElementById('closeSheet').onclick = closeSheet;
   document.getElementById('savePrefs').onclick = ()=>{
     const gv = id => (document.getElementById(id)?.value || '');
     const iv = obChecked(sheet,'pInterest'); if(iv.length) PREFS.interest = iv;
@@ -1400,10 +1537,14 @@ function openPreferences(){
 }
 
 // ---------- Messages (tabbed) ----------
+// Messages tab badge = everything waiting on you: unread conversations (counted per
+// thread, not per message) + pending requests. Matches the two tab counts, capped at 9+.
+const unreadConvoCount = ()=> CONVOS.filter(c=>c.unread).length;
 function updateMsgBadge(){
   const el = document.getElementById('tabMsgCount');
   if(!el) return;
-  if(REQUESTS.length){ el.textContent = REQUESTS.length; el.classList.add('show'); }
+  const n = unreadConvoCount() + REQUESTS.length;
+  if(n){ el.textContent = n > 9 ? '9+' : n; el.classList.add('show'); }
   else el.classList.remove('show');
 }
 function convosHTML(){
@@ -1412,7 +1553,7 @@ function convosHTML(){
     const a = ADS.find(x=>x.id===c.adId);
     return `<button class="mrow ${c.unread?'unread':''}" data-ad="${a.id}">
       <div style="flex:1;min-width:0">
-        <div class="who-name" style="${hstyle(a.headingFont)}">${a.name}, ${a.age}</div>
+        <div class="who-name" style="${hstyle(a.headingFont)}">${a.name}</div>
         <div class="who-cap">${a.headline}</div>
         <p style="margin-top:12px"><span class="sender">${c.mine ? 'You' : a.name}:</span> ${c.last}</p>
       </div>
@@ -1429,7 +1570,7 @@ function requestsHTML(){
     const a = ADS.find(x=>x.id===r.adId);
     return `<div class="req">
       <div class="spread" style="align-items:flex-start">
-        <div><div class="who-name" style="${hstyle(a.headingFont)}">${a.name}, ${a.age}</div><div class="who-cap">${a.location}</div></div>
+        <div><div class="who-name" style="${hstyle(a.headingFont)}">${a.name}</div><div class="who-cap">${a.location}</div></div>
         <div class="when">${r.when}</div>
       </div>
       <p class="their-msg"><span class="wrote">${a.name} wrote:</span> <span class="msg-text">${r.msg}</span></p>
@@ -1442,11 +1583,11 @@ function requestsHTML(){
   }).join('')}</div>`;
 }
 function renderMessages(){
-  const n = REQUESTS.length;
+  const n = REQUESTS.length, u = unreadConvoCount();
   scroll.innerHTML = `
     <div class="tabs">
-      <button class="mtab ${state.msgTab==='convos'?'active':''}" data-tab="convos">Conversations</button>
-      <button class="mtab ${state.msgTab==='requests'?'active':''}" data-tab="requests">Requests${n?`<span class="count">${n}</span>`:''}</button>
+      <button class="mtab ${state.msgTab==='convos'?'active':''}" data-tab="convos">Conversations${u?`<span class="count">(${u})</span>`:''}</button>
+      <button class="mtab ${state.msgTab==='requests'?'active':''}" data-tab="requests">Requests${n?`<span class="count">(${n})</span>`:''}</button>
     </div>
     <div>${state.msgTab==='convos' ? convosHTML() : requestsHTML()}</div>`;
 
@@ -1454,15 +1595,17 @@ function renderMessages(){
   scroll.querySelectorAll('.mrow').forEach(r=>r.addEventListener('click',()=>openThread(+r.dataset.ad)));
   scroll.querySelectorAll('[data-view-ad]').forEach(b=>b.addEventListener('click',()=>openAd(+b.dataset.viewAd)));
   scroll.querySelectorAll('[data-decline]').forEach(b=>b.addEventListener('click',()=>openDeclineConfirm(+b.dataset.decline)));
-  scroll.querySelectorAll('[data-accept]').forEach(b=>b.addEventListener('click',()=>{
-    const id = +b.dataset.accept, i = REQUESTS.findIndex(r=>r.adId===id);
-    if(i>-1){ const r = REQUESTS.splice(i,1)[0]; CONVOS.unshift({adId:r.adId, when:'now', last:r.msg, mine:false, unread:false}); }
-    updateMsgBadge(); state.msgTab = 'convos'; openThread(id);
-  }));
+  scroll.querySelectorAll('[data-accept]').forEach(b=>b.addEventListener('click',()=>acceptRequest(+b.dataset.accept)));
+}
+// accept from the Requests tab or from their ad: the request becomes a conversation
+function acceptRequest(id){
+  const i = REQUESTS.findIndex(r=>r.adId===id);
+  if(i>-1){ const r = REQUESTS.splice(i,1)[0]; CONVOS.unshift({adId:r.adId, when:'now', last:r.msg, mine:false, unread:false}); }
+  updateMsgBadge(); state.msgTab = 'convos'; openThread(id);
 }
 
 // ---------- Conversation thread ----------
-function openThread(adId){ const c = CONVOS.find(x=>x.adId===adId); if(c) c.unread=false; state.threadAd = adId; setView('thread'); }
+function openThread(adId){ const c = CONVOS.find(x=>x.adId===adId); if(c) c.unread=false; updateMsgBadge(); state.threadAd = adId; setView('thread'); }
 const THREADS = {};
 const FACE_UNLOCK = 5;
 const REPLIES = [
@@ -1823,7 +1966,6 @@ function wireAccordions(container){
 function openEditAd(){
   const me = MY_AD;
   sheet.innerHTML = `
-    <button class="close" id="closeSheet">×</button>
     <h3>Edit your ad</h3>
     <div class="form" style="margin-top:10px">
       <div class="fgroup"><label class="lab">Your name</label><input class="field-in" id="adName" value="${me.name}"></div>
@@ -1852,7 +1994,6 @@ function openEditAd(){
       <div class="form-actions"><button class="btn ghost" id="cancelAd">Cancel</button><button class="btn" id="saveAd">Save ad</button></div>
     </div>`;
   overlay.classList.add('open');
-  document.getElementById('closeSheet').onclick = closeSheet;
   document.getElementById('cancelAd').onclick = closeSheet;
   document.getElementById('saveAd').onclick = ()=>{
     const gv = id => (document.getElementById(id)?.value || '');
@@ -1967,13 +2108,16 @@ function renderSettings(){
 
 // ---------- Onboarding ----------
 let obStep = 0;
-const OB_DEFAULT_HFONT = 'EB Garamond', OB_DEFAULT_BFONT = 'Instrument Sans';
+const OB_DEFAULT_HFONT = 'EB Garamond', OB_DEFAULT_BFONT = 'Franklin Gothic';
 const obData = { name:'', age:'', location:'', headline:'', desc:'', photo:'', headingFont:OB_DEFAULT_HFONT, bodyFont:OB_DEFAULT_BFONT,
   gender:[], pronouns:[], rel:'', race:[], religion:'', sexuality:[], showSexuality:false, politics:'', kids:'', relstyle:'', build:'',
   prefInterest:[], prefAgeMin:'25', prefAgeMax:'45', prefZip:'', prefDist:'25 miles', prefRel:'' };
 const obVal = id => { const el = document.getElementById(id); return el ? el.value : ''; };
 function obResetData(){ for(const k in obData) obData[k]=''; obData.headingFont=OB_DEFAULT_HFONT; obData.bodyFont=OB_DEFAULT_BFONT; obData.gender=[]; obData.pronouns=[]; obData.race=[]; obData.sexuality=[]; obData.showSexuality=false;
   obData.prefInterest=[]; obData.prefAgeMin='25'; obData.prefAgeMax='45'; obData.prefZip=''; obData.prefDist='25 miles'; obData.prefRel=''; }
+// Classy wordmark (supplied SVG). Fill is currentColor, not the file's #F2EAD3, so it
+// follows --ink: charcoal in light mode, cream in dark.
+const CLASSY_WORDMARK = `<svg class="ob-wordmark" viewBox="0 0 93 67" role="img" aria-label="Classy" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M83.8057 13.7285C82.8736 14.0675 82.7038 14.7456 82.958 18.3047L85.0771 52.626H85.9238C87.4491 26.2724 86.9412 15.594 85.0771 13.8135V10.7627H92.0254V13.8135C90.4156 15.7638 90.3304 27.713 87.873 58.1338C87.3646 64.1505 85.0769 66.6084 81.1787 66.6084C77.0263 66.6084 75.6699 64.2352 75.6699 61.5234C75.67 58.8966 76.9414 57.1174 79.4834 57.1172C81.8562 57.1172 82.958 58.3035 82.958 60.5068C82.9579 62.2016 81.8564 63.3876 80.3311 63.7266L80.416 64.5742C83.6362 64.32 85.0771 61.9469 85.0771 58.3877C85.0771 56.2694 84.3136 55.7607 82.873 55.7607H79.3994L76.6025 19.1523C76.2636 14.7467 75.9247 14.7348 75.2471 14.5654V10.7627H83.8057V13.7285ZM15.4229 3.13574C15.3381 5.84846 15.3389 24.6604 15.3389 27.3721H12.3721C10.5077 11.6099 9.91448 6.52539 8.55859 6.52539C7.28779 6.52605 6.7793 9.23936 6.7793 28.4736C6.7793 49.8284 7.9658 52.202 9.83008 52.2021C11.7792 52.2021 12.3723 48.5574 12.457 32.8799H15.4229C15.4229 50.5909 14.7453 57.3709 8.47461 57.3711C2.28837 57.3711 0.0847529 52.1171 0 30.084C0 8.05145 1.94897 3.22101 7.0332 3.2207C9.82962 3.2207 10.3386 5.93143 11.3555 5.93164C12.2029 5.93164 12.457 5.25413 12.457 3.13574H15.4229ZM34.8643 10.3389C40.3723 10.339 42.2363 12.7967 42.2363 19.4912C42.2363 24.6609 42.1514 44.4896 42.1514 50.4219C42.1514 51.8624 42.2365 52.2861 42.6602 52.2861C43.2534 52.2861 44.6097 51.1001 44.3555 36.6094H46.5586C47.5755 45.6765 49.3549 54.5737 51.7275 54.5742C52.5749 54.5742 53.1679 53.7273 53.168 51.1006C53.168 45.9313 51.4731 41.6088 49.3545 37.2021C46.897 31.8634 44.3555 26.2703 44.3555 19.4062C44.3555 13.6438 46.2194 10.4239 49.8633 10.4238C52.4903 10.4238 53.1686 12.7959 54.1855 12.7959C54.9481 12.7958 55.2871 12.2025 55.2871 10.5078H60.2471C60.2471 10.9236 56.9372 14.2341 57.999 29.4902H55.7109C53.7619 17.2027 52.9141 13.3047 51.0498 13.3047C49.9482 13.3047 49.5244 14.5758 49.5244 16.6943C49.5244 20.6773 51.1343 24.6607 53.2529 29.0674C55.7105 34.5756 58.5918 40.7618 58.5918 47.9648C58.5917 54.6591 55.9651 57.2859 52.7451 57.2861C49.7795 57.2861 48.3305 55.6131 47.4062 54.4902C46.6753 53.6269 45.0256 51.619 44.4053 53.7959L44.4043 53.7891C43.6652 56.4926 42.4596 57.2861 40.8809 57.2861C38.2538 57.2861 37.3211 55.337 37.2363 51.9473H36.4736C35.8804 55.1675 34.355 57.2861 31.8975 57.2861C27.9996 57.2858 26.8135 52.2863 26.8135 41.9482C26.8135 31.3553 28.6778 27.8804 32.4912 26.9482C35.9655 26.1008 36.1348 24.9145 36.1348 21.3555V18.3896C36.1348 15.3389 34.8639 14.0674 32.8301 14.0674C31.7284 14.0674 30.6265 14.4066 29.6943 14.915L29.9492 15.6777C30.3726 15.593 30.796 15.5079 31.1348 15.5078C33.1686 15.5078 34.1016 16.8639 34.1016 19.7451C34.1016 22.2874 33.3382 24.4062 30.7959 24.4062C28.5928 24.4061 27.3213 22.6262 27.3213 18.9824C27.3213 13.4741 30.0339 10.3389 34.8643 10.3389ZM65.4248 10.4238C68.0513 10.4241 68.7293 12.7956 69.7461 12.7959C70.5088 12.7959 70.8477 12.2027 70.8477 10.5078H73.5596C73.4748 12.711 73.4748 27.3702 73.5596 29.4902H71.2715C69.3224 17.2028 68.4747 13.3047 66.6104 13.3047C65.509 13.305 65.085 14.5761 65.085 16.6943C65.085 20.6773 66.6959 24.6607 68.8145 29.0674C71.272 34.5756 74.1533 40.7619 74.1533 47.9648C74.1533 54.6594 71.5259 57.2861 68.3057 57.2861C65.3397 57.2861 63.9837 54.4902 62.9668 54.4902C62.2889 54.4902 61.9023 54.951 61.5713 57.1172H58.2607C58.2607 56.9371 60.9091 55.2817 59.916 36.6094H62.1191C63.1361 45.6768 64.9163 54.5742 67.2891 54.5742C68.1363 54.574 68.7294 53.7269 68.7295 51.1006C68.7295 45.9313 67.0346 41.6088 64.916 37.2021C62.4585 31.8634 59.916 26.2704 59.916 19.4062C59.916 13.6437 61.7808 10.4238 65.4248 10.4238ZM24.5176 50.9307C24.5176 53.0492 24.8562 53.9814 26.2969 53.9814V56.9473H16.5518V53.9814C18.0768 53.9813 18.3311 53.0491 18.3311 50.9307V6.86426C18.3311 4.32216 18.0768 3.55969 16.5518 3.55957V0.592773C17.4853 0.507996 23.6703 0.254196 24.5176 0V50.9307ZM36.1348 26.1006C34.5246 28.6429 32.915 29.745 32.915 41.1006C32.915 49.8284 33.2537 52.0319 34.6094 52.0322C35.5415 52.0322 36.1347 50.9308 36.1348 48.0498V26.1006Z"/></svg>`;
 function startOnboarding(){ obStep = 0; obResetData(); document.getElementById('onboarding').classList.add('open'); renderOnboarding(); }
 function obChecked(container, group){
   const acc = container.querySelector(`[data-acc][data-acc-group="${group}"]`);
@@ -2071,10 +2215,10 @@ function finishOnboarding(){
   endOnboarding(); setView('myad');
 }
 const HIW_CARDS = [
-  {n:'01', h:"You'll meet through writing", p:"Classy has no photo grid and nothing to swipe. Everyone posts a personal ad — a few honest lines about who they are and who they're hoping to find."},
-  {n:'02', h:"Browse the day's personals", p:"Each day brings a fresh paper, laid out like the classifieds. No algorithm rushing you — just read, and see whose words stay with you."},
-  {n:'03', h:"Reply, and take your time", p:"Write to the ones who catch you. Here you get to know a person before you ever see their face — the conversation is the whole point."},
-  {n:'04', h:"Faces, when you're both ready", p:"Photos stay private until you both choose to share them. A reveal is always mutual, never one-sided — no pressure, no surprises."},
+  {n:'01', h:"You'll meet through writing", p:"Everyone posts a personal ad — a few honest lines about who they are and who they're hoping to find."},
+  {n:'02', h:"Browse the day's personals", p:"Each day brings a fresh paper, laid out like the classifieds. Read at your leisure and reply to the ads that catch your eye."},
+  {n:'03', h:"Reply, and take your time", p:"Here you get to know a person before you ever see their face."},
+  {n:'04', h:"Trade faces when you're both ready", p:"Photos stay private until you both choose to share them. A reveal is always mutual."},
 ];
 let hiwIndex = -1;
 function openHowItWorks(){ hiwIndex = 0; renderHowItWorks(); }
@@ -2092,7 +2236,7 @@ function renderOnboarding(){
   const TOTAL = 6; // basics · personal · about you · photo · preferences · make it yours
   dots.innerHTML = (obStep>=1 && obStep<=TOTAL) ? `<span class="ob-stepcount">Step ${obStep} of ${TOTAL}</span>` : '';
   if(obStep===0){
-    body.innerHTML = `<div class="ob-welcome"><div class="ob-brand">Classy</div><div class="ob-tag">Seek. Find.</div><h2>No photos. Just words.</h2><p>On Classy you meet through what you write. Let's put your personal in tomorrow's paper.</p></div>`;
+    body.innerHTML = `<div class="ob-welcome"><div class="ob-brand">${CLASSY_WORDMARK}</div><div class="ob-tag">Seek. Find.</div><p>On Classy you meet through what you write.<br>Let's put your personal in tomorrow's paper.</p></div>`;
     nav.innerHTML = `<div class="ob-welcome-nav"><button class="btn block" id="obNext">Write my ad</button><button class="hiw-link" id="obHiw">How it works</button></div>`;
   } else if(obStep===1){
     body.innerHTML = `<div class="ob-step"><h2>The basics</h2>
@@ -2125,7 +2269,7 @@ function renderOnboarding(){
     nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obNext">Next</button>`;
   } else if(obStep===4){
     body.innerHTML = `<div class="ob-step"><h2>Add your photo <span class="hint">optional</span></h2>
-      <p class="ob-sub">No one sees this on your ad. It stays hidden until you and someone both choose to trade faces — and you can add it anytime from My Ad.</p>
+      <p class="ob-sub">No one sees this on your ad. It stays hidden until you and someone both choose to trade faces. You can edit it anytime from My Ad.</p>
       <input type="file" accept="image/*" id="photoInput" hidden>
       <div id="photoSlot">${photoSlotHtml()}</div>
       <div class="photo-privacy">${IC_LOCK} Hidden until a mutual face reveal — never shown on your public ad.</div>
