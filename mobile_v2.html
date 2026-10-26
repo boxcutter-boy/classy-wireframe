@@ -127,6 +127,9 @@
   .appbar{
     flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;
     padding:14px 18px 12px;border-bottom:1px solid var(--line);background:var(--bg);
+    /* 1px of background painted just below the border: when the phone is scaled to fit the
+       window, this edge lands on a fractional pixel and scrolled content leaked through it */
+    position:relative;z-index:20;box-shadow:0 1px 0 var(--bg);
   }
   /* optical nudge: the block measures centred, but Clarendon's ascent-heavy box
      makes a mostly-cap title read high. 6px down by eye — relative offset so the
@@ -169,9 +172,10 @@
      rather than padding so the icon-to-label gap above it doesn't move. */
   .tlab{position:relative;top:1.55px}
   .tab.active .tlab{font-weight:600}
-  /* uneven side pads (4.5 left / 3.5 right) nudge the digit 0.5px right — the
-     "3" carries more empty space on its right side, so it read off-centre */
-  .tab-badge{position:absolute;top:1px;left:calc(50% + 4px);min-width:16px;height:16px;padding:2.8px 3.5px 0 4.5px;border-radius:999px;background:var(--ink);color:var(--panel);font-size:10px;font-weight:400;display:none;align-items:center;justify-content:center}
+  /* the count is drawn as SVG text placed by its measured ink (see badgeSVG), so every
+     digit — and "9+" — sits dead-centre; padding nudges only ever fixed one digit */
+  .tab-badge{position:absolute;top:1px;left:calc(50% + 4px);height:16px;border-radius:999px;background:var(--ink);color:var(--panel);display:none}
+  .tab-badge svg{display:block;fill:currentColor}   /* size is inline: .tab svg (the 23px icons) would stretch it */
   body.dark .tab-badge{color:var(--bg)}
   .tab-badge.show{display:inline-flex}
 
@@ -273,9 +277,13 @@
   .feed-upgrade p{font-size:15px;line-height:1.5;margin:0 auto 18px;max-width:250px;color:var(--ink)}
 
   /* ---------- Feed gate (no ad posted) ---------- */
-  .feed-locked{position:relative;overflow:hidden;max-height:560px}
+  .feed-locked{position:relative}
   .feed-locked .card{pointer-events:none}
-  .feed-blur{position:absolute;left:-12px;right:-12px;bottom:0;height:70%;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);background:linear-gradient(to bottom, rgba(0,0,0,0), var(--bg) 82%)}
+  /* first ad stays readable as a teaser; the rest blur as whole cards (filter on the card,
+     not a backdrop-filter panel — that had a hard top edge and smeared its own borders),
+     and the stack fades into the page with a mask instead of an overlaid gradient */
+  .feed-locked .feed-col{max-height:560px;overflow:hidden;-webkit-mask-image:linear-gradient(to bottom,#000 0,#000 45%,transparent 92%);mask-image:linear-gradient(to bottom,#000 0,#000 45%,transparent 92%)}
+  .feed-locked .card:nth-child(n+2){filter:blur(4px)}
   .feed-gate{position:absolute;left:0;right:0;bottom:20px;display:flex;justify-content:center;z-index:2;padding:0 6px}
   .feed-gate-card{background:var(--panel);border:1.5px solid var(--ink);border-radius:14px;padding:24px 22px;text-align:center;box-shadow:0 12px 34px rgba(0,0,0,.16)}
   .feed-gate-card h3{font-family:"Clarendon URW",var(--serif);font-weight:400;font-size:21px;margin:0 0 10px}
@@ -419,8 +427,12 @@
   .th-menu button:active{background:var(--fill)}
   .th-menu button.danger{color:#b23b3b}
   .msgs{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
-  .bubble{max-width:80%;padding:10px 14px;border-radius:14px;font-size:15px;line-height:1.45}
-  .bubble.them{background:var(--fill);align-self:flex-start;border-bottom-left-radius:3px}
+  /* 12.25 / 7.75 instead of 10 / 10: Franklin's caps sat 2.25px high (measured on retina) — same height */
+  .bubble{max-width:80%;padding:12.25px 14px 7.75px;border-radius:14px;font-size:15px;line-height:1.45}
+  /* their bubbles sit on --panel (lighter than the page) so they read as bubbles; in dark the
+     page is darkest, so --fill is the lighter step there */
+  .bubble.them{background:var(--panel);align-self:flex-start;border-bottom-left-radius:3px}
+  body.dark .bubble.them{background:var(--fill)}
   .bubble.me{background:var(--ink);color:var(--panel);align-self:flex-end;border-bottom-right-radius:3px}
   body.dark .bubble.me{color:var(--bg)}
   .composer{position:sticky;bottom:0;z-index:10;background:var(--bg);display:flex;gap:10px;border-top:1px solid var(--line);margin:auto -18px 0;padding:14px 18px calc(16px + env(safe-area-inset-bottom))}
@@ -428,7 +440,7 @@
      read as a bright box competing with the bubbles above it */
   .composer .field{flex:1;height:46px;border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:0 14px;color:var(--ink);font-size:15px;font-family:inherit;outline:none}
   .composer .field::placeholder{color:var(--muted)}
-  .composer .sendbtn{width:46px;height:46px;flex:0 0 auto;padding:0;border-radius:10px}
+  .composer .sendbtn{width:46px;height:46px;flex:0 0 auto;padding:0;border-radius:10px;border-color:transparent}   /* no outline, disabled or not */
   .send-ic{width:20px;height:20px;display:block;fill:currentColor}
   /* pinned ad preview at the top of a conversation */
   .ad-snip{background:var(--fill-2);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-bottom:18px;cursor:pointer}
@@ -438,9 +450,9 @@
   .ad-snip p{font-size:12.5px;color:var(--muted);margin:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
   /* inline face-reveal prompt in the conversation body (only once a mutual reveal is unlocked) */
   .reveal-inline{align-self:center;max-width:300px;margin:8px auto 2px;padding:15px 16px;border:1px solid var(--line);border-radius:14px;background:var(--fill-2);display:flex;flex-direction:column;align-items:center;gap:11px;text-align:center}
-  .reveal-inline .ri-text{font-size:13px;color:var(--muted);line-height:1.45}
+  .reveal-inline .ri-text{font-size:13px;color:var(--line-strong);line-height:1.45}   /* 5.8:1 light / 5.2:1 dark (was 2.3:1) */
   .reveal-inline .ri-eye{width:22px;height:22px;color:var(--ink)}
-  .reveal-inline .ri-link{background:none;border:0;color:var(--ink);font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:2px;padding:2px}
+  .reveal-inline .ri-link{background:none;border:0;color:var(--ink);font-size:13px;font-weight:500;text-decoration:underline;text-underline-offset:2px;padding:2px}
 
   /* ---------- Face reveal ---------- */
   .reveal-status{font-size:13px;color:var(--ink);background:var(--fill-2);border:1px solid var(--line);border-radius:6px;padding:10px 12px;margin:16px 0 18px;display:flex;align-items:center;gap:8px}
@@ -998,7 +1010,9 @@ function setView(view){
   const onFeed = view === 'feed';
   viewSeg.style.display = onFeed ? '' : 'none';
   scroll.classList.remove('paper-mode', 'thread-mode');
-  document.querySelectorAll('#tabbar .tab').forEach(b=>b.classList.toggle('active', b.dataset.view===view));
+  // sub-screens keep their parent tab lit: a conversation is under Messages, Customize under My Ad
+  const tabFor = {thread:'messages', customize:'myad'}[view] || view;
+  document.querySelectorAll('#tabbar .tab').forEach(b=>b.classList.toggle('active', b.dataset.view===tabFor));
   ({feed:renderFeed, myad:renderMyAd, messages:renderMessages, settings:renderSettings, thread:renderThread, customize:renderCustomize}[view])();
   scroll.scrollTop = 0;
 }
@@ -1055,7 +1069,7 @@ function renderList(){
   if(hasAd){
     scroll.innerHTML = HOROSCOPE + `<div class="feed-col" id="feedList"></div>` + endPaperHTML();
   } else {
-    scroll.innerHTML = HOROSCOPE + `<div class="feed-locked"><div class="feed-col" id="feedList"></div><div class="feed-blur"></div>
+    scroll.innerHTML = HOROSCOPE + `<div class="feed-locked"><div class="feed-col" id="feedList"></div>
       <div class="feed-gate"><div class="feed-gate-card">
         <h3>You're reading over someone's shoulder</h3>
         <p>On Classy, you have to be in the paper to read it. Post your own personal to unlock every ad — and to reply.</p>
@@ -1544,9 +1558,24 @@ function updateMsgBadge(){
   const el = document.getElementById('tabMsgCount');
   if(!el) return;
   const n = unreadConvoCount() + REQUESTS.length;
-  if(n){ el.textContent = n > 9 ? '9+' : n; el.classList.add('show'); }
+  if(n){ el.innerHTML = badgeSVG(n > 9 ? '9+' : String(n)); el.setAttribute('aria-label', `${n} new`); el.classList.add('show'); }
   else el.classList.remove('show');
 }
+// Badge count as SVG text positioned by the glyphs' real ink box (canvas metrics), not the
+// font's line box — so "1", "4", "7" and "9+" all centre exactly in a 16px circle/pill.
+const BADGE_FONT = '400 10px "ITC Franklin Gothic LT Pro"', BADGE_H = 16;
+function badgeSVG(label){
+  const c = badgeSVG.ctx || (badgeSVG.ctx = document.createElement('canvas').getContext('2d'));
+  c.font = BADGE_FONT;
+  const m = c.measureText(label);
+  const inkW = m.actualBoundingBoxLeft + m.actualBoundingBoxRight;
+  const w = Math.max(BADGE_H, Math.ceil(inkW + 9));          // circle for one digit, pill for "9+"
+  const x = w/2 - (m.actualBoundingBoxRight - m.actualBoundingBoxLeft)/2;   // ink centre → middle
+  const y = BADGE_H/2 + (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent)/2;
+  return `<svg width="${w}" height="${BADGE_H}" viewBox="0 0 ${w} ${BADGE_H}" style="width:${w}px;height:${BADGE_H}px" aria-hidden="true"><text x="${x.toFixed(2)}" y="${y.toFixed(2)}" style="font:${BADGE_FONT}">${label}</text></svg>`;
+}
+// metrics need the real font: redraw once web/local fonts have settled
+document.fonts && document.fonts.ready.then(()=> updateMsgBadge());
 function convosHTML(){
   if(!CONVOS.length) return `<div class="empty-msg">No conversations yet. Accept a request or reply to an ad to get started.</div>`;
   return `<div class="mlist">${CONVOS.map(c=>{
@@ -2053,7 +2082,6 @@ function renderSettings(){
           ${setRow('Email','alex@email.com', `<button class="link-btn">Change</button>`)}
           ${setRow('Password','Last changed 3 months ago', `<button class="link-btn">Change</button>`)}
           ${setRow('Onboarding','Replay the new-member flow', `<button class="link-btn" id="replayOb">Replay</button>`)}
-          ${setRow('Guest view','Preview the feed as someone who hasn\'t posted an ad', `<button class="toggle ${!hasAd?'on':''}" id="guestToggle"></button>`)}
           ${setRow('<span class="danger">Delete account</span>','Permanently remove your ad, messages, and data.', `<button class="link-btn danger">Delete</button>`)}
         </div>
       </div>
@@ -2100,7 +2128,6 @@ function renderSettings(){
 
   scroll.querySelector('[data-prefs]')?.addEventListener('click', openPreferences);
   scroll.querySelector('#replayOb')?.addEventListener('click', startOnboarding);
-  scroll.querySelector('#guestToggle')?.addEventListener('click', function(){ hasAd = !this.classList.toggle('on'); });
   scroll.querySelector('#darkModeToggle')?.addEventListener('click', function(){ this.classList.toggle('on', document.body.classList.toggle('dark')); });
   scroll.querySelector('#hyperToggle')?.addEventListener('click', ()=>{ hyperlegible = !hyperlegible; if(!hyperlegible) myAdShowDecorative = false; renderSettings(); });
   scroll.querySelectorAll('[data-toggle]').forEach(t=>t.addEventListener('click',()=>t.classList.toggle('on')));
