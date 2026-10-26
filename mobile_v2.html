@@ -38,12 +38,16 @@
 
     /* ── newsprint · deliberately outside M3 ── */
     --news-bg:#fbf7eb; --news-ink:#161616; --news-rule:#bcbcb2; --news-muted:#6d6d66;
+    --news-promo:#cdc8b6;   /* "see more classifieds" filler box */
 
     /* ── replied ad · outside M3 · sits below --panel ── */
     --replied-surface:#f6efdd;
 
     --radius:6px;
-    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    /* ITC Franklin Gothic is the interface voice — every label, button, tab and
+       caption. The system stack behind it is fallback only, for anyone opening
+       the live link without the licensed font. */
+    --font:"ITC Franklin Gothic LT Pro",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
   }
   body.dark{
@@ -58,8 +62,11 @@
     --m3-outline:                #5a5a5d;
     --m3-outline-variant:        #cec7b3;
 
-    /* dark newsprint matches the app background so the paper reads as one plane */
-    --news-bg:#232329; --news-ink:#e9e9e4; --news-rule:#4c4c48; --news-muted:#a7a79f;
+    /* dark newsprint matches the app background so the paper reads as one plane,
+       and news/ink matches --ink exactly so set type reads the same warm cream
+       in the paper as it does on a card */
+    --news-bg:#232329; --news-ink:#f2ead3; --news-rule:#4c4c48; --news-muted:#a39e93;
+    --news-promo:#4a4a4e;
 
     /* darker than --panel (#313139), just above the page (#232329) */
     --replied-surface:#2a2a30;
@@ -100,10 +107,21 @@
     flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;
     padding:14px 18px 12px;border-bottom:1px solid var(--line);background:var(--bg);
   }
-  .appbar-titles{min-width:0}
-  .appbar h2{font-family:var(--serif);font-weight:500;font-size:24px;margin:0;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .issue{font-family:var(--serif);font-size:12.5px;color:var(--muted);margin-top:3px}
-  .appbar-actions{display:flex;gap:7px;flex:0 0 auto}
+  /* optical nudge: the block measures centred, but Clarendon's ascent-heavy box
+     makes a mostly-cap title read high. 6px down by eye — relative offset so the
+     bar height and the divider below it don't move. */
+  .appbar-titles{min-width:0;position:relative;top:6px}
+  /* line-height must clear the serif's descender. Iowan at 24px has a 33px font
+     box (25 ascent + 8 descent); at 1.05 the line box is 25.2px, so the glyph
+     overhangs ~4px and `overflow:hidden` — needed for the ellipsis — slices the
+     g and y. Clarendon URW's box is only 24px at 24px, so 1.12 (26.9px) clears
+     it with headroom — 1.4 was sized for Iowan and left ~5px of dead leading
+     above the cap, which pushed the title down and opened the gap to the date. */
+  .appbar h2{font-family:"Clarendon URW",var(--serif);font-weight:400;font-size:24px;margin:0;line-height:1.12;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .issue{font-family:var(--serif);font-size:12.5px;line-height:1.2;color:var(--muted);margin-top:2px}
+  /* same 6px optical offset as .appbar-titles, so the buttons stay on the
+     title's axis rather than the bar's geometric centre */
+  .appbar-actions{display:flex;align-items:center;gap:7px;flex:0 0 auto;position:relative;top:4px}
   .iconbtn{width:38px;height:38px;border:1px solid var(--line-strong);border-radius:10px;background:var(--panel);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;padding:0}
   .iconbtn svg{width:20px;height:20px}
   .iconbtn.on{background:var(--ink);color:var(--panel);border-color:var(--ink)}
@@ -125,14 +143,19 @@
   .tab{flex:1;position:relative;background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:5px 0;color:var(--muted);font-size:10.5px;letter-spacing:.02em}
   .tab svg{width:23px;height:23px}
   .tab.active{color:var(--ink)}
+  /* same cap-centring correction as .btn, measured at 10.5px. A relative offset
+     rather than padding so the icon-to-label gap above it doesn't move. */
+  .tlab{position:relative;top:1.55px}
   .tab.active .tlab{font-weight:600}
-  .tab-badge{position:absolute;top:1px;left:calc(50% + 6px);min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:var(--ink);color:var(--panel);font-size:10px;font-weight:700;display:none;align-items:center;justify-content:center}
+  /* uneven side pads (4.5 left / 3.5 right) nudge the digit 0.5px right — the
+     "3" carries more empty space on its right side, so it read off-centre */
+  .tab-badge{position:absolute;top:1px;left:calc(50% + 6px);min-width:16px;height:16px;padding:2.8px 3.5px 0 4.5px;border-radius:999px;background:var(--ink);color:var(--panel);font-size:10px;font-weight:400;display:none;align-items:center;justify-content:center}
   body.dark .tab-badge{color:var(--bg)}
   .tab-badge.show{display:inline-flex}
 
   /* ---------- Feed: horoscope ---------- */
   .horoscope{text-align:center;margin:0 0 22px;padding-bottom:20px;border-bottom:1px solid var(--line)}
-  .horo-label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+  .horo-label{font-family:"Clarendon URW",var(--serif);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
   .horo-text{font-family:var(--serif);font-style:italic;font-size:15px;line-height:1.55;color:var(--ink);margin:8px 0 0}
 
   /* ---------- Feed: read (single column) ---------- */
@@ -151,7 +174,8 @@
   .feed-name{font-size:12.5px;font-weight:500;color:var(--ink);margin:0 0 4px}
   .feed-headline{font-weight:500;font-size:calc(24px * var(--fscale,1));line-height:1.12;color:var(--ink);margin:0 0 10px}
   .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
-  .tag-chip{font-size:11px;padding:4px 9px;background:var(--fill);border:1px solid var(--line);border-radius:4px;color:var(--muted)}
+  /* 5.3/2.7 pad: Franklin rides high — centres the cap height, same 23px chip */
+  .tag-chip{font-size:11px;padding:5.3px 9px 2.7px;background:var(--fill);border:1px solid var(--line);border-radius:4px;color:var(--muted)}
   /* border drops to --line too, so the whole card recedes as one piece rather
      than leaving a bright frame around faded content */
   .card.replied{background:var(--replied);border-color:var(--line)}
@@ -167,21 +191,35 @@
   .paper-viewport{position:absolute;inset:0;overflow:hidden;background:var(--news-bg);touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
   .paper-viewport:active{cursor:grabbing}
   .paper{transform-origin:0 0;background:var(--news-bg);color:var(--news-ink);padding:16px 20px 22px;font-family:var(--serif);will-change:transform}
-  .masthead{text-align:center;border-bottom:3px double var(--news-ink);padding-bottom:9px;margin-bottom:13px}
-  .mast-title{font-family:var(--serif);font-weight:700;font-size:56px;line-height:.86;letter-spacing:-.01em}
-  .mast-sub{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--news-muted);margin-top:9px;border-top:1px solid var(--news-rule);padding-top:6px}
-  .paper-cols{column-count:5;column-gap:14px;column-rule:1px solid var(--news-rule)}
-  .clip{display:block;width:100%;text-align:left;background:none;border:0;padding:0 0 9px;margin:0 0 9px;border-bottom:1px solid var(--news-rule);break-inside:avoid;cursor:pointer;color:inherit;font-family:inherit}
+  /* masthead removed on mobile — the top bar already carries the title and the
+     issue date, so it was ~110px of duplicated information above the fold */
+  /* explicit columns, not CSS multi-column: packPaper() breaks the ads into
+     columns in JS, so each column's leftover space is known and can take a
+     filler box. Grid stretches every column to the tallest one. */
+  .paper-cols{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));column-gap:28px}
+  .paper-col{display:flex;flex-direction:column;position:relative}
+  .paper-col + .paper-col::before{content:'';position:absolute;left:-14.5px;top:0;bottom:0;width:1px;background:var(--news-rule)}
+  /* fillers grow to the bottom of their column, content centred */
+  .filler{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;border-radius:5px;padding:14px 10px;margin:0 0 14px;font-family:var(--font)}
+  .filler-title{font-family:"Clarendon URW",var(--serif);font-size:12px;line-height:1.2}
+  .filler-text{font-size:9.5px;line-height:1.4;margin:0}
+  .filler-horo{background:var(--ink);color:var(--bg)}
+  .filler-promo{background:var(--news-promo);color:var(--ink)}
+  .filler-btn{font-family:var(--font);font-size:9.5px;background:var(--ink);color:var(--bg);border:0;border-radius:4px;padding:5px 12px;margin-top:2px}
+  .clip{display:block;width:100%;text-align:left;background:none;border:0;padding:0 0 14px;margin:0 0 14px;border-bottom:1px solid var(--news-rule);break-inside:avoid;cursor:pointer;color:inherit;font-family:inherit}
   .clip-name{display:flex;align-items:center;justify-content:space-between;gap:6px;font-weight:500;font-size:9.5px;line-height:1.1;color:var(--news-ink)}
   .clip-rep-ic{width:12px;height:12px;flex:0 0 auto;color:var(--news-ink)}
   .clip-head{font-weight:500;font-size:calc(14px * var(--fscale,1));line-height:1.14;margin:2px 0 4px;color:var(--news-ink)}
   .clip-body{font-size:9px;line-height:1.34;color:var(--news-ink);opacity:.92}
   .clip-loc{font-size:8px;font-style:italic;color:var(--news-muted);margin-top:3px}
   .clip.replied{opacity:.66}
-  .paper-foot{text-align:center;font-size:12px;letter-spacing:.22em;color:var(--news-muted);margin-top:16px;font-family:var(--font)}
-  .paper-zoom{position:absolute;right:12px;bottom:14px;z-index:5;display:flex;flex-direction:column;gap:7px}
-  .paper-zoom button{width:40px;height:40px;border:1px solid var(--line-strong);border-radius:11px;background:var(--panel);color:var(--ink);font-size:22px;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 9px rgba(0,0,0,.14)}
-  .paper-hint{position:absolute;left:12px;bottom:20px;z-index:5;font-size:11px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 12px;box-shadow:0 2px 9px rgba(0,0,0,.12)}
+  .paper-foot{text-align:center;font-size:12px;letter-spacing:.06em;color:var(--news-muted);margin-top:16px;font-family:var(--font)}
+  .paper-zoom{position:absolute;right:18px;bottom:14px;z-index:5;display:flex;flex-direction:column;gap:7px}
+  .paper-zoom button{width:40px;height:40px;border:1px solid var(--line-strong);border-radius:11px;background:var(--panel);color:var(--ink);padding:0;line-height:0;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 9px rgba(0,0,0,.14)}
+  .zoom-ic{width:20px;height:20px;display:block;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+  /* uneven 7.3/4.7 pad: same Franklin rides-high offset as the badges, centres
+     the cap height in the pill without changing its 27px height */
+  .paper-hint{position:absolute;left:18px;bottom:20px;z-index:5;font-size:11px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:7.3px 12px 4.7px;box-shadow:0 2px 9px rgba(0,0,0,.12)}
 
   /* ---------- Feed: end of the paper ---------- */
   .endpaper{text-align:center;padding:38px 12px 8px;color:var(--muted)}
@@ -190,6 +228,10 @@
   .endpaper .mark{font-size:18px;color:var(--muted)}
   .endpaper h4{font-family:var(--serif);font-weight:500;font-size:20px;margin:0 0 6px;color:var(--ink)}
   .endpaper p{font-size:13px;line-height:1.55;margin:0 auto;max-width:270px}
+  /* same tan box and Clarendon head as the paper's upgrade filler, at feed scale */
+  .feed-upgrade{margin:16px 0 0;padding:26px 22px;border-radius:var(--radius);background:var(--news-promo);text-align:center}
+  .feed-upgrade h4{font-family:"Clarendon URW",var(--serif);font-weight:400;font-size:20px;line-height:1.2;margin:0 auto 10px;max-width:240px;color:var(--ink)}
+  .feed-upgrade p{font-size:14px;line-height:1.5;margin:0 auto 18px;max-width:250px;color:var(--ink)}
 
   /* ---------- Feed gate (no ad posted) ---------- */
   .feed-locked{position:relative;overflow:hidden;max-height:560px}
@@ -224,11 +266,22 @@
   @keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:none}}
 
   /* ---------- Buttons ---------- */
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:8px;font-size:14px;border:1.5px solid var(--ink);background:var(--ink);color:var(--panel)}
+  /* explicit heights, not padding-derived — padding + line-height produced
+     fractional boxes (44.0 and 36.5) that never lined up with each other or
+     with the 26px toggle column. Two sizes, app-wide, both whole numbers. */
+  /* Optical centring. Flex centres the font's line box, which reserves descender
+     space below the baseline; a label with no descenders therefore sits ~1.8px
+     high. `text-box: trim-both` is the proper fix but only applies to block
+     containers — in a flex button the label is an anonymous flex item and the
+     property is silently ignored, so it does nothing here. Correcting with
+     padding instead: on a fixed-height border-box element, padding-top P shifts
+     the centred content down by P/2, so 3.6px buys the 1.8px we need. Measured
+     for Franklin Gothic at 14px; re-measure if the UI font or size changes. */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:3.6px 18px 0;border-radius:8px;font-size:14px;border:1.5px solid var(--ink);background:var(--ink);color:var(--panel)}
   body.dark .btn{color:var(--bg);background:var(--ink);border-color:var(--ink)}
   .btn.ghost{background:var(--panel);color:var(--ink)}
   .btn.block{width:100%}
-  .btn.sm{padding:9px 15px;font-size:13px}
+  .btn.sm{height:36px;padding:3.4px 15px 0;font-size:13px}
   .btn:disabled{background:var(--fill);color:var(--muted);border-color:var(--line-strong);cursor:default}
 
   /* ---------- Messages list ---------- */
@@ -236,8 +289,10 @@
   .mrow{background:var(--panel);border:1.5px solid var(--line-strong);border-radius:var(--radius);padding:16px;text-align:left;display:flex;gap:14px;align-items:flex-start;width:100%}
   .mrow .kicker{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
   .mrow p{font-size:13px;line-height:1.5;color:var(--muted);margin:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-  .mrow-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:0 0 auto}
-  .unread-dot{width:9px;height:9px;border-radius:50%;background:var(--ink)}
+  .mrow-right{display:flex;flex-direction:row;align-items:center;gap:7px;flex:0 0 auto}
+  /* lifted onto the cap-height centre of the timestamp — flex centring uses the
+     line box, and Franklin's figures sit above its middle */
+  .unread-dot{width:9px;height:9px;border-radius:50%;background:var(--ink);position:relative;top:-1.85px}
   .mrow.unread .who-name{font-weight:700}
   .mrow.unread p{color:var(--ink)}
   .when{font-size:12px;color:var(--muted);white-space:nowrap}
@@ -247,9 +302,17 @@
 
   /* ---------- Messages tabs & requests ---------- */
   .tabs{display:flex;margin-bottom:20px;border-bottom:1px solid var(--line)}
-  .mtab{background:none;border:0;padding:11px 2px;margin-right:24px;font-size:14px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+  /* flex + align-items:center instead of vertical-align on the pill — a 18px
+     badge next to 14px text never centres reliably by baseline alignment */
+  /* 11px top/bottom became 12.8/9.2 — same total height, content 1.8px lower,
+     which also closes the float between the label and its active underline */
+  .mtab{display:inline-flex;align-items:center;gap:7px;background:none;border:0;padding:12.8px 2px 9.2px;margin-right:24px;font-size:14px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
   .mtab.active{color:var(--ink);font-weight:600;border-bottom-color:var(--ink)}
-  .mtab .count{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--ink);color:var(--panel);font-size:11px;margin-left:7px;font-weight:600;vertical-align:middle}
+  /* Franklin's digits ride high in their line box — the 4px top pad drops
+     the "3" to the pill's centre (checked on rendered pixels at 2x, not font
+     metrics, which disagree with the real render by up to 1px); top:-1.8px lifts the pill
+     onto the cap-height centre of "Requests" rather than its line box */
+  .mtab .count{position:relative;top:-1.8px;display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:4px 5px 0;border-radius:999px;background:var(--ink);color:var(--panel);font-size:11px;font-weight:400;flex:0 0 auto}
   body.dark .mtab .count{color:var(--bg)}
   .req{background:var(--panel);border:1.5px solid var(--line-strong);border-radius:var(--radius);padding:16px}
   .req .kicker{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
@@ -307,8 +370,12 @@
   .bubble.me{background:var(--ink);color:var(--panel);align-self:flex-end;border-bottom-right-radius:3px}
   body.dark .bubble.me{color:var(--bg)}
   .composer{position:sticky;bottom:0;z-index:10;background:var(--bg);display:flex;gap:10px;border-top:1px solid var(--line);margin:auto -18px 0;padding:14px 18px calc(16px + env(safe-area-inset-bottom))}
-  .composer .field{flex:1;height:46px;border:1.5px solid var(--line-strong);border-radius:10px;background:var(--panel);padding:0 14px;color:var(--ink);font-size:14px;font-family:inherit;outline:none}
+  /* --line, not --line-strong: in dark, line-strong is #cec7b3 and the field
+     read as a bright box competing with the bubbles above it */
+  .composer .field{flex:1;height:46px;border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:0 14px;color:var(--ink);font-size:14px;font-family:inherit;outline:none}
   .composer .field::placeholder{color:var(--muted)}
+  .composer .sendbtn{width:46px;height:46px;flex:0 0 auto;padding:0;border-radius:10px}
+  .send-ic{width:20px;height:20px;display:block;fill:currentColor}
   /* pinned ad preview at the top of a conversation */
   .ad-snip{background:var(--fill-2);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-bottom:18px;cursor:pointer}
   .ad-snip .ad-name{font-size:calc(16px * var(--fscale,1));margin:0 0 2px}
@@ -401,6 +468,8 @@
   .myad-actions .btn{flex:1}
 
   /* ---------- Customize ---------- */
+  /* preview only needs to show the fonts — 3 lines of body keeps the screen from scrolling */
+  .customize .myad-desc{margin-bottom:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}
   .cust-hint{text-align:center;font-size:12px;color:var(--muted);margin:14px 0 22px}
   .cust-drops{display:flex;flex-direction:column;gap:16px;margin-bottom:22px}
   .drop{display:flex;flex-direction:column;gap:8px;position:relative}
@@ -423,9 +492,12 @@
   .set-row .rs{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.45}
   .set-row .rl-wrap{min-width:0}
   .toggle{width:44px;height:26px;border-radius:999px;border:1.5px solid var(--line-strong);background:var(--fill);position:relative;flex:0 0 auto;padding:0}
-  .toggle::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--panel);border:1px solid var(--line-strong);transition:left .12s}
+  /* the knob was pinned with top:2px, which is measured from the padding box —
+     inside the 1.5px border — so it sat 3.5px from the outer edge against 4.5px
+     below. Centre it on the axis instead; no magic number to drift. */
+  .toggle::after{content:"";position:absolute;top:50%;transform:translateY(-50%);left:2.5px;width:18px;height:18px;border-radius:50%;background:var(--panel);border:1px solid var(--line-strong);transition:left .12s}
   .toggle.on{background:var(--ink);border-color:var(--ink)}
-  .toggle.on::after{left:20px;border-color:var(--ink)}
+  .toggle.on::after{left:20.5px;border-color:var(--ink)}
   .danger{color:#b23b3b}
   .req-mark{color:#b23b3b;font-weight:600}
   /* dark mode: light text everywhere; danger stays an accessible red (~5:1 on the dark panel, WCAG AA) */
@@ -502,7 +574,7 @@
   .mp-thumb{width:84px;height:106px;border-radius:9px;object-fit:cover;border:1px solid var(--line);flex:none;background:var(--fill)}
   .mp-meta{display:flex;flex-direction:column;gap:11px}
   .mp-note{font-size:12.5px;color:var(--muted);line-height:1.45}
-  .mp-meta .btn.sm{align-self:flex-start}
+  .mp-meta .btn{align-self:flex-start}
   .ic-lock{width:12px;height:12px;display:inline-block;vertical-align:-1.5px;flex:none}
 </style>
 </head>
@@ -513,7 +585,6 @@
     <header class="appbar">
       <div class="appbar-titles">
         <h2 id="title">Today's Picks</h2>
-        <div class="issue" id="issue">March 31st, 2026 · No. 0331</div>
       </div>
       <div class="appbar-actions">
         <div class="viewseg" id="viewseg">
@@ -605,7 +676,7 @@ const ADS = [
    desc:"Enthusiastic amateur in the kitchen, genuinely dangerous with a cast-iron pan but improving. Great at picking restaurants when the cooking fails, which is often. I run most mornings, argue about movies most nights, and I text back quickly — probably too quickly. I'm looking for someone who has opinions and isn't precious about them, who likes a long dinner that turns into a longer walk. Tell me what you're reading, what you quit, and the last thing that genuinely surprised you. Let's skip the small talk and get to the good part.",
    gender:['Man'], pronouns:['he/him'], politics:'Centrist', kids:'Wants kids', relationship:'Something serious', weight:'Tall, runner build, flour on everything'},
   {id:3, name:'Jordan', age:27, location:'Capitol Hill, Seattle', headline:'Looking for a partner in crime',
-   desc:"Mostly law-abiding. Tell me about your weird obsession.",
+   desc:"Mostly law-abiding. Tell me about your weird obsession — I'll match it with mine, which is ranking every diner pie in the state. Current leader: sour cherry, no contest.",
    gender:['Non-binary'], pronouns:['they/them'], politics:'Liberal', kids:"Doesn't want kids", relationship:'Not sure', weight:'Lanky, buzzed hair, mischief in the eyes'},
   {id:4, name:'Casey', age:41, location:'Wicker Park, Chicago', headline:'Second act, done right',
    desc:"Divorced, no drama, one very good dog. I know what I want now and I'm not afraid to say it. Looking for something real and unhurried.",
@@ -629,7 +700,7 @@ const ADS = [
    desc:"Bookish and easily delighted. I want tea, a good museum, and someone who texts me the thing that reminded them of me.",
    gender:['Woman'], pronouns:['she/her'], politics:'Liberal', kids:'Not sure yet', relationship:'Something serious', weight:'Petite, dark curls, paint under the nails'},
   {id:11, name:'Marcus', age:45, location:'Fishtown, Philadelphia', headline:'Dad jokes, no apologies',
-   desc:"One kid, one grill, zero chill about barbecue. Looking for someone patient and quick to laugh.",
+   desc:"One kid, one grill, zero chill about barbecue. Weekends are little league and low-and-slow brisket; weeknights I'm asleep by ten and proud of it. Looking for someone patient and quick to laugh.",
    gender:['Man'], pronouns:['he/him'], politics:'Centrist', kids:'Has kids', relationship:'Something serious', weight:'Tall, easy slouch, band-tee uniform'},
   {id:12, name:'Nadia', age:28, location:'Highland Park, LA', headline:"Let's get lost on purpose",
    desc:"Film photographer who plans trips around good light. Come wander and get a little lost with me.",
@@ -644,13 +715,13 @@ const ADS = [
    desc:"Records, ramen, and long comfortable silences.",
    gender:['Man'], pronouns:['he/him'], politics:'Liberal', kids:"Doesn't want kids", relationship:'Not sure', weight:'Willowy, freckled, hair with opinions'},
   {id:16, name:'Harper', age:24, location:'The Gulch, Nashville', headline:'New in town, big feelings',
-   desc:"Just moved for a music job and know three people. Show me your city and your favorite bad idea.",
+   desc:"Just moved for a music job and know three people, two of them from work. I play cello, cook exactly one good pasta, and get lost on purpose. Show me your city and your favorite bad idea.",
    gender:['Non-binary'], pronouns:['they/them'], politics:'Liberal', kids:'Not sure yet', relationship:'Hookup', weight:'Sturdy, warm, sleeves always rolled up'},
   {id:17, name:'Rosa', age:52, location:'Coconut Grove, Miami', headline:'Grown, grateful, and dancing',
-   desc:"Raised my kids and kept my joy. I want a partner to travel light and laugh loud with.",
+   desc:"Raised my kids and kept my joy. Now it's salsa on Fridays, my garden on Sundays, and a passport I intend to wear out. I want a partner to travel light and laugh loud with.",
    gender:['Woman'], pronouns:['she/her'], politics:'Centrist', kids:'Has kids', relationship:'Something serious', weight:'Slim, sharp jaw, perpetual tote bag'},
   {id:18, name:'Dev', age:30, location:'Capitol Hill, Denver', headline:'Ski bum with a 401(k)',
-   desc:"Powder days and spreadsheets, somehow both. Looking for someone who's fun and has a plan.",
+   desc:"Powder days and spreadsheets, somehow both. I budget for lift tickets first and everything else second. Looking for someone who's fun and has a plan — or who'll let me make one.",
    gender:['Man'], pronouns:['he/him'], politics:'Centrist', kids:'Not sure yet', relationship:'Something serious', weight:'Average build, dimples, coffee-stained tees'},
   {id:19, name:'Yuki', age:35, location:'Sunset District, SF', headline:"I'll out-plan your weekend",
    desc:"Give me a map, a snack, and a vague sense of a plan and I'll build you the best Saturday of your life — trailhead by eight, the good bakery by ten, home before you're tired of me. I'm a relentless planner slowly learning to leave room for the detour, and I'm looking for a real teammate, not a project. Hikers, wanderers, and people with strong opinions about breakfast burritos especially welcome.",
@@ -665,13 +736,13 @@ const ADS = [
    desc:"Come sit a while and let's see.",
    gender:['Man'], pronouns:['he/him'], politics:'Centrist', kids:'Has kids', relationship:'Not sure', weight:'Curvy, bold lips, thrift-store treasures'},
   {id:23, name:'Lena', age:29, location:'Wicker Park, Chicago', headline:'Ceramics, dogs, cold plunges',
-   desc:"I make mugs, foster dogs, and swim when it's stupid cold. Bring warmth and curiosity.",
+   desc:"I make mugs, foster dogs, and swim when it's stupid cold. There's usually clay on my jeans and a puppy who isn't mine yet. Bring warmth and curiosity.",
    gender:['Woman'], pronouns:['she/her'], politics:'Liberal', kids:'Not sure yet', relationship:'Something serious', weight:'Wiry, weathered hands, boots with stories'},
   {id:24, name:'Theo', age:34, location:'Los Feliz, LA', headline:'Rewatching the same three movies',
    desc:"Homebody with elite snacks.",
    gender:['Man'], pronouns:['he/him'], politics:'Liberal', kids:"Doesn't want kids", relationship:'Something serious', weight:'Medium build, gap tooth, big first laugh'},
   {id:25, name:'Simone', age:40, location:'Park Slope, NY', headline:'Full life, room for one more',
-   desc:"Single mom, big job, small dog. My time is precious and I'd love to spend some of it on you.",
+   desc:"Single mom, big job, small dog. Saturdays are the farmers market and pancakes. My time is precious and I'd love to spend some of it on you.",
    gender:['Woman'], pronouns:['she/her'], politics:'Liberal', kids:'Has kids', relationship:'Something serious', weight:'Soft, freckled, cardigan in every season'},
 ];
 
@@ -686,6 +757,26 @@ const CONVOS = [
 
 // Ads you've already replied to today (you're now in a conversation about them).
 const repliedAdIds = new Set(CONVOS.map(c=>c.adId));
+
+/* The replied ads happen to be the first six in ADS, so both the paper and the
+   card feed opened with a wall of greyed-out cards before anything new. Deal
+   them back into the deck at even intervals instead: always start on a fresh
+   ad, then one replied ad roughly every `step` fresh ones. Derived purely from
+   ADS order + repliedAdIds, so it's stable across re-renders — no shuffling
+   under the reader between views. */
+function orderedAds(){
+  const fresh  = ADS.filter(a => !repliedAdIds.has(a.id));
+  const seen   = ADS.filter(a =>  repliedAdIds.has(a.id));
+  if(!seen.length || !fresh.length) return ADS;
+  const out = [], step = (fresh.length + 1) / (seen.length + 1);
+  let s = 0, next = step;
+  fresh.forEach((a, i) => {
+    out.push(a);
+    if(s < seen.length && i + 1 >= Math.round(next)){ out.push(seen[s++]); next += step; }
+  });
+  while(s < seen.length) out.push(seen[s++]);
+  return out;
+}
 
 // People who replied to YOUR ad, awaiting accept/decline
 const REQUESTS = [
@@ -796,7 +887,6 @@ const titles = {feed:"Today's Picks", myad:"Your Ad", messages:"Your Messages", 
 // ---------- Router ----------
 const scroll = document.getElementById('scroll');
 const titleEl = document.getElementById('title');
-const issueEl = document.getElementById('issue');
 const viewSeg = document.getElementById('viewseg');
 let state = {view:'feed', threadAd:null, msgTab:'convos'};
 let blockedCount = 2;
@@ -817,7 +907,6 @@ function setView(view){
   state.view = view;
   titleEl.textContent = titles[view] || '';
   const onFeed = view === 'feed';
-  issueEl.style.display = onFeed ? '' : 'none';
   viewSeg.style.display = onFeed ? '' : 'none';
   scroll.classList.remove('paper-mode', 'thread-mode');
   document.querySelectorAll('#tabbar .tab').forEach(b=>b.classList.toggle('active', b.dataset.view===view));
@@ -828,12 +917,18 @@ document.querySelectorAll('#tabbar .tab').forEach(b=>b.addEventListener('click',
 viewSeg.querySelectorAll('button').forEach(b=>b.addEventListener('click', ()=>{ feedView = b.dataset.fv; renderFeed(); }));
 
 // ---------- Feed ----------
-const HOROSCOPE = `<div class="horoscope"><span class="horo-label">✦ Today's Horoscope ✦</span><p class="horo-text">The stars are feeling direct today. If an ad makes you laugh out loud, that's your sign — reply before you overthink it.</p></div>`;
+const HORO_TEXT = `The stars are feeling direct today. If an ad makes you laugh out loud, that's your sign — reply before you overthink it.`;
+const HOROSCOPE = `<div class="horoscope"><span class="horo-label">✦ Today's Horoscope ✦</span><p class="horo-text">${HORO_TEXT}</p></div>`;
 function updateViewToggle(){
   viewSeg.querySelectorAll('button').forEach(b=>b.classList.toggle('active', b.dataset.fv===feedView));
 }
 function endPaperHTML(){
-  return `<div class="endpaper"><div class="rule"><span class="mark">❦</span></div>
+  return `<div class="feed-upgrade">
+      <h4>Want to see more classifieds?</h4>
+      <p>Upgrade to Premium for a bigger paper every morning.</p>
+      <button class="btn" type="button">Upgrade</button>
+    </div>
+    <div class="endpaper"><div class="rule"><span class="mark">❦</span></div>
     <h4>End of today's paper</h4>
     <p>You've read all ${ADS.length} of today's personals. New ones are printed every morning.</p></div>`;
 }
@@ -875,7 +970,7 @@ function renderList(){
       </div></div></div>`;
   }
   const list = document.getElementById('feedList');
-  ADS.forEach(a=> list.appendChild(feedCard(a)));
+  orderedAds().forEach(a=> list.appendChild(feedCard(a)));
   if(!hasAd){ const g = document.getElementById('gatePost'); if(g) g.onclick = startOnboarding; }
 }
 // ---------- The Paper (zoomed-out classifieds page you browse) ----------
@@ -890,26 +985,77 @@ function clipHTML(a){
     <div class="clip-loc">${a.gender.join(' / ')} · ${a.location}</div>
   </button>`;
 }
+/* Zoom icons are drawn, not typed. A glyph "+" and "−" only line up if the
+   device's UI font happens to centre them identically — true in SF, not
+   guaranteed elsewhere. Both bars are the same length and weight here, and the
+   plus is the minus plus one perpendicular stroke, so they cannot drift. */
+const ZOOM_ICON = plus => `<svg class="zoom-ic" viewBox="0 0 24 24" aria-hidden="true">
+  <line x1="6" y1="12" x2="18" y2="12"/>${plus ? '<line x1="12" y1="6" x2="12" y2="18"/>' : ''}
+</svg>`;
+
 function renderPaper(){
   scroll.classList.add('paper-mode');
   scroll.innerHTML = `
     <div class="paper-viewport" id="paperVp">
       <div class="paper" id="paper">
-        <div class="masthead">
-          <div class="mast-title">Personals</div>
-          <div class="mast-sub">The Classy Classifieds · ${TODAY_STR}</div>
-        </div>
-        <div class="paper-cols">${ADS.map(clipHTML).join('')}</div>
-        <div class="paper-foot">— 30 —</div>
+        <div class="paper-cols" id="paperCols">${'<div class="paper-col"></div>'.repeat(PAPER_COLS)}</div>
+        <div class="paper-foot">– ${TODAY_STR} –</div>
       </div>
     </div>
     <div class="paper-hint">Pinch or ± to zoom · tap an ad to read</div>
-    <div class="paper-zoom"><button id="paperZoomIn" aria-label="Zoom in">+</button><button id="paperZoomOut" aria-label="Zoom out">−</button></div>`;
+    <div class="paper-zoom">
+      <button id="paperZoomIn" aria-label="Zoom in">${ZOOM_ICON(true)}</button>
+      <button id="paperZoomOut" aria-label="Zoom out">${ZOOM_ICON(false)}</button>
+    </div>`;
+  packPaper();
   initPaperZoom();
+  // packing measures clip heights, so pack again once the web fonts have arrived
+  if(document.fonts && document.fonts.status !== 'loaded'){
+    document.fonts.ready.then(()=>{ if(document.getElementById('paperCols')) renderPaper(); });
+  }
+}
+// ---------- Paper fillers (horoscope / upgrade) for the gaps under short columns ----------
+const PAPER_COLS = 5;
+const PAPER_FILLERS = [
+  `<div class="filler filler-horo"><div class="filler-title">* Today's Horoscope *</div><p class="filler-text">${HORO_TEXT}</p></div>`,
+  `<div class="filler filler-promo"><div class="filler-title">Want to see more classifieds?</div><p class="filler-text">Upgrade to Premium</p><button class="filler-btn" type="button">Upgrade</button></div>`,
+];
+function packPaper(){
+  const grid = document.getElementById('paperCols'), cols = [...grid.children];
+  const tmp = document.createElement('div'); tmp.innerHTML = orderedAds().map(clipHTML).join('') + PAPER_FILLERS.join('');
+  const items = [...tmp.children], clips = items.slice(0, items.length - PAPER_FILLERS.length), fills = items.slice(clips.length);
+  cols[0].append(...items);   // measure everything at real column width
+  const hOf = el => el.offsetHeight + parseFloat(getComputedStyle(el).marginBottom);
+  const h = clips.map(hOf), fh = fills.map(f => { f.style.flex = 'none'; const v = hOf(f); f.style.flex = ''; return v; });
+  // Ads stay in reading order (down column 1, then column 2…). Break them into columns so
+  // the tallest column is as short as possible, counting each filler box (used once, in
+  // order) at its natural height in the column it ends — boxes then only stretch by
+  // whatever is left over, and stay small.
+  const n = h.length, k = cols.length, F = fills.length, pre = [0];
+  h.forEach(x => pre.push(pre[pre.length-1] + x));
+  const key = (g, j, f) => (g*(n+1) + j)*(F+1) + f;
+  const best = new Map([[key(0,0,0), 0]]), from = new Map();
+  for(let g = 1; g <= k; g++) for(let j = 1; j <= n; j++) for(let f = 0; f <= F; f++){
+    for(let i = g-1; i < j; i++) for(const use of (f ? [0, 1] : [0])){
+      const prev = best.get(key(g-1, i, f - use)); if(prev === undefined) continue;
+      const v = Math.max(prev, pre[j] - pre[i] + (use ? fh[f-1] : 0));
+      if(v < (best.get(key(g, j, f)) ?? Infinity)){ best.set(key(g, j, f), v); from.set(key(g, j, f), [i, use]); }
+    }
+  }
+  for(let g = k, j = n, f = F; g >= 1; g--){
+    const [i, use] = from.get(key(g, j, f));
+    cols[g-1].append(...clips.slice(i, j));
+    if(use) cols[g-1].append(fills[f-1]);
+    j = i; f -= use;
+  }
+  // horoscope's column goes far left, upgrade's far right — anchors the bottom corners
+  if(fills[0].parentElement) grid.prepend(fills[0].parentElement);
+  if(fills[1] && fills[1].parentElement) grid.append(fills[1].parentElement);
 }
 function initPaperZoom(){
   const vp = document.getElementById('paperVp'), paper = document.getElementById('paper');
-  const PAPER_W = 720;
+  // 5 columns of 124.8px (unchanged ad width) + 4 × 28px gutters + 40px side padding
+  const PAPER_W = 776;
   paper.style.width = PAPER_W + 'px';
   paper.style.transformOrigin = '0 0';
   const paperH = paper.offsetHeight;            // natural (unscaled) height
@@ -1271,8 +1417,8 @@ function convosHTML(){
         <p style="margin-top:12px"><span class="sender">${c.mine ? 'You' : a.name}:</span> ${c.last}</p>
       </div>
       <div class="mrow-right">
-        <div class="when">${c.when}</div>
         ${c.unread ? '<span class="unread-dot"></span>' : ''}
+        <div class="when">${c.when}</div>
       </div>
     </button>`;
   }).join('')}</div>`;
@@ -1448,7 +1594,9 @@ function renderThread(){
       <div class="msgs">${msgsBlock}</div>
       <div class="composer">
         <input class="field" id="composerInput" placeholder="Write a message…">
-        <button class="btn" id="sendBtn" disabled>Send</button>
+        <button class="btn sendbtn" id="sendBtn" disabled aria-label="Send">
+          <svg class="send-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.4 4.1 20.6 12 4.4 19.9 6.2 12 4.4 4.1Z"/></svg>
+        </button>
       </div>
     </div>`;
   document.getElementById('back').onclick = ()=>setView('messages');
@@ -1540,7 +1688,7 @@ function myPhotoSlotHtml(){
   return `${thumb}
     <div class="mp-meta">
       <div class="mp-note">${IC_LOCK} Hidden until you and a match both choose to reveal. Never shown on your public ad.</div>
-      <button class="btn ghost sm" id="mpChange">${MY_AD.photo?'Change photo':'Add photo'}</button>
+      <button class="btn ghost" id="mpChange">${MY_AD.photo?'Change photo':'Add photo'}</button>
     </div>`;
 }
 function renderMyAd(){
@@ -1587,7 +1735,6 @@ function renderCustomize(){
       <div class="ad-place">${a.location}</div>
       <div class="ad-headline" style="font-family:${cssFor(b)}">${a.headline}</div>
       <p class="myad-desc" style="font-family:${cssFor(b)}">${a.desc}</p>
-      ${adMetaGrid(a)}
     </div>`;
   scroll.innerHTML = `
     <div class="customize">
@@ -1598,7 +1745,7 @@ function renderCustomize(){
         <label class="drop">
           <span class="drop-label">Display font</span>
           <select class="drop-select" id="headSel" style="font-family:${cssFor(heading)}">
-            ${HEADING_FONTS.map(f=>`<option value="${f.name}" style="${fontOptStyle(f)}"${f.name===heading?' selected':''}>${f.name} · ${f.vibe}</option>`).join('')}
+            ${HEADING_FONTS.map(f=>`<option value="${f.name}" style="${fontOptStyle(f)}"${f.name===heading?' selected':''}>${f.name}</option>`).join('')}
           </select>
         </label>
         <label class="drop">
@@ -2007,7 +2154,7 @@ function renderOnboarding(){
       <div class="cust-drops">
         <label class="drop"><span class="drop-label">Display font</span>
           <select class="drop-select" id="obHeadSel" style="font-family:${cssFor(obData.headingFont)}">
-            ${HEADING_FONTS.map(f=>`<option value="${f.name}" style="${fontOptStyle(f)}"${f.name===obData.headingFont?' selected':''}>${f.name} · ${f.vibe}</option>`).join('')}
+            ${HEADING_FONTS.map(f=>`<option value="${f.name}" style="${fontOptStyle(f)}"${f.name===obData.headingFont?' selected':''}>${f.name}</option>`).join('')}
           </select></label>
         <label class="drop"><span class="drop-label">Body font</span>
           <select class="drop-select" id="obBodySel" style="font-family:${cssFor(obData.bodyFont)}">
@@ -2060,7 +2207,6 @@ window.addEventListener('resize', ()=>{
   clearTimeout(feedResizeTimer);
   feedResizeTimer = setTimeout(renderFeed, 150);
 });
-issueEl.textContent = TODAY_STR;
 updateMsgBadge();
 setView('feed');
 </script>
