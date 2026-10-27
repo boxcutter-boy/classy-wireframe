@@ -654,9 +654,10 @@
   .photo-tips-link svg{width:15px;height:15px;flex:none}
   /* hidden for now, not deleted: the illustration boxes are placeholders until real art
      lands, and the photo-tips link is parked — openPhotoTips and its sheet still exist.
-     Delete these two lines to bring both back. */
+     Delete these lines to bring them back. */
   .hiw-illus{display:none}
   .photo-tips-link{display:none}
+  .cust-borders{display:none}   /* post borders aren't built yet — hidden with the rest */
   /* Photo tips overlay */
   .ptips{z-index:120;align-items:flex-end}
   .ptips-title{font-family:"clarendon-urw","Clarendon URW",var(--serif);font-weight:400;font-size:24px;margin:6px 0 10px;line-height:1.15}
@@ -802,10 +803,12 @@ const ADS = [
    gender:['Man'], pronouns:['he/him'], politics:'Centrist', kids:'Wants kids', relationship:'Something serious', weight:'Tall, runner build, flour on everything'},
   {id:3, name:'Jordan', age:27, location:'Uptown, Chicago', headline:'Looking for a partner in crime',
    desc:"Mostly law-abiding. Tell me about your weird obsession — I'll match it with mine, which is ranking every diner pie in the state. Current leader: sour cherry, no contest.",
-   gender:['Non-binary'], pronouns:['they/them'], politics:'Liberal', kids:"Doesn't want kids", relationship:'Not sure', weight:'Lanky, buzzed hair, mischief in the eyes'},
+   gender:['Non-binary'], pronouns:['they/them'], politics:'Liberal', kids:"Doesn't want kids", relationship:'Not sure', weight:'Lanky, buzzed hair, mischief in the eyes',
+   face:'portraits/jordan.jpg'},
   {id:4, name:'Casey', age:41, location:'Wicker Park, Chicago', headline:'Second act, done right',
    desc:"Divorced, no drama, one very good dog. I know what I want now and I'm not afraid to say it. Looking for something real and unhurried.",
-   gender:['Woman'], pronouns:['she/her'], politics:'Conservative', kids:'Has kids', relationship:'Something serious', weight:'Medium build, soft features, good laugh lines'},
+   gender:['Woman'], pronouns:['she/her'], politics:'Conservative', kids:'Has kids', relationship:'Something serious', weight:'Medium build, soft features, good laugh lines',
+   face:'portraits/casey.jpg'},
   {id:5, name:'Devin', age:29, location:'Ukrainian Village, Chicago', headline:'Ask me about my sourdough',
    desc:"Baker by hobby, designer by trade. Warning: I will make you try the bread.",
    gender:['Man'], pronouns:['he/him'], politics:'Liberal', kids:'Not sure yet', relationship:'Hookup', weight:'Broad, beard, forearms built from dough'},
@@ -2360,7 +2363,7 @@ function renderOnboarding(){
     nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obNext">Next</button>`;
   } else {
     body.innerHTML = `<div class="ob-step"><div class="ob-kicker">Optional</div><h2>Make it yours</h2>
-      <p class="ob-sub">Here's your whole ad. Give it a font that fits your vibe, choose a border, or post as-is — you can refine anything anytime in My Ad.</p>
+      <p class="ob-sub">Here's your whole ad. Give it a font that fits your vibe, or post as-is — you can refine anything anytime in My Ad.</p>
       <div id="obCustPreview">${obAdCard()}</div>
       <div class="cust-drops">
         <label class="drop"><span class="drop-label">Display font</span>
