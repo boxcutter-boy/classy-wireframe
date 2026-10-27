@@ -119,6 +119,14 @@
   @media (min-width:470px){
     body{align-items:center}
     .app{flex:none;width:393px;max-width:none;height:852px;border-radius:55px;transform:scale(var(--fit,1));transform-origin:center}
+    /* while a dialog is open, ONE shade covers the whole phone, status bar included. (The dialog's own
+       backdrop sits in .screen, below the status bar, and two layers left a hairline seam where they met.)
+       The shade sits just under the open dialog: under regular dialogs (z 50), or just under the photo
+       tips (z 120), which open over onboarding (z 100). */
+    .app .overlay{background:transparent}   /* .app: outranks the base .overlay rule further down */
+    .app::after{content:'';position:absolute;inset:0;border-radius:inherit;background:rgba(0,0,0,.42);opacity:0;pointer-events:none;z-index:49}
+    .app:has(.overlay.open)::after{opacity:1}
+    .app:has(.ptips.open)::after{z-index:119}
     .statusbar{display:flex;flex:0 0 54px;position:relative;align-items:center;justify-content:space-between;padding:0 30px 0 50px;background:var(--bg);color:var(--ink);
       font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;font-size:17px;font-weight:600;letter-spacing:-.02em}
     .sb-time{width:54px;text-align:center;padding-top:2px}
@@ -415,10 +423,18 @@
   .th-eye svg{width:22px;height:22px}
   .th-eye.locked{color:var(--line-strong);cursor:default}
   .th-eye.offered::after{content:'';position:absolute;top:1px;right:1px;width:9px;height:9px;border-radius:50%;background:#c0392b;border:2px solid var(--bg)}
-  .th-eye-wrap .tip{position:absolute;top:calc(100% + 9px);right:-4px;width:200px;background:var(--ink);color:var(--panel);font-size:12px;line-height:1.45;padding:10px 12px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.24);opacity:0;pointer-events:none;transform:translateY(-4px);transition:opacity .14s,transform .14s;z-index:30;text-align:left}
+  .th-eye-wrap .tip{position:absolute;top:calc(100% + 5px);right:-4px;width:200px;background:#000;color:var(--panel);font-size:12px;line-height:1.45;padding:10px 12px;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.18),0 12px 28px rgba(0,0,0,.28);opacity:0;pointer-events:none;transform:translateY(-4px);transition:opacity .14s,transform .14s;z-index:30;text-align:left}
   body.dark .th-eye-wrap .tip{background:var(--panel);color:var(--ink);border:1px solid var(--line-strong)}
-  .th-eye-wrap .tip::before{content:'';position:absolute;bottom:100%;right:12px;border:6px solid transparent;border-bottom-color:var(--ink)}
-  body.dark .th-eye-wrap .tip::before{border-bottom-color:var(--panel)}
+  /* pointer: one triangle in the tip's fill (::after) that overlaps the box's top edge so they read as
+     one shape, over a slightly larger triangle in the outline colour (::before, dark mode only) that
+     shows as a 1px line along its two sides and meets the box's outline */
+  .th-eye-wrap .tip::before,.th-eye-wrap .tip::after{content:'';position:absolute;clip-path:polygon(50% 0,100% 100%,0 100%)}
+  /* centred 20px in from the tip's right edge, under the eye's iris (dark mode's 1px border moves the
+     positioning edge in by 1px, hence its own offsets) */
+  .th-eye-wrap .tip::before{top:-8.5px;right:11.5px;width:17px;height:8.5px;background:transparent}
+  body.dark .th-eye-wrap .tip::before{background:var(--line-strong);right:10.5px}
+  .th-eye-wrap .tip::after{top:-7px;right:13px;width:14px;height:7.5px;background:inherit}
+  body.dark .th-eye-wrap .tip::after{right:12px}
   .th-eye-wrap:hover .tip,.th-eye-wrap.tip-show .tip{opacity:1;transform:none}
   /* conversation "more" menu (unmatch / block) */
   .th-menu-wrap{position:relative;display:flex}
@@ -462,11 +478,14 @@
   .reveal-col{display:flex;flex-direction:column;align-items:center;gap:12px}
   .reveal-name{font-weight:500;font-size:calc(26px * var(--fscale,1));line-height:1;color:var(--ink);text-align:center}
   .reveal-tile{position:relative;aspect-ratio:3/4;border-radius:12px;overflow:hidden;border:1.5px solid var(--line-strong);touch-action:none;user-select:none}
-  .portrait{position:absolute;inset:0;background:linear-gradient(155deg,#aebccb,#7d899c)}
+  .portrait{position:absolute;inset:0;background:linear-gradient(155deg,#aebccb,#7d899c);border-radius:10.5px}   /* the tile's 12px less its 1.5px border */
   .portrait.them{background:linear-gradient(155deg,#c9b49f,#9a8770)}
+  /* an ad with a face photo (a.face) shows it instead of the placeholder silhouette */
+  .portrait.photo{background:var(--face) center/cover no-repeat}
+  .portrait.photo::before,.portrait.photo::after{display:none}
   .portrait::before{content:'';position:absolute;left:50%;top:35%;width:40%;aspect-ratio:1;background:rgba(255,255,255,.9);border-radius:50%;transform:translate(-50%,-50%)}
   .portrait::after{content:'';position:absolute;left:50%;bottom:-32%;width:78%;height:62%;background:rgba(255,255,255,.9);border-radius:50%;transform:translateX(-50%)}
-  .frost{position:absolute;inset:0;background:rgba(226,227,231,.96);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+  .frost{position:absolute;inset:0;background:rgba(226,227,231,.96);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);border-radius:10.5px}
   .reveal-hint{font-size:12px;color:var(--muted);text-align:center;margin-top:12px}
 
   /* body copy (ad text, messages, sheet + onboarding paragraphs) is 15px app-wide; labels,
@@ -802,7 +821,8 @@ const ADS = [
    gender:['Woman'], pronouns:['she/her'], politics:'Liberal', kids:'Not sure yet', relationship:'Something serious', weight:'Petite, dark curls, paint under the nails'},
   {id:11, name:'Marcus', age:34, location:'Bronzeville, Chicago', headline:'Dad jokes, no apologies',
    desc:"One kid, one grill, zero chill about barbecue. Weekends are little league and low-and-slow brisket; weeknights I'm asleep by ten and proud of it. Looking for someone patient and quick to laugh.",
-   gender:['Man'], pronouns:['he/him'], politics:'Liberal', kids:'Has kids', relationship:'Something serious', weight:'Tall, easy slouch, band-tee uniform'},
+   gender:['Man'], pronouns:['he/him'], politics:'Liberal', kids:'Has kids', relationship:'Something serious', weight:'Tall, easy slouch, band-tee uniform',
+   face:'portraits/marcus.jpg'},
   {id:12, name:'Nadia', age:28, location:'Lincoln Square, Chicago', headline:"Let's get lost on purpose",
    desc:"Film photographer who plans trips around good light. Come wander and get a little lost with me.",
    gender:['Woman'], pronouns:['she/her'], politics:'Liberal', kids:"Doesn't want kids", relationship:'Not sure', weight:'Round face, kind eyes, sensible shoes'},
@@ -1486,7 +1506,7 @@ function faceRevealStep(a){
     <div class="reveal-single">
       <div class="reveal-col">
         <div class="reveal-name" style="${hstyle(a.headingFont)}">${a.name}</div>
-        <div class="reveal-tile"><div class="portrait them"></div><div class="frost"></div></div>
+        <div class="reveal-tile"><div class="portrait them${a.face ? ' photo' : ''}"${a.face ? ` style="--face:url('${a.face}')"` : ''}></div><div class="frost"></div></div>
       </div>
     </div>
     <div class="reveal-hint">This photo isn't saved anywhere — it only exists in this moment.</div>`;
