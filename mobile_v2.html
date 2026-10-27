@@ -48,8 +48,9 @@
     /* ITC Franklin Gothic is the interface voice — every label, button, tab and
        caption. The system stack behind it is fallback only, for anyone opening
        the live link without the licensed font. */
-    --font:"ITC Franklin Gothic LT Pro",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    /* Adobe Fonts' franklin-gothic centres its caps in the line box on its own, so text is centred with even padding (the old uneven pads were for the desktop LT Pro font, which sat ~0.15em high). Re-check alignment if the font source changes. */
+    --font:"franklin-gothic","ITC Franklin Gothic LT Pro",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --serif:"iowan-old-style-bt","Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
   }
   body.dark{
     /* only the source layer flips — the app tokens below alias these */
@@ -131,18 +132,21 @@
        window, this edge lands on a fractional pixel and scrolled content leaked through it */
     position:relative;z-index:20;box-shadow:0 1px 0 var(--bg);
   }
-  /* optical nudge: the block measures centred, but Clarendon's ascent-heavy box
-     makes a mostly-cap title read high. 6px down by eye — relative offset so the
-     bar height and the divider below it don't move. */
-  .appbar-titles{min-width:0;position:relative;top:6px}
+  /* optical nudge so the title's cap height centres on the view toggle beside it. Was 6px
+     for the desktop Clarendon; Adobe clarendon-urw sits its baseline ~3.5px lower, so 2.5px
+     (measured on retina). Relative offset, so the bar height and divider don't move. */
+  .appbar-titles{min-width:0;position:relative;top:2.5px}
   /* line-height must clear the serif's descender. Iowan at 24px has a 33px font
      box (25 ascent + 8 descent); at 1.05 the line box is 25.2px, so the glyph
      overhangs ~4px and `overflow:hidden` — needed for the ellipsis — slices the
      g and y. Clarendon URW's box is only 24px at 24px, so 1.12 (26.9px) clears
      it with headroom — 1.4 was sized for Iowan and left ~5px of dead leading
      above the cap, which pushed the title down and opened the gap to the date. */
-  .appbar h2{font-family:"Clarendon URW",var(--serif);font-weight:400;font-size:24px;margin:0;line-height:1.12;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .issue{font-family:"Clarendon URW",var(--serif);font-size:12.5px;line-height:1.2;color:var(--muted);margin-top:2px}
+  /* Adobe clarendon-urw puts the baseline lower than the desktop copy, so its g/y overhang
+     the 1.12 line box by ~1.2px; 4px of padding (cancelled by the negative margin) extends the
+     clip area for overflow:hidden without moving anything */
+  .appbar h2{font-family:"clarendon-urw","Clarendon URW",var(--serif);font-weight:400;font-size:24px;margin:0 0 -4px;padding-bottom:4px;line-height:1.12;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .issue{font-family:"clarendon-urw","Clarendon URW",var(--serif);font-size:12.5px;line-height:1.2;color:var(--muted);margin-top:2px}
   /* same 6px optical offset as .appbar-titles, so the buttons stay on the
      title's axis rather than the bar's geometric centre */
   .appbar-actions{display:flex;align-items:center;gap:7px;flex:0 0 auto;position:relative;top:4px}
@@ -181,7 +185,7 @@
 
   /* ---------- Feed: horoscope ---------- */
   .horoscope{text-align:center;margin:0 0 22px;padding-bottom:20px;border-bottom:1px solid var(--line)}
-  .horo-label{font-family:"Clarendon URW",var(--serif);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+  .horo-label{font-family:"clarendon-urw","Clarendon URW",var(--serif);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
   /* EB Garamond runs small for its size, so 16px reads like the old 15px serif */
   .horo-text{font-family:'EB Garamond',var(--serif);font-size:16px;line-height:1.55;color:var(--ink);margin:8px 0 0}
 
@@ -196,15 +200,16 @@
   /* ad typography (global): decorative font ONLY on the name; all-caps headline + body share the body font */
   .ad-name{font-weight:500;font-size:calc(26px * var(--fscale,1));line-height:1.05;color:var(--ink);margin:0 0 6px}
   .ad-place{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
-  .ad-headline{font-weight:700;font-size:13px;letter-spacing:.07em;text-transform:uppercase;line-height:1.3;color:var(--ink);margin:0 0 11px}
+  /* 600 = Franklin Demi; 700 has no cut of its own and falls through to Heavy */
+  .ad-headline{font-weight:600;font-size:13px;letter-spacing:.07em;text-transform:uppercase;line-height:1.3;color:var(--ink);margin:0 0 11px}
   .ad-body{font-size:15px;line-height:1.5;color:var(--ink);margin:0}
   .feed-name{font-size:12.5px;font-weight:500;color:var(--ink);margin:0 0 4px}
   .feed-headline{font-weight:500;font-size:calc(24px * var(--fscale,1));line-height:1.12;color:var(--ink);margin:0 0 10px}
   .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
-  /* 5.3/2.7 pad: Franklin rides high — centres the cap height, same 23px chip */
   /* text is Outline Variant, not Caption Text: --muted on --fill was ~2.2:1 and read
      as disabled. Outline Variant clears AA for small text in both modes (5.5 / 4.6:1) */
-  .tag-chip{font-size:11px;padding:5.3px 9px 2.7px;background:var(--fill);border:1px solid var(--line);border-radius:4px;color:var(--line-strong)}
+  /* optical: caps sit ~0.8px high in this box with Adobe franklin-gothic (measured on retina) */
+  .tag-chip{font-size:11px;padding:4.8px 9px 3.2px;background:var(--fill);border:1px solid var(--line);border-radius:4px;color:var(--line-strong)}
   /* border drops to --line too, so the whole card recedes as one piece rather
      than leaving a bright frame around faded content */
   .card.replied{background:var(--replied);border-color:var(--line)}
@@ -233,7 +238,7 @@
   .paper-col + .paper-col::before{content:'';position:absolute;left:-14.5px;top:0;bottom:0;width:1px;background:var(--news-rule)}
   /* fillers grow to the bottom of their column, content centred */
   .filler{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;border-radius:5px;padding:14px 10px;margin:0 0 14px;font-family:var(--font)}
-  .filler-title{font-family:"Clarendon URW",var(--serif);font-size:12px;line-height:1.2}
+  .filler-title{font-family:"clarendon-urw","Clarendon URW",var(--serif);font-size:12px;line-height:1.2}
   .filler-text{font-size:9.5px;line-height:1.4;margin:0}
   .filler-horo{background:var(--ink);color:var(--bg)}
   /* horoscope copy in EB Garamond (regular); Garamond runs small, so 10.5px */
@@ -241,7 +246,7 @@
   /* padding 13px (not the filler's 14px) so the 1px outline keeps the box's height — the
      column balance is tuned to it, and 2px more reshuffles the whole paper */
   .filler-promo{background:var(--news-promo);color:var(--ink);border:1px solid var(--news-promo-line);padding-top:13px;padding-bottom:13px}
-  .filler-btn{font-family:var(--font);font-size:9.5px;background:var(--ink);color:var(--panel);border:0;border-radius:4px;padding:5.8px 12px 4.2px;margin-top:2px}   /* uneven pad centres Franklin's caps */
+  .filler-btn{font-family:var(--font);font-size:9.5px;background:var(--ink);color:var(--panel);border:0;border-radius:4px;padding:5px 12px;margin-top:2px}
   .clip{display:block;width:100%;text-align:left;background:none;border:0;padding:0 0 14px;margin:0 0 14px;border-bottom:1px solid var(--news-rule);break-inside:avoid;cursor:pointer;color:inherit;font-family:inherit}
   /* no divider on the ad right above a horoscope / upgrade box — the box ends the column.
      Transparent (not removed) so the 1px stays and the column packing doesn't shift */
@@ -251,15 +256,17 @@
   .clip-head{font-weight:500;font-size:calc(14px * var(--fscale,1));line-height:1.14;margin:2px 0 4px;color:var(--news-ink)}
   /* 11.85px × the paper's starting zoom (≈1.27) = 15px on screen, matching the list feed's body */
   .clip-body{font-size:11.85px;line-height:1.34;color:var(--news-ink);opacity:.92}
+  .clip-more{color:var(--news-muted);white-space:nowrap}   /* quiet "… →" on capped long ads, not a link */
+  /* the app's arrow icon (same drawing as the back button), so it matches whatever font the ad uses */
+  .ic-arrow{width:1em;height:1em;display:inline-block;vertical-align:-0.15em}
+  .back .ic-arrow{transform:scaleX(-1)}
   .clip-loc{font-size:8px;font-style:italic;color:var(--news-muted);margin-top:3px}
   .clip.replied{opacity:.66}
   .paper-foot{text-align:center;font-size:13px;letter-spacing:.04em;color:var(--news-muted);margin-top:16px;font-family:'EB Garamond',var(--serif)}   /* Garamond runs small: 13px ≈ the old 12px Franklin */
   /* auto-hiding like video controls: in while the paper is being moved, out ~1.5s after */
   .paper-zoom{position:absolute;right:18px;bottom:14px;z-index:5;display:flex;flex-direction:column;gap:7px;opacity:0;pointer-events:none;transition:opacity .6s ease}
   .paper-zoom.show,.paper-zoom:has(:focus-visible){opacity:1;pointer-events:auto}   /* keyboard focus keeps them up */
-  /* uneven 7.3/4.7 pad: same Franklin rides-high offset as the badges, centres
-     the cap height in the pill without changing its 27px height */
-  .paper-hint{position:absolute;left:18px;bottom:20px;z-index:5;font-size:11px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:7.3px 12px 4.7px;box-shadow:0 2px 9px rgba(0,0,0,.12);opacity:0;transform:translateY(4px);transition:opacity .6s ease,transform .6s ease;pointer-events:none}
+  .paper-hint{position:absolute;left:18px;bottom:20px;z-index:5;font-size:11px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6.75px 12px 5.25px;box-shadow:0 2px 9px rgba(0,0,0,.12);opacity:0;transform:translateY(4px);transition:opacity .6s ease,transform .6s ease;pointer-events:none}
   .paper-hint.show{opacity:1;transform:none}
   .paper-zoom button{width:40px;height:40px;border:1px solid var(--line-strong);border-radius:11px;background:var(--panel);color:var(--ink);padding:0;line-height:0;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 9px rgba(0,0,0,.14)}
   .zoom-ic{width:20px;height:20px;display:block;stroke:currentColor;stroke-width:2;stroke-linecap:round}
@@ -269,11 +276,11 @@
   .endpaper .rule{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:14px}
   .endpaper .rule::before,.endpaper .rule::after{content:'';height:1px;background:var(--line-strong);width:52px;opacity:.7}
   .endpaper .mark{font-size:18px;color:var(--muted)}
-  .endpaper h4{font-family:"Clarendon URW",var(--serif);font-weight:400;font-size:20px;margin:0 0 6px;color:var(--ink)}
+  .endpaper h4{font-family:"clarendon-urw","Clarendon URW",var(--serif);font-weight:400;font-size:20px;margin:0 0 6px;color:var(--ink)}
   .endpaper p{font-size:15px;line-height:1.55;margin:0 auto;max-width:270px}
   /* same tan box and Clarendon head as the paper's upgrade filler, at feed scale */
   .feed-upgrade{margin:16px 0 0;padding:26px 22px;border-radius:var(--radius);background:var(--news-promo);border:1px solid var(--news-promo-line);text-align:center}
-  .feed-upgrade h4{font-family:"Clarendon URW",var(--serif);font-weight:400;font-size:20px;line-height:1.2;margin:0 auto 10px;max-width:240px;color:var(--ink)}
+  .feed-upgrade h4{font-family:"clarendon-urw","Clarendon URW",var(--serif);font-weight:400;font-size:20px;line-height:1.2;margin:0 auto 10px;max-width:240px;color:var(--ink)}
   .feed-upgrade p{font-size:15px;line-height:1.5;margin:0 auto 18px;max-width:250px;color:var(--ink)}
 
   /* ---------- Feed gate (no ad posted) ---------- */
@@ -286,7 +293,7 @@
   .feed-locked .card:nth-child(n+2){filter:blur(4px)}
   .feed-gate{position:absolute;left:0;right:0;bottom:20px;display:flex;justify-content:center;z-index:2;padding:0 6px}
   .feed-gate-card{background:var(--panel);border:1.5px solid var(--ink);border-radius:14px;padding:24px 22px;text-align:center;box-shadow:0 12px 34px rgba(0,0,0,.16)}
-  .feed-gate-card h3{font-family:"Clarendon URW",var(--serif);font-weight:400;font-size:21px;margin:0 0 10px}
+  .feed-gate-card h3{font-family:"clarendon-urw","Clarendon URW",var(--serif);font-weight:400;font-size:21px;margin:0 0 10px}
   .feed-gate-card p{font-size:15px;color:var(--muted);line-height:1.55;margin:0 0 18px}
 
   /* ---------- Bottom sheet overlay ---------- */
@@ -305,7 +312,7 @@
   .sheet .close::before,.sheet .close::after{content:'';position:absolute;left:50%;top:50%;width:14px;height:1.6px;margin:-0.8px 0 0 -7px;background:currentColor;border-radius:1px;transform:rotate(45deg)}
   .sheet .close::after{transform:rotate(-45deg)}
   .sheet .kicker{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-  .sheet h3{font-family:"Clarendon URW",var(--serif);font-weight:400;font-size:calc(25px * var(--fscale,1));margin:8px 0 16px;line-height:1.15}
+  .sheet h3{font-family:"clarendon-urw","Clarendon URW",var(--serif);font-weight:400;font-size:calc(25px * var(--fscale,1));margin:8px 0 16px;line-height:1.15}
   .sheet p{font-size:15px;line-height:1.6;margin:0 0 18px}
   .sheet .meta{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px;border-top:1px solid var(--line);padding-top:16px;margin-bottom:20px}
   .sheet .meta div{font-size:13px}
@@ -320,24 +327,17 @@
   /* explicit heights, not padding-derived — padding + line-height produced
      fractional boxes (44.0 and 36.5) that never lined up with each other or
      with the 26px toggle column. Two sizes, app-wide, both whole numbers. */
-  /* Optical centring. Flex centres the font's line box, which reserves descender
-     space below the baseline; a label with no descenders therefore sits ~1.8px
-     high. `text-box: trim-both` is the proper fix but only applies to block
-     containers — in a flex button the label is an anonymous flex item and the
-     property is silently ignored, so it does nothing here. Correcting with
-     padding instead: on a fixed-height border-box element, padding-top P shifts
-     the centred content down by P/2, so 3.6px buys the 1.8px we need. Measured
-     for Franklin Gothic at 14px; re-measure if the UI font or size changes. */
+  /* labels centre with no padding offset: Adobe Fonts' franklin-gothic centres its caps in the line box on its own, so text is centred with even padding (the old uneven pads were for the desktop LT Pro font, which sat ~0.15em high) */
   /* every primary (filled) button: --ink fill, --panel label; dark mode swaps the label to --bg.
      The paper's .filler-btn follows the same pair (it used --bg in light, a shade darker) */
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:3.6px 18px 0;border-radius:8px;font-size:14px;border:1.5px solid var(--ink);background:var(--ink);color:var(--panel)}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 18px;border-radius:8px;font-size:14px;border:1.5px solid var(--ink);background:var(--ink);color:var(--panel)}
   /* dark only swaps the filled button's label to the darker --bg; fill and border already
      follow --ink. Scoped with :not() so it no longer outranks .ghost and :disabled — it
      used to, which filled every outline button cream in dark mode */
   body.dark .btn:not(.ghost):not(:disabled),body.dark .filler-btn{color:var(--bg)}
   .btn.ghost{background:var(--panel);color:var(--ink)}
   .btn.block{width:100%}
-  .btn.sm{height:36px;padding:4.6px 15px 0;font-size:13px}
+  .btn.sm{height:36px;padding:0 15px;font-size:13px}
   .btn:disabled{background:var(--fill);color:var(--muted);border-color:var(--line-strong);cursor:default}
 
   /* ---------- Messages list ---------- */
@@ -349,9 +349,7 @@
      The ad tagline and timestamp stay in --muted on purpose — secondary, not the message */
   .mrow p{font-size:15px;line-height:1.5;color:var(--line-strong);margin:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
   .mrow-right{display:flex;flex-direction:row;align-items:center;gap:7px;flex:0 0 auto}
-  /* lifted onto the cap-height centre of the timestamp — flex centring uses the
-     line box, and Franklin's figures sit above its middle */
-  .unread-dot{width:9px;height:9px;border-radius:50%;background:var(--ink);position:relative;top:-2.6px}   /* measured on a retina screenshot */
+  .unread-dot{width:9px;height:9px;border-radius:50%;background:var(--ink);}
   .mrow.unread .who-name{font-weight:700}
   .mrow.unread p{color:var(--ink)}
   .when{font-size:12px;color:var(--muted);white-space:nowrap}
@@ -427,8 +425,8 @@
   .th-menu button:active{background:var(--fill)}
   .th-menu button.danger{color:#b23b3b}
   .msgs{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
-  /* 12.25 / 7.75 instead of 10 / 10: Franklin's caps sat 2.25px high (measured on retina) — same height */
-  .bubble{max-width:80%;padding:12.25px 14px 7.75px;border-radius:14px;font-size:15px;line-height:1.45}
+  /* optical: caps sit ~1.1px high in this box with Adobe franklin-gothic (measured on retina) */
+  .bubble{max-width:80%;padding:11.1px 14px 8.9px;border-radius:14px;font-size:15px;line-height:1.45}
   /* their bubbles sit on --panel (lighter than the page) so they read as bubbles; in dark the
      page is darkest, so --fill is the lighter step there */
   .bubble.them{background:var(--panel);align-self:flex-start;border-bottom-left-radius:3px}
@@ -485,7 +483,7 @@
   .counter.at-max{color:#b23b3b}
   .soa-lab{font-size:12px;color:var(--muted)}
   .form-subhead{border-top:1px solid var(--line);padding-top:18px}
-  .fsh-title{font-family:"Clarendon URW",var(--serif);font-size:17px;margin-bottom:3px}
+  .fsh-title{font-family:"clarendon-urw","Clarendon URW",var(--serif);font-size:17px;margin-bottom:3px}
   .fsh-sub{font-size:12px;color:var(--muted)}
   .checks{display:flex;flex-wrap:wrap;gap:9px}
   .check{display:flex;align-items:center;gap:8px;border:1.5px solid var(--line-strong);border-radius:8px;padding:11px 13px;font-size:13px;background:var(--panel);color:var(--ink);text-align:left}
@@ -503,10 +501,9 @@
   .writein-field::placeholder{color:var(--muted)}
   .writein-check:not(.sel) .writein-field{color:var(--muted)}
   .acc{border:1.5px solid var(--line-strong);border-radius:10px;background:var(--panel);overflow:hidden}
+  /* optical: caps sit ~1px high in this box with Adobe franklin-gothic (measured on retina) */
+  .acc-label,.acc-value{position:relative;top:1px}
   .acc-head{display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;padding:14px 15px;cursor:pointer;text-align:left;font-family:inherit;color:var(--ink)}
-  /* label + value drop 2.5px onto the row's centre (and the ▾'s); flex centres
-     the line box, and Franklin sets its caps above the middle of it */
-  .acc-label,.acc-value{position:relative;top:2.5px}
   .acc-label{font-size:14px;font-weight:600;flex:0 0 auto}
   .acc-value{flex:1;text-align:right;font-size:14px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .acc-value.set{color:var(--ink)}
@@ -524,7 +521,7 @@
 
   /* ---------- My Ad ---------- */
   .myad-card{background:var(--panel);border:1.5px solid var(--line-strong);border-radius:10px;padding:22px}
-  .myad-headline{font-family:"Clarendon URW",var(--serif);font-weight:400;font-size:calc(25px * var(--fscale,1));margin:8px 0 16px;line-height:1.15}
+  .myad-headline{font-family:"clarendon-urw","Clarendon URW",var(--serif);font-weight:400;font-size:calc(25px * var(--fscale,1));margin:8px 0 16px;line-height:1.15}
   .myad-desc{font-size:15px;line-height:1.6;margin:0 0 20px}
   .kicker{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
   .myad-meta{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;border-top:1px solid var(--line);padding-top:18px}
@@ -555,7 +552,7 @@
   /* ---------- Settings ---------- */
   .settings{display:flex;flex-direction:column;gap:30px}
   /* Settings type, a step up from the original 18/14/12: section 21, row title 16, description 14 */
-  .set-section .sec-head{font-family:"Clarendon URW",var(--serif);font-weight:400;font-size:21px;margin:0 0 3px}
+  .set-section .sec-head{font-family:"clarendon-urw","Clarendon URW",var(--serif);font-weight:400;font-size:21px;margin:0 0 3px}
   .set-section .sec-sub{font-size:14px;color:var(--line-strong);margin:0 0 14px}
   .set-card{background:var(--panel);border:1.5px solid var(--line);border-radius:var(--radius);overflow:hidden}
   .set-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 16px}
@@ -566,9 +563,8 @@
   /* row descriptions explain what a setting does, so they need to be readable: Outline
      Variant (6.3:1 light / 7.6:1 dark), not Caption Text (2.5:1) */
   .set-row .rs{font-size:14px;color:var(--line-strong);margin-top:3px;line-height:1.45}
-  /* text block drops 2.5px onto the row's centre, level with the toggle/button —
-     Franklin's caps sit above the middle of the line box flex centres on */
-  .set-row .rl-wrap{min-width:0;position:relative;top:2.5px}
+  /* optical: title+description block sits ~0.9px high in this box with Adobe franklin-gothic (measured on retina) */
+  .set-row .rl-wrap{min-width:0;position:relative;top:0.9px}
   .toggle{width:44px;height:26px;border-radius:999px;border:1.5px solid var(--line-strong);background:var(--fill);position:relative;flex:0 0 auto;padding:0}
   /* the knob was pinned with top:2px, which is measured from the padding box —
      inside the 1.5px border — so it sat 3.5px from the outer edge against 4.5px
@@ -595,7 +591,7 @@
   .ob-dot.on{opacity:1;background:var(--ink)}
   .ob-stepcount{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
   .ob-kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
-  .ob-body h2{font-family:"Clarendon URW",var(--serif);font-weight:400;font-size:28px;margin:0 0 8px}
+  .ob-body h2{font-family:"clarendon-urw","Clarendon URW",var(--serif);font-weight:400;font-size:28px;margin:0 0 8px}
   .ob-body h2 .req-mark{font-size:.5em;vertical-align:super;font-weight:700}
   .ob-sub{font-size:15px;color:var(--muted);margin:0 0 8px;line-height:1.5}
   .ob-step{display:flex;flex-direction:column;gap:24px}
@@ -607,7 +603,7 @@
   .ob-brand{line-height:0;color:var(--ink)}
   .ob-wordmark{width:128px;height:92px;display:inline-block}   /* SVG native 93×67, +15% then +20% */
   .ob-tag{font-size:11px;letter-spacing:.24em;color:var(--muted);text-transform:uppercase;margin:10px 0 30px}
-  .ob-welcome h2{font-family:"Clarendon URW",var(--serif);font-weight:400;font-size:26px;margin:0 0 10px}
+  .ob-welcome h2{font-family:"clarendon-urw","Clarendon URW",var(--serif);font-weight:400;font-size:26px;margin:0 0 10px}
   .ob-welcome p{font-size:15px;color:var(--muted);line-height:1.6;margin:0 auto}
   .ob-nav{display:flex;justify-content:space-between;gap:12px}
   .ob-welcome-nav{display:flex;flex-direction:column;gap:14px;width:100%}
@@ -618,7 +614,7 @@
   .hiw{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:100%;padding:6px 0 4px}
   .hiw-kicker{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
   .hiw-illus{width:128px;height:128px;border-radius:14px;background:var(--fill);border:1.5px solid var(--line-strong);margin-bottom:24px}
-  .hiw-h{font-family:"Clarendon URW",var(--serif);font-weight:400;font-size:25px;margin:0 0 12px}
+  .hiw-h{font-family:"clarendon-urw","Clarendon URW",var(--serif);font-weight:400;font-size:25px;margin:0 0 12px}
   .hiw-p{font-size:15px;color:var(--muted);line-height:1.65;max-width:340px;margin:0 auto}
   .ob-nav .btn{flex:1}
   .photo-drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:34px 20px;border:1.5px dashed var(--line-strong);border-radius:12px;background:var(--fill-2);cursor:pointer;text-align:center}
@@ -636,7 +632,7 @@
   .photo-tips-link svg{width:15px;height:15px;flex:none}
   /* Photo tips overlay */
   .ptips{z-index:120;align-items:flex-end}
-  .ptips-title{font-family:"Clarendon URW",var(--serif);font-weight:400;font-size:24px;margin:6px 0 10px;line-height:1.15}
+  .ptips-title{font-family:"clarendon-urw","Clarendon URW",var(--serif);font-weight:400;font-size:24px;margin:6px 0 10px;line-height:1.15}
   .ptips-sub{font-size:15px;color:var(--muted);line-height:1.6;margin:0 0 22px}
   .ptips-section{margin-bottom:22px}
   .ptips-section:last-child{margin-bottom:0}
@@ -666,6 +662,7 @@
   .mp-meta .btn{align-self:flex-start}
   .ic-lock{width:12px;height:12px;display:inline-block;vertical-align:-1.5px;flex:none}
 </style>
+<link rel="stylesheet" href="https://use.typekit.net/wrp0uro.css">
 </head>
 <body>
 
@@ -900,15 +897,15 @@ const MY_AD = {
 // who has it installed/Adobe-activated) with a free Google Fonts stand-in behind it for the wireframe.
 // w = font-weight, it = italic — honor the specific cut the user asked for.
 const HEADING_FONTS = [
-  {name:'TT Modernoir',               css:"'TT Modernoir', 'Bodoni Moda', serif",             vibe:'High-fashion, dramatic', scale:1.00, w:600},
-  {name:'Divulga',                    css:"'Divulga', 'Anton', sans-serif",                   vibe:'Bold, loud',             scale:0.92},
+  {name:'TT Modernoir',               css:"'tt-modernoir', 'TT Modernoir', 'Bodoni Moda', serif",             vibe:'High-fashion, dramatic', scale:1.00, w:600},
+  {name:'Divulga',                    css:"'r41-divulga', 'Divulga', 'Anton', sans-serif",                   vibe:'Bold, loud',             scale:0.92},
   {name:'EB Garamond',                css:"'EB Garamond', serif",                             vibe:'Classic, literary',      scale:1.08, w:600},
-  {name:'Flower Power',               css:"'Flower Power', 'Pacifico', cursive",              vibe:'Groovy, playful',        scale:1.00},
-  {name:'ITC Avant Garde Gothic Pro', css:"'ITC Avant Garde Gothic Pro', 'Jost', sans-serif", vibe:'Geometric, mod',         scale:1.00, w:700, it:true},
+  {name:'Flower Power',               css:"'flower-power', 'Flower Power', 'Pacifico', cursive",              vibe:'Groovy, playful',        scale:1.00},
+  {name:'ITC Avant Garde Gothic Pro', css:"'itc-avant-garde-gothic-pro', 'ITC Avant Garde Gothic Pro', 'Jost', sans-serif", vibe:'Geometric, mod',         scale:1.00, w:700, it:true},
   {name:'Courier Prime',              css:"'Courier Prime', monospace",                       vibe:'Typewriter, plain',      scale:1.15},
-  {name:'Job Clarendon',              css:"'Job Clarendon', 'Roboto Slab', serif",            vibe:'Slab, sturdy',           scale:1.00},
-  {name:'Gothicus Roman',             css:"'Gothicus Roman', 'UnifrakturCook', cursive",      vibe:'Gothic, blackletter',    scale:1.05, w:700},
-  {name:'Cooper Std',                 css:"'Cooper Std', 'Alfa Slab One', serif",             vibe:'Chunky, retro',          scale:0.95, it:true},
+  {name:'Job Clarendon',              css:"'job-clarendon', 'Job Clarendon', 'Roboto Slab', serif",            vibe:'Slab, sturdy',           scale:1.00},
+  {name:'Gothicus Roman',             css:"'gothicus-roman', 'Gothicus Roman', 'UnifrakturCook', cursive",      vibe:'Gothic, blackletter',    scale:1.05, w:700},
+  {name:'Cooper Std',                 css:"'cooper-black-std', 'Cooper Std', 'Alfa Slab One', serif",             vibe:'Chunky, retro',          scale:0.95, it:true},
 ];
 const BODY_FONTS = [
   {name:'Courier Prime',   css:"'Courier Prime', monospace"},
@@ -1100,11 +1097,13 @@ const ZOOM_ICON = plus => `<svg class="zoom-ic" viewBox="0 0 24 24" aria-hidden=
   <line x1="6" y1="12" x2="18" y2="12"/>${plus ? '<line x1="12" y1="6" x2="12" y2="18"/>' : ''}
 </svg>`;
 
+// 5 columns of 124.8px (unchanged ad width) + 4 × 28px gutters + 40px side padding
+const PAPER_W = 776;
 function renderPaper(){
   scroll.classList.add('paper-mode');
   scroll.innerHTML = `
     <div class="paper-viewport" id="paperVp">
-      <div class="paper" id="paper">
+      <div class="paper" id="paper" style="width:${PAPER_W}px">   <!-- width set before packPaper measures the columns -->
         <div class="paper-cols" id="paperCols">${'<div class="paper-col"></div>'.repeat(PAPER_COLS)}</div>
         <div class="paper-foot">– ${TODAY_STR} –</div>
       </div>
@@ -1127,11 +1126,28 @@ const PAPER_FILLERS = [
   `<div class="filler filler-horo"><div class="filler-title">* Today's Horoscope *</div><p class="filler-text">${HORO_TEXT}</p></div>`,
   `<div class="filler filler-promo"><div class="filler-title">Want to see more classifieds?</div><p class="filler-text">Upgrade to Premium</p><button class="filler-btn" type="button">Upgrade</button></div>`,
 ];
+// Long ads stop at PAPER_MAX_LINES in the paper and end "… →" (tapping the ad opens the full
+// text). Cut on a word boundary, found by binary search on the rendered height.
+const PAPER_MAX_LINES = 12;
+function capClipBody(el){
+  if(!el) return;
+  const lh = parseFloat(getComputedStyle(el).lineHeight), max = lh * PAPER_MAX_LINES + 1;
+  if(el.offsetHeight <= max) return;
+  const words = el.textContent.split(' '), more = '<span class="clip-more">&hairsp;…&thinsp;<svg class="ic-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg></span>';
+  let lo = 1, hi = words.length;
+  while(lo < hi){
+    const mid = (lo + hi + 1) >> 1;
+    el.innerHTML = words.slice(0, mid).join(' ') + more;
+    if(el.offsetHeight <= max) lo = mid; else hi = mid - 1;
+  }
+  el.innerHTML = words.slice(0, lo).join(' ').replace(/[,;:—–-]+$/,'') + more;
+}
 function packPaper(){
   const grid = document.getElementById('paperCols'), cols = [...grid.children];
   const tmp = document.createElement('div'); tmp.innerHTML = orderedAds().map(clipHTML).join('') + PAPER_FILLERS.join('');
   const items = [...tmp.children], clips = items.slice(0, items.length - PAPER_FILLERS.length), fills = items.slice(clips.length);
   cols[0].append(...items);   // measure everything at real column width
+  clips.forEach(c=> capClipBody(c.querySelector('.clip-body')));
   const hOf = el => el.offsetHeight + parseFloat(getComputedStyle(el).marginBottom);
   const h = clips.map(hOf), fh = fills.map(f => { f.style.flex = 'none'; const v = hOf(f); f.style.flex = ''; return v; });
   // Ads stay in reading order (down column 1, then column 2…). Break them into columns so
@@ -1173,9 +1189,6 @@ function initPaperZoom(){
   };
   const noteZoom = ()=>{ paperZoomLearned = true; hint.classList.remove('show'); wake(); };
   zoomEl.addEventListener('pointerdown', wake);
-  // 5 columns of 124.8px (unchanged ad width) + 4 × 28px gutters + 40px side padding
-  const PAPER_W = 776;
-  paper.style.width = PAPER_W + 'px';
   paper.style.transformOrigin = '0 0';
   const paperH = paper.offsetHeight;            // natural (unscaled) height
   let minScale = 0.5, maxScale = 2.2, scale = 0.5, panX = 0, panY = 0, userZoomed = false;
@@ -1563,7 +1576,7 @@ function updateMsgBadge(){
 }
 // Badge count as SVG text positioned by the glyphs' real ink box (canvas metrics), not the
 // font's line box — so "1", "4", "7" and "9+" all centre exactly in a 16px circle/pill.
-const BADGE_FONT = '400 10px "ITC Franklin Gothic LT Pro"', BADGE_H = 16;
+const BADGE_FONT = '400 10px "franklin-gothic","ITC Franklin Gothic LT Pro",sans-serif', BADGE_H = 16;
 function badgeSVG(label){
   const c = badgeSVG.ctx || (badgeSVG.ctx = document.createElement('canvas').getContext('2d'));
   c.font = BADGE_FONT;
@@ -1910,7 +1923,7 @@ function renderCustomize(){
     </div>`;
   scroll.innerHTML = `
     <div class="customize">
-      <button class="back" id="cBack" style="margin-bottom:14px">← Back to My Ad</button>
+      <button class="back" id="cBack" style="margin-bottom:14px"><svg class="ic-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>Back to My Ad</button>
       <div id="custPreview">${previewAd(heading, body)}</div>
       <div class="cust-hint">Live preview</div>
       <div class="cust-drops">
@@ -2380,6 +2393,41 @@ window.addEventListener('resize', ()=>{
 });
 updateMsgBadge();
 setView('feed');
+</script>
+<!-- ── Portfolio bridge (ferri.design) ─────────────────────────────────────
+     Only active when this prototype is embedded in an iframe.
+     · parent → here : {type:'classy:theme', theme:'light'|'dark'}
+     · here → parent : {type:'classy:theme', theme} whenever body.dark changes,
+                       including from the in-app Settings toggle
+     · ?theme=dark in the URL sets the starting theme. -->
+<style>html.embedded body{background:transparent}</style>
+<script>
+(function(){
+  var embedded = window.self !== window.top;
+  var q = new URLSearchParams(location.search).get('theme');
+  if(q === 'dark') document.body.classList.add('dark');
+  if(!embedded) return;
+  document.documentElement.classList.add('embedded');
+  // leave room for the phone's drop shadow inside the iframe (stock fit leaves only 16px)
+  function fitEmbedded(){
+    var f = Math.min(1, (innerHeight-160)/852, (innerWidth-150)/393);
+    document.documentElement.style.setProperty('--fit', f);
+  }
+  addEventListener('resize', fitEmbedded); fitEmbedded();
+  function current(){ return document.body.classList.contains('dark') ? 'dark' : 'light'; }
+  function report(){ parent.postMessage({type:'classy:theme', theme: current()}, location.origin); }
+  window.addEventListener('message', function(e){
+    if(e.origin !== location.origin || !e.data || e.data.type !== 'classy:theme') return;
+    document.body.classList.toggle('dark', e.data.theme === 'dark');
+    // keep the in-app Settings switch in step if that screen is open
+    var t = document.getElementById('darkModeToggle');
+    if(t) t.classList.toggle('on', e.data.theme === 'dark');
+  });
+  var last = current();
+  new MutationObserver(function(){ var c = current(); if(c !== last){ last = c; report(); } })
+    .observe(document.body, {attributes:true, attributeFilter:['class']});
+  report();
+})();
 </script>
 </body>
 </html>
