@@ -626,7 +626,7 @@
   .ob-wordmark{width:128px;height:92px;display:inline-block}   /* SVG native 93×67, +15% then +20% */
   .ob-tag{font-size:11px;letter-spacing:.24em;color:var(--muted);text-transform:uppercase;margin:10px 0 30px}
   .ob-welcome h2{font-family:"clarendon-urw","Clarendon URW",var(--serif);font-weight:400;font-size:26px;margin:0 0 10px}
-  .ob-welcome p{font-size:15px;color:var(--muted);line-height:1.6;margin:0 auto}
+  .ob-welcome p{font-size:15px;color:var(--sub);line-height:1.6;margin:0 auto}
   .ob-nav{display:flex;justify-content:space-between;gap:12px}
   .ob-welcome-nav{display:flex;flex-direction:column;gap:14px;width:100%}
   /* .ob-nav .btn{flex:1} is for the side-by-side Back/Next pair; in this column it
@@ -637,7 +637,7 @@
   .hiw-kicker{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
   .hiw-illus{width:128px;height:128px;border-radius:14px;background:var(--fill);border:1.5px solid var(--line-strong);margin-bottom:24px}
   .hiw-h{font-family:"clarendon-urw","Clarendon URW",var(--serif);font-weight:400;font-size:25px;margin:0 0 12px}
-  .hiw-p{font-size:15px;color:var(--muted);line-height:1.65;max-width:340px;margin:0 auto}
+  .hiw-p{font-size:15px;color:var(--sub);line-height:1.65;max-width:340px;margin:0 auto}
   .ob-nav .btn{flex:1}
   .photo-drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:34px 20px;border:1.5px dashed var(--line-strong);border-radius:12px;background:var(--fill-2);cursor:pointer;text-align:center}
   .photo-drop .pu-ico{font-size:24px;line-height:1;margin-bottom:2px}
@@ -652,6 +652,11 @@
   .photo-attached{margin-top:14px}
   .photo-tips-link{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;background:none;border:0;color:var(--muted);font-family:inherit;font-size:13px;cursor:pointer;padding:2px;text-decoration:underline;text-underline-offset:3px;margin-top:4px}
   .photo-tips-link svg{width:15px;height:15px;flex:none}
+  /* hidden for now, not deleted: the illustration boxes are placeholders until real art
+     lands, and the photo-tips link is parked — openPhotoTips and its sheet still exist.
+     Delete these two lines to bring both back. */
+  .hiw-illus{display:none}
+  .photo-tips-link{display:none}
   /* Photo tips overlay */
   .ptips{z-index:120;align-items:flex-end}
   .ptips-title{font-family:"clarendon-urw","Clarendon URW",var(--serif);font-weight:400;font-size:24px;margin:6px 0 10px;line-height:1.15}
