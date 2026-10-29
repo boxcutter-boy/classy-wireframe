@@ -209,11 +209,11 @@
   }
   .card:active{transform:scale(.992)}
   /* ad typography (global): decorative font ONLY on the name; all-caps headline + body share the body font */
-  .ad-name{font-weight:500;font-size:calc(26px * var(--fscale,1));line-height:1.05;color:var(--ink);margin:0 0 6px}
-  .ad-place{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+  .post-name{font-weight:500;font-size:calc(26px * var(--fscale,1));line-height:1.05;color:var(--ink);margin:0 0 6px}
+  .post-place{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
   /* 600 = Franklin Demi; 700 has no cut of its own and falls through to Heavy */
-  .ad-headline{font-weight:600;font-size:13px;letter-spacing:.07em;text-transform:uppercase;line-height:1.3;color:var(--ink);margin:0 0 11px}
-  .ad-body{font-size:15px;line-height:1.5;color:var(--ink);margin:0}
+  .post-headline{font-weight:600;font-size:13px;letter-spacing:.07em;text-transform:uppercase;line-height:1.3;color:var(--ink);margin:0 0 11px}
+  .post-body{font-size:15px;line-height:1.5;color:var(--ink);margin:0}
   .feed-name{font-size:12.5px;font-weight:500;color:var(--ink);margin:0 0 4px}
   .feed-headline{font-weight:500;font-size:calc(24px * var(--fscale,1));line-height:1.12;color:var(--ink);margin:0 0 10px}
   .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
@@ -226,7 +226,7 @@
   .card.replied{background:var(--replied);border-color:var(--line)}
   /* opacity, not a colour — it blends toward the card behind, so the text goes
      lighter in light mode and darker in dark mode without a second token */
-  .card.replied .feed-name,.card.replied .feed-headline,.card.replied .ad-body,.card.replied .tags{opacity:.34}
+  .card.replied .feed-name,.card.replied .feed-headline,.card.replied .post-body,.card.replied .tags{opacity:.34}
   .card.replied:active{transform:none}
   .replied-note{display:flex;align-items:center;gap:7px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:12px;font-weight:600;color:var(--muted)}
   .replied-note::before{content:'✓';display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--ink);color:var(--panel);font-size:10px;flex:none}
@@ -385,12 +385,12 @@
   .req .their-msg .msg-text{font-style:italic}
   .req-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   /* pending request shown on their ad (feed / paper / View ad) in place of "Reply to this ad" */
-  .ad-request{margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
-  .ad-req-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:13px}
-  .ad-req-head .wrote{font-weight:600;color:var(--ink)}
-  .ad-req-msg{font-size:15px;line-height:1.55;font-style:italic;color:var(--ink);margin:8px 0 16px}
-  .ad-req-actions{display:flex;gap:10px}
-  .ad-req-actions .btn{flex:1}
+  .post-request{margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+  .post-req-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:13px}
+  .post-req-head .wrote{font-weight:600;color:var(--ink)}
+  .post-req-msg{font-size:15px;line-height:1.55;font-style:italic;color:var(--ink);margin:8px 0 16px}
+  .post-req-actions{display:flex;gap:10px}
+  .post-req-actions .btn{flex:1}
   .req-actions .link-btn{margin-right:auto}
   .spread{display:flex;align-items:center;justify-content:space-between;gap:16px}
   .empty-msg{color:var(--muted);font-size:15px;line-height:1.6;padding:20px 0}
@@ -460,11 +460,11 @@
   .composer .sendbtn{width:46px;height:46px;flex:0 0 auto;padding:0;border-radius:10px;border-color:transparent}   /* no outline, disabled or not */
   .send-ic{width:20px;height:20px;display:block;fill:currentColor}
   /* pinned ad preview at the top of a conversation */
-  .ad-snip{background:var(--fill-2);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-bottom:18px;cursor:pointer}
-  .ad-snip .ad-name{font-size:calc(16px * var(--fscale,1));margin:0 0 2px}
-  .ad-snip .ad-place{font-size:10px;margin:0 0 6px}
-  .ad-snip .ad-headline{font-size:11px;margin:0 0 6px}
-  .ad-snip p{font-size:12.5px;color:var(--muted);margin:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .post-snip{background:var(--fill-2);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-bottom:18px;cursor:pointer}
+  .post-snip .post-name{font-size:calc(16px * var(--fscale,1));margin:0 0 2px}
+  .post-snip .post-place{font-size:10px;margin:0 0 6px}
+  .post-snip .post-headline{font-size:11px;margin:0 0 6px}
+  .post-snip p{font-size:12.5px;color:var(--muted);margin:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
   /* inline face-reveal prompt in the conversation body (only once a mutual reveal is unlocked) */
   .reveal-inline{align-self:center;max-width:300px;margin:8px auto 2px;padding:15px 16px;border:1px solid var(--line);border-radius:14px;background:var(--fill-2);display:flex;flex-direction:column;align-items:center;gap:11px;text-align:center}
   .reveal-inline .ri-text{font-size:13px;color:var(--line-strong);line-height:1.45}   /* 5.8:1 light / 5.2:1 dark (was 2.3:1) */
@@ -1068,8 +1068,8 @@ function endPaperHTML(){
 }
 // Ad typography (global): the decorative font is used ONLY on the name + age;
 // the headline (ALWAYS ALL CAPS) and the body copy share the ad's body font.
-function adNameHTML(a){ return `<div class="ad-name" style="${hstyle(a.headingFont)}">${a.name}, ${a.age}</div>`; }
-function adHeadlineHTML(a){ return `<div class="ad-headline" style="font-family:${cssFor(a.bodyFont)}${headlineWeight()}">${a.headline}</div>`; }
+function adNameHTML(a){ return `<div class="post-name" style="${hstyle(a.headingFont)}">${a.name}, ${a.age}</div>`; }
+function adHeadlineHTML(a){ return `<div class="post-headline" style="font-family:${cssFor(a.bodyFont)}${headlineWeight()}">${a.headline}</div>`; }
 // Feed cards flip the hierarchy: the headline leads in the display font, the name sits above it as a small byline in the body font.
 function feedNameHTML(a){ return `<div class="feed-name" style="font-family:${cssFor(a.bodyFont)}">${a.name}, ${a.age}</div>`; }
 function feedHeadlineHTML(a){ return `<div class="feed-headline" style="${hstyle(a.headingFont)}">${a.headline}</div>`; }
@@ -1079,7 +1079,7 @@ function feedCard(a){
   card.className = 'card' + (replied ? ' replied' : '');
   card.dataset.ad = a.id;
   card.innerHTML = feedNameHTML(a) + feedHeadlineHTML(a)
-    + `<p class="ad-body" style="font-family:${cssFor(a.bodyFont)}">${a.desc}</p>`
+    + `<p class="post-body" style="font-family:${cssFor(a.bodyFont)}">${a.desc}</p>`
     + `<div class="tags"><span class="tag-chip">${a.gender.join(' / ')}</span><span class="tag-chip">${a.location}</span></div>`
     + (replied ? '<div class="replied-note">You replied to this ad</div>' : '');
   if(hasAd) card.addEventListener('click', ()=>openAd(a.id));
@@ -1299,17 +1299,17 @@ function openAd(id, showReply=true){
   const replied = repliedAdIds.has(id);
   const req = REQUESTS.find(r=>r.adId===id);   // they wrote to you and you haven't answered yet
   const action = !showReply ? '' : req ? `
-    <div class="ad-request">
-      <div class="ad-req-head"><span class="wrote">${a.name} wrote to you</span><span class="when">${req.when}</span></div>
-      <p class="ad-req-msg">${req.msg}</p>
-      <div class="ad-req-actions"><button class="btn ghost" id="adDecline">Decline</button><button class="btn" id="adAccept">Accept</button></div>
+    <div class="post-request">
+      <div class="post-req-head"><span class="wrote">${a.name} wrote to you</span><span class="when">${req.when}</span></div>
+      <p class="post-req-msg">${req.msg}</p>
+      <div class="post-req-actions"><button class="btn ghost" id="postDecline">Decline</button><button class="btn" id="postAccept">Accept</button></div>
     </div>` : replied
       ? '<button class="btn ghost block" id="goConvoBtn" style="margin-top:20px">You replied — open conversation</button>'
       : '<button class="btn block" id="replyBtn" style="margin-top:20px">Reply to this ad</button>';
   sheet.innerHTML = `
     <button class="close" id="closeSheet">×</button>
     ${adNameHTML(a)}
-    <div class="ad-place">${a.location}</div>
+    <div class="post-place">${a.location}</div>
     ${adHeadlineHTML(a)}
     <p class="myad-desc" style="font-family:${cssFor(a.bodyFont)}">${a.desc}</p>
     ${adMetaGrid(a)}
@@ -1320,9 +1320,9 @@ function openAd(id, showReply=true){
   if(rb) rb.onclick = ()=>{ closeSheet(); openThread(id); };
   const gc = document.getElementById('goConvoBtn');
   if(gc) gc.onclick = ()=>{ closeSheet(); openThread(id); };
-  const ac = document.getElementById('adAccept');
+  const ac = document.getElementById('postAccept');
   if(ac) ac.onclick = ()=>{ closeSheet(); acceptRequest(id); };
-  const dc = document.getElementById('adDecline');
+  const dc = document.getElementById('postDecline');
   if(dc) dc.onclick = ()=> openDeclineConfirm(id);
 }
 function closeSheet(){ overlay.classList.remove('open', 'card-modal'); }
@@ -1798,10 +1798,10 @@ function renderThread(){
           </div>
         </div>
       </div>
-      <div class="ad-snip" id="adSnip" title="View full ad">
-        <div class="ad-name" style="${hstyle(a.headingFont)}">${a.name}, ${a.age}</div>
-        <div class="ad-place">${a.location}</div>
-        <div class="ad-headline" style="font-family:${cssFor(a.bodyFont)}${headlineWeight()}">${a.headline}</div>
+      <div class="post-snip" id="postSnip" title="View full ad">
+        <div class="post-name" style="${hstyle(a.headingFont)}">${a.name}, ${a.age}</div>
+        <div class="post-place">${a.location}</div>
+        <div class="post-headline" style="font-family:${cssFor(a.bodyFont)}${headlineWeight()}">${a.headline}</div>
         <p style="font-family:${cssFor(a.bodyFont)}">${a.desc}</p>
       </div>
       <div class="msgs">${msgsBlock}</div>
@@ -1814,7 +1814,7 @@ function renderThread(){
     </div>`;
   document.getElementById('back').onclick = ()=>setView('messages');
   document.getElementById('threadName').onclick = ()=>openAd(a.id, false);
-  document.getElementById('adSnip').onclick = ()=>openAd(a.id, false);
+  document.getElementById('postSnip').onclick = ()=>openAd(a.id, false);
   const moreBtn = document.getElementById('moreBtn'), threadMenu = document.getElementById('threadMenu');
   moreBtn.onclick = (e)=>{
     e.stopPropagation();
@@ -1910,7 +1910,7 @@ function renderMyAd(){
     <div class="myad">
       <div class="myad-card">
         ${adNameHTML(a)}
-        <div class="ad-place">${a.location}</div>
+        <div class="post-place">${a.location}</div>
         ${adHeadlineHTML(a)}
         <p class="myad-desc" style="font-family:${cssFor(a.bodyFont)}">${a.desc}</p>
         ${adMetaGrid(a)}
@@ -1944,9 +1944,9 @@ function renderCustomize(){
   let heading = a.headingFont, body = a.bodyFont;
   const previewAd = (h, b)=>`
     <div class="myad-card">
-      <div class="ad-name" style="${hstyle(h)}">${a.name}, ${a.age}</div>
-      <div class="ad-place">${a.location}</div>
-      <div class="ad-headline" style="font-family:${cssFor(b)}">${a.headline}</div>
+      <div class="post-name" style="${hstyle(h)}">${a.name}, ${a.age}</div>
+      <div class="post-place">${a.location}</div>
+      <div class="post-headline" style="font-family:${cssFor(b)}">${a.headline}</div>
       <p class="myad-desc" style="font-family:${cssFor(b)}">${a.desc}</p>
     </div>`;
   scroll.innerHTML = `
@@ -2038,18 +2038,18 @@ function openEditAd(){
   sheet.innerHTML = `
     <h3>Edit your ad</h3>
     <div class="form" style="margin-top:10px">
-      <div class="fgroup"><label class="lab">Your name</label><input class="field-in" id="adName" value="${me.name}"></div>
+      <div class="fgroup"><label class="lab">Your name</label><input class="field-in" id="postName" value="${me.name}"></div>
       <div style="display:flex;gap:14px">
-        <div class="fgroup" style="flex:0 0 96px"><label class="lab">Age</label><input class="field-in" id="adAge" value="${me.age}"></div>
-        <div class="fgroup" style="flex:1"><label class="lab">Location</label><input class="field-in" id="adLoc" value="${me.location}"></div>
+        <div class="fgroup" style="flex:0 0 96px"><label class="lab">Age</label><input class="field-in" id="postAge" value="${me.age}"></div>
+        <div class="fgroup" style="flex:1"><label class="lab">Location</label><input class="field-in" id="postLoc" value="${me.location}"></div>
       </div>
       <div class="fgroup">
         <div class="lab-row"><label class="lab">Ad headline</label><span class="counter" id="cntHeadline"></span></div>
-        <input class="field-in" id="adHeadline" maxlength="250" value="${me.headline}">
+        <input class="field-in" id="postHeadline" maxlength="250" value="${me.headline}">
       </div>
       <div class="fgroup">
         <div class="lab-row"><label class="lab">Ad description</label><span class="counter" id="cntDesc"></span></div>
-        <textarea class="field-in autogrow" id="adDesc" maxlength="1000">${me.desc}</textarea>
+        <textarea class="field-in autogrow" id="postDesc" maxlength="1000">${me.desc}</textarea>
       </div>
       ${accField('Gender', checkGroup('gender',['Man','Woman','Trans man','Trans woman','Non-binary','Write in…'],me.gender,false,'grid2'), 'gender')}
       ${accField('Race / ethnicity', checkGroup('race',['Asian','Black','Hispanic / Latino','Indigenous','Middle Eastern','Pacific Islander','White','Mixed','Prefer not to say','Write in…'],me.race,false,'grid2',['Prefer not to say']), 'race')}
@@ -2067,10 +2067,10 @@ function openEditAd(){
   document.getElementById('cancelAd').onclick = closeSheet;
   document.getElementById('saveAd').onclick = ()=>{
     const gv = id => (document.getElementById(id)?.value || '');
-    me.name = gv('adName').trim() || me.name;
-    me.age = gv('adAge').trim() || me.age;
-    me.location = gv('adLoc').trim() || me.location;
-    me.headline = gv('adHeadline'); me.desc = gv('adDesc'); me.weight = accText(sheet,'appearance');
+    me.name = gv('postName').trim() || me.name;
+    me.age = gv('postAge').trim() || me.age;
+    me.location = gv('postLoc').trim() || me.location;
+    me.headline = gv('postHeadline'); me.desc = gv('postDesc'); me.weight = accText(sheet,'appearance');
     me.gender = obChecked(sheet,'gender'); me.pronouns = obChecked(sheet,'pronouns'); me.race = obChecked(sheet,'race'); me.sexuality = obChecked(sheet,'sexuality');
     me.religion = obChecked(sheet,'religion')[0]||''; me.politics = obChecked(sheet,'politics')[0]||''; me.kids = obChecked(sheet,'kids')[0]||'';
     me.relationship = obChecked(sheet,'rel')[0]||''; me.relstyle = obChecked(sheet,'relstyle')[0]||'';
@@ -2087,8 +2087,8 @@ function openEditAd(){
     el.addEventListener('input', update); update();
     return el;
   }
-  bindCounter('adHeadline', 'cntHeadline', 250);
-  const descEl = bindCounter('adDesc', 'cntDesc', 1000);
+  bindCounter('postHeadline', 'cntHeadline', 250);
+  const descEl = bindCounter('postDesc', 'cntDesc', 1000);
   const grow = ()=>{ descEl.style.height = 'auto'; descEl.style.height = descEl.scrollHeight + 'px'; };
   descEl.addEventListener('input', grow); grow();
 }
@@ -2257,9 +2257,9 @@ function obAdCard(){
   const d = obData;
   const meta = adMetaGrid({ gender:d.gender, race:d.race, religion:d.religion, pronouns:d.pronouns, showSexuality:d.showSexuality, sexuality:d.sexuality, politics:d.politics, kids:d.kids, relationship:d.rel, relstyle:d.relstyle, weight:d.build });
   return `<div class="myad-card">
-    <div class="ad-name" style="${hstyle(d.headingFont)}">${d.name||'Your name'}, ${d.age||'—'}</div>
-    <div class="ad-place">${d.location||'Your city'}</div>
-    <div class="ad-headline" style="font-family:${cssFor(d.bodyFont)}${headlineWeight()}">${d.headline||'Your headline'}</div>
+    <div class="post-name" style="${hstyle(d.headingFont)}">${d.name||'Your name'}, ${d.age||'—'}</div>
+    <div class="post-place">${d.location||'Your city'}</div>
+    <div class="post-headline" style="font-family:${cssFor(d.bodyFont)}${headlineWeight()}">${d.headline||'Your headline'}</div>
     <p class="myad-desc" style="font-family:${cssFor(d.bodyFont)}">${d.desc||'Your ad copy will show here.'}</p>
     ${meta}
   </div>`;
