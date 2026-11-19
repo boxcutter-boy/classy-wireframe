@@ -618,8 +618,6 @@
   .ob-dots{display:flex;gap:7px;justify-content:center;min-height:8px}
   .ob-dot{width:7px;height:7px;border-radius:50%;background:var(--line-strong);opacity:.45}
   .ob-dot.on{opacity:1;background:var(--ink)}
-  .ob-stepcount{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-  .ob-kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
   .ob-body h2{font-family:"clarendon-urw","Clarendon URW",var(--serif);font-weight:400;font-size:28px;margin:0 0 8px}
   .ob-body h2 .req-mark{font-size:.5em;vertical-align:super;font-weight:700}
   .ob-sub{font-size:15px;color:var(--sub);margin:0 0 8px;line-height:1.5}
@@ -641,7 +639,6 @@
   .ob-nav .ob-welcome-nav .btn{flex:none}
   .hiw-link{background:none;border:0;color:var(--muted);font-size:14px;font-family:inherit;letter-spacing:.02em;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:6px;align-self:center}
   .hiw{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:100%;padding:6px 0 4px}
-  .hiw-kicker{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
   .hiw-illus{width:128px;height:128px;border-radius:14px;background:var(--fill);border:1.5px solid var(--line-strong);margin-bottom:24px}
   .hiw-h{font-family:"clarendon-urw","Clarendon URW",var(--serif);font-weight:400;font-size:25px;margin:0 0 12px}
   .hiw-p{font-size:15px;color:var(--sub);line-height:1.65;max-width:340px;margin:0 auto}
@@ -2304,7 +2301,7 @@ function renderHowItWorks(){
   const body = document.getElementById('obBody'), nav = document.getElementById('obNav'), dots = document.getElementById('obDots');
   const c = HIW_CARDS[hiwIndex], last = hiwIndex === HIW_CARDS.length - 1;
   dots.innerHTML = HIW_CARDS.map((_,k)=>`<span class="ob-dot ${k===hiwIndex?'on':''}"></span>`).join('');
-  body.innerHTML = `<div class="hiw"><div class="hiw-kicker">How it works</div><div class="hiw-illus"></div><h2 class="hiw-h">${c.h}</h2><p class="hiw-p">${c.p}</p></div>`;
+  body.innerHTML = `<div class="hiw"><div class="hiw-illus"></div><h2 class="hiw-h">${c.h}</h2><p class="hiw-p">${c.p}</p></div>`;
   nav.innerHTML = `<button class="btn ghost" id="hiwBack">Back</button><button class="btn" id="hiwNext">${last?'Write my ad':'Next'}</button>`;
   document.getElementById('hiwBack').onclick=()=>{ if(hiwIndex===0){ hiwIndex=-1; renderOnboarding(); } else { hiwIndex--; renderHowItWorks(); } };
   document.getElementById('hiwNext').onclick=()=>{ if(last){ hiwIndex=-1; obStep=1; renderOnboarding(); } else { hiwIndex++; renderHowItWorks(); } };
@@ -2312,7 +2309,7 @@ function renderHowItWorks(){
 function renderOnboarding(){
   const body = document.getElementById('obBody'), nav = document.getElementById('obNav'), dots = document.getElementById('obDots');
   const TOTAL = 6; // basics · personal · about you · photo · preferences · make it yours
-  dots.innerHTML = (obStep>=1 && obStep<=TOTAL) ? `<span class="ob-stepcount">Step ${obStep} of ${TOTAL}</span>` : '';
+  dots.innerHTML = (obStep>=1 && obStep<=TOTAL) ? Array.from({length:TOTAL}, (_,k)=>`<span class="ob-dot ${k===obStep-1?'on':''}"></span>`).join('') : '';   // pagination dots, like How it works
   if(obStep===0){
     body.innerHTML = `<div class="ob-welcome"><div class="ob-brand">${CLASSY_WORDMARK}</div><div class="ob-tag">Seek. Find.</div><p>On Classy you meet through what you write.<br>Let's put your personal in tomorrow's paper.</p></div>`;
     nav.innerHTML = `<div class="ob-welcome-nav"><button class="btn block" id="obNext">Write my ad</button><button class="hiw-link" id="obHiw">How it works</button></div>`;
@@ -2370,7 +2367,7 @@ function renderOnboarding(){
       ${accField('Relationship type', checkGroup('prefRel',['Hookup','Not sure','Something serious'],[obData.prefRel],true,'stacked'), 'prefRel')}</div>`;
     nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obNext">Next</button>`;
   } else {
-    body.innerHTML = `<div class="ob-step"><div class="ob-kicker">Optional</div><h2>Make it yours</h2>
+    body.innerHTML = `<div class="ob-step"><h2>Make it yours</h2>
       <p class="ob-sub">Here's your whole ad. Give it a font that fits your vibe, or post as-is — you can refine anything anytime in the Ad tab.</p>
       <div id="obCustPreview">${obAdCard()}</div>
       <div class="cust-drops">
