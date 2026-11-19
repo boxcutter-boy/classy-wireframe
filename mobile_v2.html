@@ -372,7 +372,7 @@
   .sender{font-weight:600;color:var(--ink)}
 
   /* ---------- Messages tabs & requests ---------- */
-  .tabs{display:flex;margin-bottom:20px;border-bottom:1px solid var(--line)}
+  .tabs{display:flex;margin:-12px 0 20px;border-bottom:1px solid var(--line)}   /* pulled up into the page's 20px top padding: the tabs' own padding already spaces them from the header */
   /* flex + align-items:center instead of vertical-align on the pill — a 18px
      badge next to 14px text never centres reliably by baseline alignment */
   /* 11px top/bottom became 12.8/9.2 — same total height, content 1.8px lower,
@@ -556,7 +556,7 @@
   .myad-meta{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;border-top:1px solid var(--line);padding-top:18px}
   .myad-meta div{font-size:13px}
   .myad-meta span{color:var(--muted);display:block;margin-bottom:2px}
-  .myad-foot{margin-top:16px;display:flex;flex-direction:column;gap:12px}
+  .myad-foot{margin-top:22px;display:flex;flex-direction:column;gap:12px}   /* inside the ad card, under its details */
   .myad-hint{font-size:12px;color:var(--muted);text-align:center}
   .myad-actions{display:flex;gap:10px}
   .myad-decotoggle{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:14px;padding:13px 15px;border:1.5px solid var(--line);border-radius:10px;background:var(--panel)}
@@ -689,9 +689,9 @@
   .mp-head{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:13px}
   .mp-row{display:flex;gap:15px;align-items:center}
   .mp-thumb{width:84px;height:106px;border-radius:9px;object-fit:cover;border:1px solid var(--line);flex:none;background:var(--fill)}
-  .mp-meta{display:flex;flex-direction:column;gap:11px}
+  .mp-meta{flex:1;display:flex;flex-direction:column;gap:11px}
   .mp-note{font-size:12.5px;color:var(--muted);line-height:1.45}
-  .mp-meta .btn{align-self:flex-start}
+  .mp-meta .btn{align-self:flex-end}
   .ic-lock{width:12px;height:12px;display:inline-block;vertical-align:-1.5px;flex:none}
 </style>
 <link rel="stylesheet" href="https://use.typekit.net/wrp0uro.css">
@@ -1907,7 +1907,7 @@ function myPhotoSlotHtml(){
     : `<div class="mp-thumb"></div>`;
   return `${thumb}
     <div class="mp-meta">
-      <div class="mp-note">${IC_LOCK} Hidden until you and a match both choose to reveal. Never shown on your public ad.</div>
+      <div class="mp-note">${IC_LOCK} Hidden until you and a match both choose to reveal.</div>
       <button class="btn ghost" id="mpChange">${MY_AD.photo?'Change photo':'Add photo'}</button>
     </div>`;
 }
@@ -1921,19 +1921,19 @@ function renderMyAd(){
         ${adHeadlineHTML(a)}
         <p class="myad-desc" style="font-family:${cssFor(a.bodyFont)}">${a.desc}</p>
         ${adMetaGrid(a)}
+        <div class="myad-foot">
+          <div class="myad-actions">
+            <button class="btn ghost" id="customizeAd">Customize</button>
+            <button class="btn" id="editAd">Edit ad</button>
+          </div>
+          <div class="myad-hint">This is how your ad appears to other members.</div>
+        </div>
       </div>
       ${hyperlegible ? `<div class="myad-decotoggle"><div class="dt-text"><div class="dt-label">Show decorative fonts</div><div class="dt-sub">Preview your ad in the fonts most members see.</div></div><button class="toggle ${myAdShowDecorative?'on':''}" id="decoToggle"></button></div>` : ''}
       <div class="myad-private">
-        <div class="mp-head">Private photo</div>
+        <div class="mp-head">Face reveal photo</div>
         <div class="mp-row" id="mpRow">${myPhotoSlotHtml()}</div>
         <input type="file" accept="image/*" id="myPhotoInput" hidden>
-      </div>
-      <div class="myad-foot">
-        <div class="myad-actions">
-          <button class="btn ghost" id="customizeAd">Customize</button>
-          <button class="btn" id="editAd">Edit ad</button>
-        </div>
-        <div class="myad-hint">This is how your ad appears to other members.</div>
       </div>
     </div>`;
   document.getElementById('editAd').onclick = openEditAd;
