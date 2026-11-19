@@ -160,17 +160,20 @@
   .issue{font-family:"clarendon-urw","Clarendon URW",var(--serif);font-size:12.5px;line-height:1.2;color:var(--muted);margin-top:2px}
   /* same 6px optical offset as .appbar-titles, so the buttons stay on the
      title's axis rather than the bar's geometric centre */
-  .appbar-actions{display:flex;align-items:center;gap:7px;flex:0 0 auto;position:relative;top:4px}
+  /* the 40px view toggle is taller than the title line, so it overhangs the content box
+     instead of growing it — negative margins keep every page's header the same height */
+  .appbar-actions{display:flex;align-items:center;gap:7px;flex:0 0 auto;position:relative;top:-0.5px;margin:-7px 0}
   .iconbtn{width:38px;height:38px;border:1px solid var(--line-strong);border-radius:10px;background:var(--panel);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;padding:0}
   .iconbtn svg{width:20px;height:20px}
   .iconbtn.on{background:var(--ink);color:var(--panel);border-color:var(--ink)}
   /* feed view toggle: newspaper ⇄ feed (icon-only segmented control) */
   /* outline, divider and the unselected icon all use --ink, the selected fill colour */
-  .viewseg{display:inline-flex;align-items:center;height:38px;border:1px solid var(--ink);border-radius:10px;overflow:hidden;flex:0 0 auto}
-  .viewseg button{display:flex;align-items:center;justify-content:center;background:var(--panel);border:0;color:var(--ink);padding:0 11px;height:100%}
-  .viewseg button + button{border-left:1px solid var(--ink)}
-  .viewseg button.active{background:var(--ink);color:var(--panel)}
-  .viewseg button svg{width:19px;height:19px;display:block}
+  /* two separate tiles (Figma: Feed View Toggle Button Group) — 40px, 8px radius, 6px apart */
+  .viewseg{display:inline-flex;align-items:center;gap:6px;flex:0 0 auto}
+  .viewseg button{display:flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;border:0;border-radius:8px;background:var(--panel);color:var(--line-strong)}
+  .viewseg button.active{background:var(--ink);color:var(--bg)}
+  body.dark .viewseg button:not(.active){background:var(--fill)}
+  .viewseg button svg{width:24px;height:24px;display:block}
 
   /* ---------- Scroll region ---------- */
   .scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 18px 30px}
@@ -713,10 +716,10 @@
       <div class="appbar-actions">
         <div class="viewseg" id="viewseg">
           <button data-fv="paper" title="Newspaper view" aria-label="Newspaper view">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5h11v12H5.5A1.5 1.5 0 0 1 4 17V6.5z"/><path d="M15 9.5h3.5A1.5 1.5 0 0 1 20 11v6a1.5 1.5 0 0 1-1.5 1.5H15"/><line x1="6.6" y1="9.5" x2="12.4" y2="9.5"/><line x1="6.6" y1="12.5" x2="12.4" y2="12.5"/><line x1="6.6" y1="15.5" x2="10" y2="15.5"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 3L20.33 4.67L18.67 3L17 4.67L15.33 3L13.67 4.67L12 3L10.33 4.67L8.67 3L7 4.67L5.33 3L3.67 4.67L2 3V19C2 20.1 2.9 21 4 21H20C21.1 21 22 20.1 22 19V3ZM11 19H4V13H11V19ZM20 19H13V17H20V19ZM20 15H13V13H20V15ZM20 11H4V8H20V11Z"/></svg>
           </button>
           <button data-fv="list" title="Feed view" aria-label="Feed view">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="4" y="5" width="16" height="6" rx="1.4"/><rect x="4" y="13" width="16" height="6" rx="1.4"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 13H5C3.9 13 3 13.9 3 15V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V15C21 13.9 20.1 13 19 13ZM19 19H5V15H19V19Z"/><path d="M19 3H5C3.9 3 3 3.9 3 5V9C3 10.1 3.9 11 5 11H19C20.1 11 21 10.1 21 9V5C21 3.9 20.1 3 19 3ZM19 9H5V5H19V9Z"/></svg>
           </button>
         </div>
       </div>
@@ -731,7 +734,7 @@
       </button>
       <button class="tab" data-view="myad">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.4"/><path d="M5.6 19c.7-3.2 3.2-4.9 6.4-4.9s5.7 1.7 6.4 4.9"/></svg>
-        <span class="tlab">My Ad</span>
+        <span class="tlab">Ad</span>
       </button>
       <button class="tab" data-view="messages">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/><path d="M4 7.5l8 5.5 8-5.5"/></svg>
@@ -1036,6 +1039,8 @@ function setView(view){
   titleEl.textContent = titles[view] || '';
   const onFeed = view === 'feed';
   viewSeg.style.display = onFeed ? '' : 'none';
+  // a conversation has its own header (back, name, actions), so the page title bar steps aside
+  document.querySelector('.appbar').style.display = view === 'thread' ? 'none' : '';
   scroll.classList.remove('paper-mode', 'thread-mode');
   // sub-screens keep their parent tab lit: a conversation is under Messages, Customize under My Ad
   const tabFor = {thread:'messages', customize:'myad'}[view] || view;
@@ -1951,7 +1956,7 @@ function renderCustomize(){
     </div>`;
   scroll.innerHTML = `
     <div class="customize">
-      <button class="back" id="cBack" style="margin-bottom:14px"><svg class="ic-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>Back to My Ad</button>
+      <button class="back" id="cBack" style="margin-bottom:14px"><svg class="ic-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>Back to Ad</button>
       <div id="custPreview">${previewAd(heading, body)}</div>
       <div class="cust-hint">Live preview</div>
       <div class="cust-drops">
@@ -2337,7 +2342,7 @@ function renderOnboarding(){
     nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obNext">Next</button>`;
   } else if(obStep===4){
     body.innerHTML = `<div class="ob-step"><h2>Add your photo <span class="hint">optional</span></h2>
-      <p class="ob-sub">No one sees this on your ad. It stays hidden until you and someone both choose to trade faces. You can edit it anytime from My Ad.</p>
+      <p class="ob-sub">No one sees this on your ad. It stays hidden until you and someone both choose to trade faces. You can edit it anytime from the Ad tab.</p>
       <input type="file" accept="image/*" id="photoInput" hidden>
       <div id="photoSlot">${photoSlotHtml()}</div>
       <div class="photo-privacy">${IC_LOCK} Hidden until a mutual face reveal — never shown on your public ad.</div>
@@ -2361,7 +2366,7 @@ function renderOnboarding(){
     nav.innerHTML = `<button class="btn ghost" id="obBack">Back</button><button class="btn" id="obNext">Next</button>`;
   } else {
     body.innerHTML = `<div class="ob-step"><div class="ob-kicker">Optional</div><h2>Make it yours</h2>
-      <p class="ob-sub">Here's your whole ad. Give it a font that fits your vibe, or post as-is — you can refine anything anytime in My Ad.</p>
+      <p class="ob-sub">Here's your whole ad. Give it a font that fits your vibe, or post as-is — you can refine anything anytime in the Ad tab.</p>
       <div id="obCustPreview">${obAdCard()}</div>
       <div class="cust-drops">
         <label class="drop"><span class="drop-label">Display font</span>
